@@ -1,4 +1,5 @@
 package fr.irisa.comprtmc
+import collection.JavaConverters._
 
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
