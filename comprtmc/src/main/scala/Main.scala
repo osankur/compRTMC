@@ -41,44 +41,8 @@ object Main {
         if (!config.taFile.exists()){
           logger.error(("%s File " + config.taFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
-        }        
-        //val alphabetList = List("get1","rel1","get2", "rel2").asJava
-        val alphabetList = List("get1","get2").asJava
-        val alphabet : Alphabet[String] = Alphabets.fromList(alphabetList)
-        val target : CompactDFA[String] =
-            AutomatonBuilders.newDFA(alphabet)
-                    .withInitial("q0")
-                    .from("q0")
-                      .on("get1").to("q0")
-                      .on("get2").to("q1")
-                      .withAccepting("q0")
-                    /*
-                    .from("q0")
-                        .on("get1").to("q0")
-                    .from("q0")
-                        .on("rel1").to("q1")
-                    .from("q1")
-                        .on("get2").to("q1")
-                    .from("q1")
-                        .on("rel2").to("q2")
-                    .withAccepting("q0")
-                    .withAccepting("q1")
-                    */
-                    .create();
-        val taReader = TCheckerTA(config.taFile)
-        try {
-          val mOracle = TCheckerMembershipOracle(alphabet, taReader)
-          System.out.println("Membership question: " + mOracle.answerQuery(Word.fromList(List("get1","rel1").asJava)))
-          val inclOracle = TCheckerInclusionOracle(alphabet, taReader)
-          inclOracle.findCounterExample(target,null)
-        } catch {
-          case BadTimedAutomaton(msg) => logger.error(msg)
-          case FailedTAModelChecking(msg) => 
-            logger.error("TA Model checking failed. TChecker's output:")
-            logger.error(msg)
         }
       case _ =>
-      // arguments are bad, error message will have been displayed
     }
   }
 }

@@ -25,6 +25,7 @@ import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words._
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
+import net.automatalib.visualization.Visualization;
 
 case class BadTimedAutomaton(msg: String) extends Exception(msg)
 case class FailedTAModelChecking(msg: String) extends Exception(msg)
@@ -136,23 +137,18 @@ class TCheckerMonitorMaker(
     // Build product automaton
     val strB = StringBuilder()
     strB.append(ta.core)
-    strB.append("\n")
-    strB.append(
-      "# Trace Monitor Process\nprocess:%s\nlocation:%s:q0{initial:}\n".format(
-        monitorProcessName,
-        monitorProcessName
-      )
-    )
-    for (i <- 1 to word.length - 1) {
-      strB.append("location:%s:q%d\n".format(monitorProcessName, i))
+    strB.append("\nprocess:%s\n".format(monitorProcessName))
+    for (i <- 0 to word.length) {
+      strB.append("location:%s:q%d".format(monitorProcessName, i))
+      val attributes = ArrayBuffer[String]()
+      if (i == 0){
+        attributes.append("initial:")
+      }
+      if (i == word.length){
+        attributes.append("labels:%s".format(acceptLabel))
+      }
+      strB.append("{%s}\n".format(attributes.mkString(":")))
     }
-    strB.append(
-      "location:%s:q%d{labels:%s}\n".format(
-        monitorProcessName,
-        word.length,
-        acceptLabel
-      )
-    )
     word.zipWithIndex.foreach { (label, i) =>
       strB.append(
         "edge:%s:q%d:q%d:%s\n".format(monitorProcessName, i, i + 1, label)
@@ -168,11 +164,14 @@ class TCheckerMonitorMaker(
     * included in the DFA, that TA /\ comp(DFA) is non-empty.
     */
   def makeInclusionMonitor(hypothesis: DFA[_, String]): String = {
+    //Visualization.visualize(hypothesis, alphabet);
     val strStates = StringBuilder()
     val strTransitions = StringBuilder()
     // val alphabetSet = alphabet.asScala.toSet
     val initStates = hypothesis.getInitialStates().asScala
     strStates.append("process:" + monitorProcessName + "\n")
+    // Add a dummy accepting node in case there is no accepting state at the end (this prevents tchecker from complaining)
+    strStates.append("location:%s:dummy{labels:%s}\n".format(monitorProcessName,acceptLabel))
     hypothesis
       .getStates()
       .asScala
@@ -185,7 +184,7 @@ class TCheckerMonitorMaker(
         }
         // revert accepting and non-accepting states
         if (!hypothesis.isAccepting(state)) {
-          attributes.append("labels:_crtmc_accept")
+          attributes.append("labels:%s".format(acceptLabel))
         }
         strStates.append(attributes.mkString(":"))
         strStates.append("}\n")
@@ -219,7 +218,7 @@ class TCheckerMembershipOracle(
     alphabet: Alphabet[String],
     ta : TCheckerTA,    
     tmpDirName: String = "./.crtmc/"
-) extends MembershipOracle[String, Boolean] {
+) extends MembershipOracle[String, java.lang.Boolean] {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
@@ -227,7 +226,7 @@ class TCheckerMembershipOracle(
 
   override def processQueries(
       queries: java.util.Collection[
-        ? <: de.learnlib.api.query.Query[String, Boolean]
+        ? <: de.learnlib.api.query.Query[String, java.lang.Boolean]
       ]
   ): Unit = {
     MQUtil.answerQueries(this, queries);
@@ -236,7 +235,7 @@ class TCheckerMembershipOracle(
   override def answerQuery(
       prefix: Word[String],
       suffix: Word[String]
-  ): Boolean = {
+  ): java.lang.Boolean = {
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     val productFile =
       Files.createTempFile(tmpDirPath, "productMem", ".ta").toFile()
@@ -245,14 +244,18 @@ class TCheckerMembershipOracle(
     pw.close()
 
     // Model check product automaton
-    logger.debug("Running TChecker for a membership query")
-    val output = "tck-reach -a covreach %s -l %s"
+    System.out.println("Running TChecker for a membership query: " + trace)
+    logger.debug("Running TChecker for a membership query: " + trace)
+    val cmd = "tck-reach -a covreach %s -l %s"
       .format(productFile.toString, taMonitorMaker.acceptLabel)
-      .!!
+    System.out.println(cmd)
+    val output = cmd.!!
     productFile.delete()
     if (output.contains("REACHABLE false")) then {
+      System.out.println("Membership query (false): " + trace)
       false
     } else if (output.contains("REACHABLE true")) then {
+      System.out.println("Membership query (true): " + trace)
       true
     } else {
       throw FailedTAModelChecking(output)
@@ -267,6 +270,8 @@ class TCheckerInclusionOracle(
 ) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerInclusionOracle])
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
+  private val alphabetSet = alphabet.asScala.toSet
+
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
@@ -287,28 +292,29 @@ class TCheckerInclusionOracle(
     logger.debug("Running TChecker for a membership query")
     val output = "tck-reach -a covreach %s -l %s -C %s"
       .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString).!!
-    // System.out.println(output)
     
-    // productFile.delete()
+    productFile.delete()
     if (output.contains("REACHABLE false")) then {
       null // Inclusion holds
     } else if (output.contains("REACHABLE true")) then {
       val lines = Source.fromFile(certFile).getLines().toList
       val word = ArrayBuffer[String]()
-      val regEdge = "\\s*([0-9]+)\\s*->\\s*([0-9]+)\\s*\\[.*vedge=\"<(.*)>\".*\\]".r
-      var index = 0
+      val regEdge = ".*->.*vedge=\"<(.*)>\".*".r
       lines.foreach({
-        case regEdge(i,j,syncList) => 
-          if(index != i.toInt || index+1!=j.toInt){
-            throw Exception("Non sequential ordering of transitions in certificate file: %s -> %s".format(i,j))
+        case regEdge(syncList) => 
+          val singleSync = syncList.split(",").map(_.split("@")(1)).toSet.intersect(alphabetSet)
+          if (singleSync.size > 1){
+            throw FailedTAModelChecking("The counterexample trace has a transition with syncs containing more than one letter of the alphabet:\n" + syncList)
+          } else if (singleSync.size == 0){
+            throw FailedTAModelChecking("The counterexample trace has a transition without any letter of the alphabet:\n" + syncList)
           }
-          System.out.println(syncList)
-          index = index + 1
+          val a = singleSync.toArray
+          word.append(a(0))
         case _ => ()
       })
+      System.out.println("Inclusion query cex: " + word)
       certFile.delete()
-      null
-      // return DefaultQuery[String, java.lang.Boolean](Word.fromArray[Character](words.toArray,0,words.length), java.lang.Boolean.TRUE)
+      return DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
     } else {
       throw FailedTAModelChecking(output)
     }

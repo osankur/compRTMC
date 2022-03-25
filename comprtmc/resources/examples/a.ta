@@ -1,0 +1,101 @@
+#labels=scheduled
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:job_shop_3_2_10_30
+
+# Events
+event:tau
+event:count
+event:get1
+event:rel1
+event:get2
+event:rel2
+event:get3
+event:rel3
+event:done1
+event:done2
+
+# Machine 1
+process:M1
+location:M1:idle{initial:}
+location:M1:busy
+edge:M1:idle:busy:get1
+edge:M1:busy:idle:rel1
+
+# Machine 2
+process:M2
+location:M2:idle{initial:}
+location:M2:busy
+edge:M2:idle:busy:get2
+edge:M2:busy:idle:rel2
+
+# Machine 3
+process:M3
+location:M3:idle{initial:}
+location:M3:busy
+edge:M3:idle:busy:get3
+edge:M3:busy:idle:rel3
+
+# Job 1
+process:J1
+clock:1:x1
+location:J1:i1{initial:}
+location:J1:w1
+location:J1:i3{committed:}
+location:J1:done
+location:J1:i2
+location:J1:w2
+edge:J1:i1:w1:get1{do: x1=0}
+edge:J1:w1:i2:rel1{provided: x1>=3}
+edge:J1:i2:w2:get3{do: x1=0}
+edge:J1:w2:i3:rel3{provided: x1>=9}
+edge:J1:i3:done:done1
+
+# Job 2
+process:J2
+clock:1:x2
+location:J2:i1{initial:}
+location:J2:w1
+location:J2:i3{committed:}
+location:J2:done
+location:J2:i2
+location:J2:w2
+location:J2:o{labels:done2}
+edge:J2:i1:w1:get2{do: x2=0}
+edge:J2:w1:i2:rel2{provided: x2>=2}
+edge:J2:i2:w2:get3{do: x2=0}
+edge:J2:w2:i3:rel3{provided: x2>=1}
+edge:J2:i3:done:done2
+
+# Controller
+process:C
+clock:1:z
+int:1:0:2:0:n
+location:C:idle{initial:}
+location:C:done{labels: scheduled}
+edge:C:idle:idle:count{do: n=n+1}
+edge:C:idle:done:count{provided: n==1 && (z <= 30) : do: n=n+1}
+
+sync:J1@done1:C@count
+sync:J1@rel1:M1@rel1
+sync:J1@get2:M2@get2
+sync:J1@rel2:M2@rel2
+sync:J1@get3:M3@get3
+sync:J1@rel3:M3@rel3
+sync:J2@done2:C@count
+sync:J2@get1:M1@get1
+sync:J2@rel1:M1@rel1
+sync:J2@get2:M2@get2
+sync:J2@rel2:M2@rel2
+sync:J2@get3:M3@get3
+sync:J2@rel3:M3@rel3
+
