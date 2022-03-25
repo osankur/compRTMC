@@ -3,6 +3,9 @@ package fr.irisa.comprtmc
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import collection.JavaConverters._
+import collection.convert.ImplicitConversions._
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.Buffer
 import scala.sys.process._
 import scala.io.Source
 import scala.collection.mutable.StringBuilder
@@ -20,11 +23,11 @@ import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words._
+import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.util.automata.builders.AutomatonBuilders;
 
 case class BadTimedAutomaton(msg: String) extends Exception(msg)
 case class FailedTAModelChecking(msg: String) extends Exception(msg)
-
-abstract class TA
 
 /** Read TChecker TA from given file, and store the tuple (events,
   * eventsOfProcesses, core, syncs) where events is the list of all events,
@@ -32,14 +35,14 @@ abstract class TA
   * the list of lines of the input file except for the sync instructions, and
   * syncs contains lists of tuples encoding the syncs
   */
-class TCheckerTA(inputFile: java.io.File) extends TA {
+class TCheckerTA(inputFile: java.io.File) {
   class TCheckerTAStructure(
       val events: List[String],
       val eventsOfProcesses: HashMap[String, Set[String]],
       val syncs: List[List[(String, String)]],
       val core: String
   )
-  val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
+  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
 
   private val taComponents = {
     val lines = Source.fromFile(inputFile).getLines().toList
@@ -93,32 +96,18 @@ class TCheckerTA(inputFile: java.io.File) extends TA {
   def eventsOfProcesses: HashMap[String, Set[String]] =
     taComponents.eventsOfProcesses
   def core: String = taComponents.core
+
 }
 
-class TCheckerMembershipOracle(
-    alphabet: Alphabet[String],
+class TCheckerMonitorMaker(
     ta: TCheckerTA,
-    tmpDirName: String = "./.crtmc/"
-) extends MembershipOracle[String, Boolean] {
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
+    alphabet: Alphabet[String],
+    monitorProcessName: String = "_crtmc_mon"
+) {
 
-  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
-  val productFile = Files.createTempFile(tmpDirPath, "product", ".ta").toFile()
-  productFile.getParentFile().mkdirs()
-    // System.out.printf("Wrote text to temporary file %s%n", tmpFile.toString());
-
-  //private val productFile = File(tmpDirName, "product.ta")
-  
-  private val monitorProcessName = "_crtmc_mon"
-
-  override def processQueries(
-      queries: java.util.Collection[
-        ? <: de.learnlib.api.query.Query[String, Boolean]
-      ]
-  ): Unit = {
-    MQUtil.answerQueries(this, queries);
-  }
-
+  /** Textual declaration of sync labels where the monitor process participates
+    * in all synchronized edges with a label in alphabet.
+    */
   val productTASyncs: String = {
     val strB = StringBuilder()
     val alphabetSet = alphabet.asScala.toSet
@@ -137,43 +126,129 @@ class TCheckerMembershipOracle(
     }
     strB.result()
   }
+  def acceptLabel = "_crtmc_accept"
 
-  override def answerQuery(
-      prefix: Word[String],
-      suffix: Word[String]
-  ): Boolean = {
-    val length = prefix.length + suffix.length
-    val trace = prefix.asList().asScala ++ suffix.asList().asScala
+  /** Returns textual description of TA made of the product of given TA, and a
+    * monitor that reads a given word. The acceptLabel is reachable if the
+    * intersection is non-empty
+    */
+  def makeWordMonitor(word: Buffer[String]): String = {
     // Build product automaton
-    val queueStrB = StringBuilder()
-    queueStrB.append(
+    val strB = StringBuilder()
+    strB.append(ta.core)
+    strB.append("\n")
+    strB.append(
       "# Trace Monitor Process\nprocess:%s\nlocation:%s:q0{initial:}\n".format(
         monitorProcessName,
         monitorProcessName
       )
     )
-    for (i <- 1 to length - 1) {
-      queueStrB.append("location:%s:q%d\n".format(monitorProcessName, i))
+    for (i <- 1 to word.length - 1) {
+      strB.append("location:%s:q%d\n".format(monitorProcessName, i))
     }
-    queueStrB.append(
-      "location:%s:q%d{labels:done}\n".format(monitorProcessName, length)
+    strB.append(
+      "location:%s:q%d{labels:%s}\n".format(
+        monitorProcessName,
+        word.length,
+        acceptLabel
+      )
     )
-    trace.zipWithIndex.foreach { (label, i) =>
-      queueStrB.append(
+    word.zipWithIndex.foreach { (label, i) =>
+      strB.append(
         "edge:%s:q%d:q%d:%s\n".format(monitorProcessName, i, i + 1, label)
       )
     }
+    strB.append("\n")
+    strB.append(productTASyncs.mkString)
+    return strB.toString
+  }
+
+  /** Returns textual description of TA made of the product of given TA, and the
+    * complement of the given DFA. The acceptLabel is reachable TA is not
+    * included in the DFA, that TA /\ comp(DFA) is non-empty.
+    */
+  def makeInclusionMonitor(hypothesis: DFA[_, String]): String = {
+    val strStates = StringBuilder()
+    val strTransitions = StringBuilder()
+    // val alphabetSet = alphabet.asScala.toSet
+    val initStates = hypothesis.getInitialStates().asScala
+    strStates.append("process:" + monitorProcessName + "\n")
+    hypothesis
+      .getStates()
+      .asScala
+      .foreach(state =>
+        strStates
+          .append("location:%s:q%s{".format(monitorProcessName, state.toString))
+        val attributes = ArrayBuffer[String]()
+        if (initStates.contains(state)) then {
+          attributes.append("initial:")
+        }
+        // revert accepting and non-accepting states
+        if (!hypothesis.isAccepting(state)) {
+          attributes.append("labels:_crtmc_accept")
+        }
+        strStates.append(attributes.mkString(":"))
+        strStates.append("}\n")
+        for (sigma <- alphabet.toList) {
+          val succs = hypothesis.getSuccessors(state, sigma);
+          if (!succs.isEmpty()) then {
+            for (succ <- succs) {
+              strTransitions.append(
+                "edge:%s:q%s:q%s:%s\n".format(
+                  monitorProcessName,
+                  state.toString,
+                  succ.toString,
+                  sigma
+                )
+              )
+            }
+          }
+        }
+      )
+      val taB = StringBuilder()
+      taB.append(ta.core)
+      taB.append(strStates.append(strTransitions.toString).toString)
+      taB.append("\n")
+      taB.append(productTASyncs)
+      taB.toString
+  }
+
+}
+
+class TCheckerMembershipOracle(
+    alphabet: Alphabet[String],
+    ta : TCheckerTA,    
+    tmpDirName: String = "./.crtmc/"
+) extends MembershipOracle[String, Boolean] {
+  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
+  private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
+  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
+  tmpDirPath.toFile().mkdirs()
+
+  override def processQueries(
+      queries: java.util.Collection[
+        ? <: de.learnlib.api.query.Query[String, Boolean]
+      ]
+  ): Unit = {
+    MQUtil.answerQueries(this, queries);
+  }
+
+  override def answerQuery(
+      prefix: Word[String],
+      suffix: Word[String]
+  ): Boolean = {
+    val trace = prefix.asList().asScala ++ suffix.asList().asScala
+    val productFile =
+      Files.createTempFile(tmpDirPath, "productMem", ".ta").toFile()
     val pw = PrintWriter(productFile)
-    pw.write(ta.core)
-    pw.write("\n\n")
-    pw.write(queueStrB.mkString)
-    pw.write("\n\n")
-    pw.write(productTASyncs.mkString)
+    pw.write(taMonitorMaker.makeWordMonitor(trace))
     pw.close()
 
     // Model check product automaton
     logger.debug("Running TChecker for a membership query")
-    val output = "tck-reach -a covreach %s".format(productFile.toString).!!
+    val output = "tck-reach -a covreach %s -l %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel)
+      .!!
     productFile.delete()
     if (output.contains("REACHABLE false")) then {
       false
@@ -182,7 +257,6 @@ class TCheckerMembershipOracle(
     } else {
       throw FailedTAModelChecking(output)
     }
-
   }
 }
 
@@ -190,21 +264,54 @@ class TCheckerInclusionOracle(
     alphabet: Alphabet[String],
     ta: TCheckerTA,
     tmpDirName: String = "./.crtmc/"
-) extends EquivalenceOracle.DFAEquivalenceOracle[Character] {
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
-
-  private val productFile = File(tmpDirName, "product.ta")
-  productFile.getParentFile().mkdirs()
-  private val monitorProcessName = "_crtmc_mon"
+) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
+  private val logger = LoggerFactory.getLogger(classOf[TCheckerInclusionOracle])
+  private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
+  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
+  tmpDirPath.toFile().mkdirs()
 
   override def findCounterExample(
-      hypothesis: DFA[_, Character],
-      inputs: java.util.Collection[? <: Character]
-  ): DefaultQuery[Character, java.lang.Boolean] = {
-    // Create TA process corresponding to the complement of hypothesis
-    // Dump the product with ta
-    // Call model checker 
-    null
+      hypothesis: DFA[_, String],
+      inputs: java.util.Collection[? <: String]
+  ): DefaultQuery[String, java.lang.Boolean] = {
+    val productFile =
+      Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
+    val pw = PrintWriter(productFile)
+    pw.write(taMonitorMaker.makeInclusionMonitor(hypothesis))
+    pw.close()
+
+    val certFile =
+      Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
+
+    // Model check product automaton
+    logger.debug("Running TChecker for a membership query")
+    val output = "tck-reach -a covreach %s -l %s -C %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString).!!
+    // System.out.println(output)
+    
+    // productFile.delete()
+    if (output.contains("REACHABLE false")) then {
+      null // Inclusion holds
+    } else if (output.contains("REACHABLE true")) then {
+      val lines = Source.fromFile(certFile).getLines().toList
+      val word = ArrayBuffer[String]()
+      val regEdge = "\\s*([0-9]+)\\s*->\\s*([0-9]+)\\s*\\[.*vedge=\"<(.*)>\".*\\]".r
+      var index = 0
+      lines.foreach({
+        case regEdge(i,j,syncList) => 
+          if(index != i.toInt || index+1!=j.toInt){
+            throw Exception("Non sequential ordering of transitions in certificate file: %s -> %s".format(i,j))
+          }
+          System.out.println(syncList)
+          index = index + 1
+        case _ => ()
+      })
+      certFile.delete()
+      null
+      // return DefaultQuery[String, java.lang.Boolean](Word.fromArray[Character](words.toArray,0,words.length), java.lang.Boolean.TRUE)
+    } else {
+      throw FailedTAModelChecking(output)
+    }
   }
 
 }
