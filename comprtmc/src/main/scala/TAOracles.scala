@@ -1,5 +1,5 @@
 package fr.irisa.comprtmc
-
+import io.AnsiColor._
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import collection.JavaConverters._
@@ -206,9 +206,11 @@ class TCheckerMonitorMaker(
       )
       val taB = StringBuilder()
       taB.append(ta.core)
+      taB.append("\n")
       taB.append(strStates.append(strTransitions.toString).toString)
       taB.append("\n")
       taB.append(productTASyncs)
+      taB.append("\n")
       taB.toString
   }
 
@@ -244,18 +246,17 @@ class TCheckerMembershipOracle(
     pw.close()
 
     // Model check product automaton
-    System.out.println("Running TChecker for a membership query: " + trace)
-    logger.debug("Running TChecker for a membership query: " + trace)
+    System.out.println("Running TChecker for a " + BLUE + " membership query: " + trace + RESET)
     val cmd = "tck-reach -a covreach %s -l %s"
       .format(productFile.toString, taMonitorMaker.acceptLabel)
     System.out.println(cmd)
     val output = cmd.!!
-    productFile.delete()
+    // productFile.delete()
     if (output.contains("REACHABLE false")) then {
-      System.out.println("Membership query (false): " + trace)
+      System.out.println("Membership query " + RED + "(false)" + RESET)
       false
     } else if (output.contains("REACHABLE true")) then {
-      System.out.println("Membership query (true): " + trace)
+      System.out.println("Membership query " + GREEN + "(true)" + RESET)
       true
     } else {
       throw FailedTAModelChecking(output)
@@ -289,14 +290,17 @@ class TCheckerInclusionOracle(
       Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
 
     // Model check product automaton
-    logger.debug("Running TChecker for a membership query")
+    System.out.println("Running TChecker for an " + YELLOW + "inclusion query" + RESET)
     val output = "tck-reach -a covreach %s -l %s -C %s"
       .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString).!!
     
     productFile.delete()
     if (output.contains("REACHABLE false")) then {
+      System.out.println(GREEN + "Inclusion checks" + RESET)
+      certFile.delete()
       null // Inclusion holds
     } else if (output.contains("REACHABLE true")) then {
+      System.out.println(RED + "Counterexample to inclusion" + RESET)
       val lines = Source.fromFile(certFile).getLines().toList
       val word = ArrayBuffer[String]()
       val regEdge = ".*->.*vedge=\"<(.*)>\".*".r
@@ -316,6 +320,7 @@ class TCheckerInclusionOracle(
       certFile.delete()
       return DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
     } else {
+      certFile.delete()
       throw FailedTAModelChecking(output)
     }
   }

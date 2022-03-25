@@ -64,28 +64,36 @@ class BasicTests extends munit.FunSuite {
 }
 
 class FullZG extends munit.FunSuite {
-  test("a_flat.ta") {
-    val ta = TCheckerTA(File("resources/examples/a_flat.ta"))
+  def learnForInclusion(input: String): Unit = {
+    val ta = TCheckerTA(File(input))
     val alphabet: Alphabet[String] = Alphabets.fromList(ta.events.asJava)
-    val mOracle : de.learnlib.api.oracle.MembershipOracle[String,java.lang.Boolean] = TCheckerMembershipOracle(alphabet, ta)
+    val mOracle
+        : de.learnlib.api.oracle.MembershipOracle[String, java.lang.Boolean] =
+      TCheckerMembershipOracle(alphabet, ta)
     val inclOracle = TCheckerInclusionOracle(alphabet, ta)
-    val lstar = ClassicLStarDFABuilder[String]().withAlphabet(alphabet).withOracle(mOracle).create()
-    val experiment : DFAExperiment[String] = DFAExperiment(lstar, inclOracle, alphabet);
+    val lstar = ClassicLStarDFABuilder[String]()
+      .withAlphabet(alphabet)
+      .withOracle(mOracle)
+      .create()
+    val experiment: DFAExperiment[String] =
+      DFAExperiment(lstar, inclOracle, alphabet);
 
-      // turn on time profiling
+    // turn on time profiling
     experiment.setProfile(true);
 
-      // enable logging of models
+    // enable logging of models
     experiment.setLogModels(true);
 
-      // run experiment
+    // run experiment
     experiment.run();
 
     // get learned model
     val result = experiment.getFinalHypothesis();
 
     // report results
-    System.out.println("-------------------------------------------------------");
+    System.out.println(
+      "-------------------------------------------------------"
+    );
 
     // profiling
     System.out.println(SimpleProfiler.getResults());
@@ -100,7 +108,12 @@ class FullZG extends munit.FunSuite {
     // show model
     Visualization.visualize(result, alphabet);
 
-    System.out.println("-------------------------------------------------------");
-
+    System.out.println(
+      "-------------------------------------------------------"
+    )
+  }
+  test("a_flat.ta") {
+    // learnForInclusion("resources/examples/a_flat.ta")
+    learnForInclusion("/tmp/c.ta")
   }
 }
