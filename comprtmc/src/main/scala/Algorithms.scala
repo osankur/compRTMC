@@ -1,0 +1,112 @@
+package fr.irisa.comprtmc
+import io.AnsiColor._
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import collection.JavaConverters._
+import collection.convert.ImplicitConversions._
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.Buffer
+import de.learnlib.api.oracle.EquivalenceOracle
+import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.api.oracle._
+import de.learnlib.api.oracle.MembershipOracle
+import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.util.automata.builders.AutomatonBuilders;
+import net.automatalib.automata.fsa.DFA;
+import net.automatalib.words.impl.Alphabets;
+import net.automatalib.words._
+import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.util.automata.builders.AutomatonBuilders;
+import net.automatalib.visualization.Visualization;
+import de.learnlib.util.Experiment.DFAExperiment;
+import de.learnlib.util.statistics.SimpleProfiler;
+import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
+import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
+
+
+case class CounterExample(cexDescription : String) extends Exception
+
+class CompSafetyAlgorithm(
+    fsmIntersectionOracle : FSMIntersectionOracle,
+    taMembershipOracle : TAMembershipOracle, 
+    taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]
+){
+    System.out.println("COMP SAFETY")
+    private val logger = LoggerFactory.getLogger(classOf[CompSafetyAlgorithm])
+
+    case class ProductCounterExample(smvTrace : String, trace : List[String], taTrace : String) extends Exception
+
+    /** Oracle for compositional model checking. Given hypothesis DFA which includes TA,
+     *  the oracle first checks if FSM x hypothesis satisfies the safety specification
+     *  using @fsmIntersectionOracle. If no counterexample is found, then safety is established.
+     *  Otherwise, @taMembershipOracle is used to check if the cex is realizable in the TA.
+     *  If yes, then the counterexample is confirmed. Otherwise, a query is returned to rule out
+     *  the trace of the counterexample. 
+     */
+    class EqOracle(fsmIntersectionOracle : FSMIntersectionOracle, taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]) 
+        extends EquivalenceOracle.DFAEquivalenceOracle[String]{
+        override def findCounterExample(
+            hypothesis: DFA[_, String],
+            inputs: java.util.Collection[? <: String]
+        ): DefaultQuery[String, java.lang.Boolean] = {
+            taInclusionOracle.findCounterExample(hypothesis,inputs) match {
+                case null =>
+                    fsmIntersectionOracle.checkIntersection(hypothesis) match{
+                        case None => 
+                            // Verification succeeded
+                            null
+                        case Some(FSMOracles.CounterExample(cexDescription, trace)) =>
+                            // FSM x hypothesis contains a counterexample trace
+                            // Check feasability with TChecker
+                            System.out.println(RED + "*** FSM Counterexample found: " + trace + RESET + "\n")
+                            val word = Word.fromList(trace)
+
+                            //  if feasible: return counterexample
+                            //  otherwise, create query to rule out the trace
+                            taMembershipOracle.getTimedWitness(Word.epsilon,word) match{
+                                case Some(timedTrace) => throw ProductCounterExample(cexDescription, trace, timedTrace)
+                                case None => DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
+                            }                             
+                            
+                    }
+                case query => query
+            }
+        }
+    }
+    def run() : Unit = {
+        val alph = Alphabets.fromList(fsmIntersectionOracle.alphabet)
+        val lstar = ClassicLStarDFABuilder[String]()
+            .withAlphabet(alph)
+            .withOracle(taMembershipOracle)
+            .create()
+        val eqOracle = EqOracle(fsmIntersectionOracle, taInclusionOracle)
+        val experiment: DFAExperiment[String] =
+        DFAExperiment(lstar, eqOracle, alph);
+
+        // turn on time profiling
+        experiment.setProfile(true);
+
+        // enable logging of models
+        experiment.setLogModels(true);
+
+        try {
+            experiment.run();
+            System.out.println(GREEN + "\nSafety holds\n" + RESET)
+            val result = experiment.getFinalHypothesis();
+
+            System.out.println(SimpleProfiler.getResults());
+            System.out.println(experiment.getRounds().getSummary());
+            System.out.println("States: " + result.size());
+            System.out.println("Sigma: " + alph.size());
+        } catch {
+            case ProductCounterExample(smvTrace, trace, taTrace) =>
+                System.out.println(RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n")
+                System.out.println("\t" + YELLOW + BOLD + trace + RESET)
+                System.out.println("\nSMV trace:")
+                System.out.println(YELLOW + smvTrace + RESET)
+                System.out.println("\nTA trace:")
+                System.out.println(YELLOW + taTrace + RESET)
+            case e => throw e
+        }
+    }
+}

@@ -1,0 +1,29 @@
+MODULE main
+IVAR
+	_rt_ : -1..3;
+VAR
+	state : {q0, q1, q2};
+	bit : boolean;
+ASSIGN
+	init(state) := q0;
+	init(bit) := FALSE;
+	next(state) := case
+		state = q0 & a : q1;
+		state = q1 & a : q2;
+		state = q0 & !a : q0;
+		state = q1 & !a : q1;
+		tau : state;
+		TRUE : state;
+	esac;
+	next(bit) := case
+		state = q2 : {TRUE, FALSE};
+		TRUE : bit;
+	esac;
+DEFINE
+	a := _rt_ = 0;
+	b := _rt_ = 1;
+	c := _rt_ = 2;
+	d := _rt_ = 3;
+	tau := _rt_ = -1;
+	err := bit;
+INVARSPEC !err

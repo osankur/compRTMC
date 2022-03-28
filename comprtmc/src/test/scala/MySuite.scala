@@ -50,12 +50,12 @@ class BasicTests extends munit.FunSuite {
         .withAccepting("q0")
         .create();
     val ta = TCheckerTA(File("resources/examples/a.ta"))
-    val mOracle = TCheckerMembershipOracle(alphabet, ta)
+    val mOracle = TCheckerMembershipOracle(ta,alphabet)
     assertEquals(
       mOracle.answerQuery(Word.fromList(List("get1", "rel1").asJava)),
       java.lang.Boolean.FALSE
     )
-    val inclOracle = TCheckerInclusionOracle(alphabet, ta)
+    val inclOracle = TCheckerInclusionOracle(ta, alphabet)
     val query = inclOracle.findCounterExample(target, null)
     if (query == null) {
       assertNotEquals(true, false)
@@ -69,8 +69,8 @@ class FullZG extends munit.FunSuite {
     val alphabet: Alphabet[String] = Alphabets.fromList(ta.events.asJava)
     val mOracle
         : de.learnlib.api.oracle.MembershipOracle[String, java.lang.Boolean] =
-      TCheckerMembershipOracle(alphabet, ta)
-    val inclOracle = TCheckerInclusionOracle(alphabet, ta)
+      TCheckerMembershipOracle(ta,alphabet)
+    val inclOracle = TCheckerInclusionOracle(ta,alphabet)
     val lstar = ClassicLStarDFABuilder[String]()
       .withAlphabet(alphabet)
       .withOracle(mOracle)
@@ -114,6 +114,24 @@ class FullZG extends munit.FunSuite {
   }
   test("a_flat.ta") {
     // learnForInclusion("resources/examples/a_flat.ta")
-    learnForInclusion("/tmp/c.ta")
+    learnForInclusion("resources/examples/a_flat.ta")
+  }
+  test("untimed") {
+    // learnForInclusion("resources/examples/a_flat.ta")
+    learnForInclusion("resources/examples/untimed.ta")
+  }
+}
+
+class DFATest extends munit.FunSuite {
+  test("dfa2"){
+    Example.example2()
+  }
+}
+
+
+class SMVParserTest extends munit.FunSuite{
+  test("b.smv"){
+    val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(File("resources/examples/b.smv"))
+    System.out.println(fsmIntersectOracle.alphabet)
   }
 }

@@ -58,6 +58,26 @@ class SampleEquivalenceOracle extends EquivalenceOracle.DFAEquivalenceOracle[Cha
                 .withAccepting("q0")
                 .withAccepting("q1")
                 .create();
+        // AutomatonBuilders.newDFA(inputs)
+        //         .withInitial("q0")
+        //         .from("q0")
+        //             .on('a').to("q1")
+        //         .from("q1")
+        //             .on('a').to("q1")
+        //         .from("q1")
+        //             .on('b').to("q2")
+        //         .from("q2")
+        //             .on('c').to("q3")
+        //         .from("q3")
+        //             .on('a').to("q2")
+        //         .from("q3")
+        //             .on('d').to("q4")
+        //         .withAccepting("q0")
+        //         .withAccepting("q1")
+        //         .withAccepting("q2")
+        //         .withAccepting("q3")
+        //         .withAccepting("q4")
+        //         .create();
         
       override def findCounterExample(hypothesis : DFA[_,Character], inputs : java.util.Collection[? <: Character]) : DefaultQuery[Character, java.lang.Boolean] = {
         // Try traces in a*b* but not in hypothesis
@@ -105,7 +125,7 @@ class SampleEquivalenceOracle extends EquivalenceOracle.DFAEquivalenceOracle[Cha
 object Example {
 
   def example2() : Unit = {
-    val inputs : Alphabet[Character] = Alphabets.characters('a', 'c')
+    val inputs : Alphabet[Character] = Alphabets.characters('a', 'b')
     val mqOracle : MembershipOracle[Character,java.lang.Boolean]= SampleMembershipOracle()
     val lstar = ClassicLStarDFABuilder[Character]().withAlphabet(inputs).withOracle(mqOracle).create()
     val wMethod = SampleEquivalenceOracle()

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import collection.JavaConverters._
 import collection.convert.ImplicitConversions._
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.Buffer
 import scala.sys.process._
 import scala.io.Source
@@ -86,9 +87,6 @@ class TCheckerTA(inputFile: java.io.File) {
       case _ => ()
     }
     val core = lines.filter(line => !line.startsWith("sync:")).mkString("\n")
-    logger.debug("Events: " + events)
-    logger.debug("Syncs: " + syncs)
-    logger.debug("" + eventsOfProcesses)
     TCheckerTAStructure(events, eventsOfProcesses, syncs, core)
   }
 
@@ -98,20 +96,42 @@ class TCheckerTA(inputFile: java.io.File) {
     taComponents.eventsOfProcesses
   def core: String = taComponents.core
 
+  def getTraceFromCexDescription(cexDescription : List[String]) : List[String] = {
+      val alphabetSet = events.toSet
+      val word = ListBuffer[String]()
+      val regEdge = ".*->.*vedge=\"<(.*)>\".*".r
+      cexDescription.foreach({
+        case regEdge(syncList) => 
+          val singleSync = syncList.split(",").map(_.split("@")(1)).toSet.intersect(alphabetSet)
+          if (singleSync.size > 1){
+            throw FailedTAModelChecking("The counterexample trace has a transition with syncs containing more than one letter of the alphabet:\n" + syncList)
+          } else if (singleSync.size == 0){
+            throw FailedTAModelChecking("The counterexample trace has a transition without any letter of the alphabet:\n" + syncList)
+          }
+          val a = singleSync.toArray
+          word.append(a(0))
+        case _ => ()
+      })
+      word.toList
+  }
 }
 
-class TCheckerMonitorMaker(
+
+class TCheckerMonitorMaker (
     ta: TCheckerTA,
     alphabet: Alphabet[String],
     monitorProcessName: String = "_crtmc_mon"
-) {
+)  {
 
   /** Textual declaration of sync labels where the monitor process participates
-    * in all synchronized edges with a label in alphabet.
+    * in all synchronized edges with a label in alphabet + 
+    * the monitor synchronizes on the letters of the alphabet with all processes
+    * which use that action without declaring any sync.
     */
   val productTASyncs: String = {
     val strB = StringBuilder()
     val alphabetSet = alphabet.asScala.toSet
+      // The monitor shall join all syncs on letters of the alphabet
     ta.syncs.foreach { syncLine =>
       val newSyncLine =
         syncLine.map(_._2).toSet.intersect(alphabetSet).toList match
@@ -125,6 +145,24 @@ class TCheckerMonitorMaker(
       strB.append(newSyncLine.map(_ + "@" + _).mkString(":"))
       strB.append("\n")
     }
+    // For each process, store the set of letters that appear in a sync instruction
+    val syncEventsOfProcesses = HashMap[String, Set[String]]()
+    ta.syncs.foreach { syncLine =>
+      val newSyncLine =
+        syncLine.filter(alphabetSet.contains(_)).foreach(
+          (proc, event) => 
+            val currentSet = syncEventsOfProcesses.getOrElse(proc,Set[String]())
+            syncEventsOfProcesses += proc -> currentSet
+        )
+    }
+    strB.append("\n")
+    // The monitor shall join all previously asynchronous transitions on the letters of the alphabet
+    ta.eventsOfProcesses.foreach(
+      (proc, syncEvents) => 
+        syncEvents.diff(syncEventsOfProcesses.getOrElse(proc, Set[String]())).foreach(
+          e => strB.append("sync:%s@%s:%s@%s\n".format(monitorProcessName,e,proc,e))
+        )
+    )
     strB.result()
   }
   def acceptLabel = "_crtmc_accept"
@@ -164,7 +202,6 @@ class TCheckerMonitorMaker(
     * included in the DFA, that TA /\ comp(DFA) is non-empty.
     */
   def makeInclusionMonitor(hypothesis: DFA[_, String]): String = {
-    //Visualization.visualize(hypothesis, alphabet);
     val strStates = StringBuilder()
     val strTransitions = StringBuilder()
     // val alphabetSet = alphabet.asScala.toSet
@@ -215,12 +252,21 @@ class TCheckerMonitorMaker(
   }
 
 }
+abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boolean]{
+  /**
+   * Returns witness timed trace if the given word is in the untimed language
+   */
+  def getTimedWitness(
+      prefix: Word[String],
+      suffix: Word[String]
+  ): Option[String]
 
+}
 class TCheckerMembershipOracle(
+    ta : TCheckerTA,
     alphabet: Alphabet[String],
-    ta : TCheckerTA,    
     tmpDirName: String = "./.crtmc/"
-) extends MembershipOracle[String, java.lang.Boolean] {
+) extends TAMembershipOracle {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
@@ -238,6 +284,19 @@ class TCheckerMembershipOracle(
       prefix: Word[String],
       suffix: Word[String]
   ): java.lang.Boolean = {
+    getTimedWitness(prefix,suffix) match {
+      case None => false
+      case _ => true
+    }
+  }
+
+  /**
+   * Returns witness timed trace if the given word is in the untimed language
+   */
+  override def getTimedWitness(
+      prefix: Word[String],
+      suffix: Word[String]
+  ): Option[String] = {
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     val productFile =
       Files.createTempFile(tmpDirPath, "productMem", ".ta").toFile()
@@ -245,19 +304,25 @@ class TCheckerMembershipOracle(
     pw.write(taMonitorMaker.makeWordMonitor(trace))
     pw.close()
 
+    val certFile =
+      Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
+
     // Model check product automaton
-    System.out.println("Running TChecker for a " + BLUE + " membership query: " + trace + RESET)
-    val cmd = "tck-reach -a covreach %s -l %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel)
-    System.out.println(cmd)
+    val cmd = "tck-reach -a covreach %s -l %s -c %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString)
+    // System.out.println(cmd)
     val output = cmd.!!
-    // productFile.delete()
+    productFile.delete()
     if (output.contains("REACHABLE false")) then {
-      System.out.println("Membership query " + RED + "(false)" + RESET)
-      false
+      // System.out.println("Membership query " + RED + "(false)" + RESET)
+      certFile.delete()
+      None
     } else if (output.contains("REACHABLE true")) then {
-      System.out.println("Membership query " + GREEN + "(true)" + RESET)
-      true
+      val timedCex = Source.fromFile(certFile).mkString
+      //System.out.println(timedCex)
+      certFile.delete()
+      Some(timedCex)
+      // Some(ta.getTraceFromCexDescription(lines))
     } else {
       throw FailedTAModelChecking(output)
     }
@@ -265,8 +330,8 @@ class TCheckerMembershipOracle(
 }
 
 class TCheckerInclusionOracle(
-    alphabet: Alphabet[String],
     ta: TCheckerTA,
+    alphabet: Alphabet[String],
     tmpDirName: String = "./.crtmc/"
 ) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerInclusionOracle])
@@ -275,6 +340,8 @@ class TCheckerInclusionOracle(
 
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
   tmpDirPath.toFile().mkdirs()
+
+  System.out.println("Inclusion Alphabet: " + alphabet.toList)
 
   override def findCounterExample(
       hypothesis: DFA[_, String],
@@ -291,8 +358,10 @@ class TCheckerInclusionOracle(
 
     // Model check product automaton
     System.out.println("Running TChecker for an " + YELLOW + "inclusion query" + RESET)
-    val output = "tck-reach -a covreach %s -l %s -C %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString).!!
+    val cmd = "tck-reach -a covreach %s -l %s -c %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString)
+    System.out.println(cmd)
+    val output = cmd.!!
     
     productFile.delete()
     if (output.contains("REACHABLE false")) then {
@@ -300,29 +369,40 @@ class TCheckerInclusionOracle(
       certFile.delete()
       null // Inclusion holds
     } else if (output.contains("REACHABLE true")) then {
-      System.out.println(RED + "Counterexample to inclusion" + RESET)
       val lines = Source.fromFile(certFile).getLines().toList
-      val word = ArrayBuffer[String]()
-      val regEdge = ".*->.*vedge=\"<(.*)>\".*".r
-      lines.foreach({
-        case regEdge(syncList) => 
-          val singleSync = syncList.split(",").map(_.split("@")(1)).toSet.intersect(alphabetSet)
-          if (singleSync.size > 1){
-            throw FailedTAModelChecking("The counterexample trace has a transition with syncs containing more than one letter of the alphabet:\n" + syncList)
-          } else if (singleSync.size == 0){
-            throw FailedTAModelChecking("The counterexample trace has a transition without any letter of the alphabet:\n" + syncList)
-          }
-          val a = singleSync.toArray
-          word.append(a(0))
-        case _ => ()
-      })
-      System.out.println("Inclusion query cex: " + word)
       certFile.delete()
-      return DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
+      val word = ta.getTraceFromCexDescription(lines)
+      val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
+      System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
+      System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
+      // Visualization.visualize(hypothesis, alphabet);
+      return query
     } else {
       certFile.delete()
       throw FailedTAModelChecking(output)
     }
   }
 
+}
+
+class UppaalTA
+
+object TAOracles {
+
+  object Factory{
+    def getTCheckerOracles(taFile: File,
+      alphabet: List[String],
+      tmpDirName: String = "./.crtmc/") : (TAMembershipOracle, EquivalenceOracle.DFAEquivalenceOracle[String]) = {        
+        val alph = Alphabets.fromList(alphabet)
+        val ta = TCheckerTA(taFile)
+        (TCheckerMembershipOracle(ta, alph, tmpDirName), TCheckerInclusionOracle(ta, alph, tmpDirName))
+      }
+
+    def getUppaalOracles(ta: UppaalTA,
+      alphabet: List[String],
+      tmpDirName: String = "./.crtmc/") : (MembershipOracle[String, java.lang.Boolean], EquivalenceOracle.DFAEquivalenceOracle[String]) = {
+        throw Exception("Not yet implemented")
+      }
+
+  }
 }
