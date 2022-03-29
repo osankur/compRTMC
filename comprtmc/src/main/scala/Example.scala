@@ -27,6 +27,8 @@ import net.automatalib.words._
 import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
 
+import net.automatalib.serialization.aut._
+
 class SampleMembershipOracle extends MembershipOracle[Character,java.lang.Boolean] {
     override def processQueries(queries : java.util.Collection[? <: de.learnlib.api.query.Query[Character, java.lang.Boolean]]): Unit =
         {
@@ -157,7 +159,11 @@ object Example {
     System.out.println("Sigma: " + inputs.size());
 
     // show model
-    Visualization.visualize(result, inputs);
+    // Visualization.visualize(result, inputs);
+    val f  =   new java.util.function.Function[Character, String] {
+      override def apply(input: Character): String = input+""
+    }
+    System.out.println(AUTWriter.writeAutomaton(result,inputs,f,System.out))
 
     System.out.println("-------------------------------------------------------");
 

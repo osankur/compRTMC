@@ -1,6 +1,6 @@
 // For more information on writing tests, see
 // https://scalameta.org/munit/docs/getting-started.html
-
+/*
 package fr.irisa.comprtmc
 import net.automatalib.words.Word
 import net.automatalib.words.Alphabet;
@@ -9,6 +9,7 @@ import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
 import collection.JavaConverters._
 import java.io.File
+import java.io.FileInputStream
 import de.learnlib.api.algorithm.LearningAlgorithm.DFALearner
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
@@ -27,6 +28,7 @@ import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
+import net.automatalib.serialization.aut._
 
 class BasicTests extends munit.FunSuite {
   test("example test that succeeds") {
@@ -106,7 +108,7 @@ class FullZG extends munit.FunSuite {
     System.out.println("Sigma: " + alphabet.size());
 
     // show model
-    Visualization.visualize(result, alphabet);
+    // Visualization.visualize(result, alphabet);
 
     System.out.println(
       "-------------------------------------------------------"
@@ -125,13 +127,8 @@ class FullZG extends munit.FunSuite {
 class DFATest extends munit.FunSuite {
   test("dfa2"){
     Example.example2()
+    val inp = FileInputStream("resources/examples/a.des")
+    val aut = AUTParser.readAutomaton(inp)
   }
 }
-
-
-class SMVParserTest extends munit.FunSuite{
-  test("b.smv"){
-    val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(File("resources/examples/b.smv"))
-    System.out.println(fsmIntersectOracle.alphabet)
-  }
-}
+*/

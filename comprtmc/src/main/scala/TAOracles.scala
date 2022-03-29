@@ -261,7 +261,10 @@ abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boo
       suffix: Word[String]
   ): Option[String]
 
+  def systemElapsedTime : Long
+  def nbQueries : Long
 }
+
 class TCheckerMembershipOracle(
     ta : TCheckerTA,
     alphabet: Alphabet[String],
@@ -271,6 +274,15 @@ class TCheckerMembershipOracle(
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
   tmpDirPath.toFile().mkdirs()
+
+  private var _elapsed : Long = 0
+  private var _nbQueries : Long = 0
+  override def systemElapsedTime : Long ={
+    _elapsed
+  }
+  override def nbQueries : Long ={
+    _nbQueries
+  }
 
   override def processQueries(
       queries: java.util.Collection[
@@ -298,6 +310,8 @@ class TCheckerMembershipOracle(
       suffix: Word[String]
   ): Option[String] = {
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
+
+    this._nbQueries += 1
     val productFile =
       Files.createTempFile(tmpDirPath, "productMem", ".ta").toFile()
     val pw = PrintWriter(productFile)
@@ -306,23 +320,28 @@ class TCheckerMembershipOracle(
 
     val certFile =
       Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
+    
 
     // Model check product automaton
     val cmd = "tck-reach -a covreach %s -l %s -c %s"
       .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString)
-    // System.out.println(cmd)
+    System.out.println(cmd)
+    var beginTime = System.nanoTime()
     val output = cmd.!!
+    this._elapsed = this._elapsed + (System.nanoTime() - beginTime)
+    
     productFile.delete()
+    System.out.println(BLUE + "Membership query: " + trace + RESET)
+    // System.out.println(BLUE + output + RESET)
     if (output.contains("REACHABLE false")) then {
-      // System.out.println("Membership query " + RED + "(false)" + RESET)
+      // System.out.println("Query: " + RED + "(false)" + RESET)
       certFile.delete()
       None
     } else if (output.contains("REACHABLE true")) then {
+      // System.out.println("Query: " + GREEN + "(true)" + RESET)
       val timedCex = Source.fromFile(certFile).mkString
-      //System.out.println(timedCex)
       certFile.delete()
       Some(timedCex)
-      // Some(ta.getTraceFromCexDescription(lines))
     } else {
       throw FailedTAModelChecking(output)
     }
@@ -340,8 +359,6 @@ class TCheckerInclusionOracle(
 
   val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
   tmpDirPath.toFile().mkdirs()
-
-  System.out.println("Inclusion Alphabet: " + alphabet.toList)
 
   override def findCounterExample(
       hypothesis: DFA[_, String],
@@ -365,7 +382,7 @@ class TCheckerInclusionOracle(
     
     productFile.delete()
     if (output.contains("REACHABLE false")) then {
-      System.out.println(GREEN + "Inclusion checks" + RESET)
+      System.out.println(GREEN + "Inclusion holds" + RESET)
       certFile.delete()
       null // Inclusion holds
     } else if (output.contains("REACHABLE true")) then {

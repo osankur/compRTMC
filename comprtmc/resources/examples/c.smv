@@ -1,0 +1,28 @@
+MODULE main
+IVAR
+	i : boolean;
+VAR
+	state : {q0, q1, q2};
+	bit : boolean;
+ASSIGN
+	init(state) := q0;
+	init(bit) := FALSE;
+	next(state) := case
+		state = q0 & i : q1;
+		state = q1 & !i : q2;
+		state = q0 & i : q0;
+		state = q1 & !i : q1;
+		TRUE : state;
+	esac;
+	next(bit) := case
+		state = q2 : {TRUE, FALSE};
+		TRUE : bit;
+	esac;
+DEFINE
+	-- RT Observers
+	_rt_a := i;
+	_rt_b := !i & state = q1;
+	_rt_c := !i & state = q2;
+	err := bit;
+
+INVARSPEC !err

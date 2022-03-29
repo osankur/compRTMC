@@ -22,7 +22,13 @@ import de.learnlib.util.Experiment.DFAExperiment;
 import de.learnlib.util.statistics.SimpleProfiler;
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
+import net.automatalib.serialization.aut._
+import net.automatalib.visualization.Visualization;
 
+import de.learnlib.algorithms.kv.dfa.KearnsVaziraniDFA
+import de.learnlib.algorithms.kv.dfa.KearnsVaziraniDFABuilder
+import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFA
+import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFABuilder
 
 case class CounterExample(cexDescription : String) extends Exception
 
@@ -31,7 +37,6 @@ class CompSafetyAlgorithm(
     taMembershipOracle : TAMembershipOracle, 
     taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]
 ){
-    System.out.println("COMP SAFETY")
     private val logger = LoggerFactory.getLogger(classOf[CompSafetyAlgorithm])
 
     case class ProductCounterExample(smvTrace : String, trace : List[String], taTrace : String) extends Exception
@@ -49,11 +54,12 @@ class CompSafetyAlgorithm(
             hypothesis: DFA[_, String],
             inputs: java.util.Collection[? <: String]
         ): DefaultQuery[String, java.lang.Boolean] = {
-            taInclusionOracle.findCounterExample(hypothesis,inputs) match {
+            taInclusionOracle.findCounterExample(hypothesis,inputs) match {                
                 case null =>
                     fsmIntersectionOracle.checkIntersection(hypothesis) match{
                         case None => 
                             // Verification succeeded
+                            //Visualization.visualize(hypothesis, inputs)
                             null
                         case Some(FSMOracles.CounterExample(cexDescription, trace)) =>
                             // FSM x hypothesis contains a counterexample trace
@@ -64,8 +70,12 @@ class CompSafetyAlgorithm(
                             //  if feasible: return counterexample
                             //  otherwise, create query to rule out the trace
                             taMembershipOracle.getTimedWitness(Word.epsilon,word) match{
-                                case Some(timedTrace) => throw ProductCounterExample(cexDescription, trace, timedTrace)
-                                case None => DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
+                                case Some(timedTrace) => 
+                                    throw ProductCounterExample(cexDescription, trace, timedTrace)
+                                case None => 
+                                    System.out.println(GREEN + "*** It was spurious\n" + RESET)
+                                    // Visualization.visualize(hypothesis, inputs)
+                                    DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
                             }                             
                             
                     }
@@ -73,31 +83,44 @@ class CompSafetyAlgorithm(
             }
         }
     }
+    
     def run() : Unit = {
         val alph = Alphabets.fromList(fsmIntersectionOracle.alphabet)
         val lstar = ClassicLStarDFABuilder[String]()
             .withAlphabet(alph)
             .withOracle(taMembershipOracle)
             .create()
+        val dt = DTLearnerDFABuilder[String]()
+            .withAlphabet(alph)
+            .withOracle(taMembershipOracle)
+            .create()
+        val kv = KearnsVaziraniDFABuilder[String]()
+            .withAlphabet(alph)
+            .withOracle(taMembershipOracle)
+            .create()
+
         val eqOracle = EqOracle(fsmIntersectionOracle, taInclusionOracle)
-        val experiment: DFAExperiment[String] =
-        DFAExperiment(lstar, eqOracle, alph);
+        // val experiment: DFAExperiment[String] = DFAExperiment(lstar, eqOracle, alph);
+        val experiment: DFAExperiment[String] = DFAExperiment(dt, eqOracle, alph);
 
         // turn on time profiling
         experiment.setProfile(true);
 
         // enable logging of models
         experiment.setLogModels(true);
-
+        
         try {
             experiment.run();
-            System.out.println(GREEN + "\nSafety holds\n" + RESET)
+            System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
             val result = experiment.getFinalHypothesis();
-
+            
             System.out.println(SimpleProfiler.getResults());
             System.out.println(experiment.getRounds().getSummary());
             System.out.println("States: " + result.size());
             System.out.println("Sigma: " + alph.size());
+            System.out.println("Total system calls: " + taMembershipOracle.systemElapsedTime / 1000000L + "ms");
+            System.out.println("Nb of membership queries: " + taMembershipOracle.nbQueries);
+            System.out.println("Time per query: " + taMembershipOracle.systemElapsedTime / 1000000L / taMembershipOracle.nbQueries + "ms");
         } catch {
             case ProductCounterExample(smvTrace, trace, taTrace) =>
                 System.out.println(RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n")
@@ -106,6 +129,8 @@ class CompSafetyAlgorithm(
                 System.out.println(YELLOW + smvTrace + RESET)
                 System.out.println("\nTA trace:")
                 System.out.println(YELLOW + taTrace + RESET)
+            case ParseError(msg) =>
+                System.out.println(RED + msg + RESET)
             case e => throw e
         }
     }

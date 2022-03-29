@@ -48,75 +48,66 @@ class SMV(inputFile: java.io.File) {
     val newLines = ListBuffer[String]()
     val alphabet = ListBuffer[String]()
     var alphabetSize = -2
-    val alphabetDef = StringBuilder()
     var invarErr = false
     var inMain = false // are we reading inside module main?
     val regModuleMain = "\\s*MODULE\\s*(.*)\\s*".r
     val regError = "\\s*INVARSPEC\\s*!([a-zA-Z0-9_]*)\\s*".r
-    val regAlphabet =
-      "\\s*_rt_\\s*:\\s*-1..([0-9]*)\\s*;\\s*".r // "_rt_ : i..j;"
+    // val regAlphabet =
+    //   "\\s*_rt_\\s*:\\s*-1..([0-9]*)\\s*;\\s*".r // "_rt_ : i..j;"
     val regLetter =
-      "\\s*(.+)\\s*:=\\s*_rt_\\s*=\\s*([0-9])\\s*;\\s*".r // "_rt_ : i..j;"
-    val regTau =
-      "\\s*(.+)\\s*:=\\s*_rt_\\s*=\\s*-1\\s*;\\s*".r // "_rt_ : i..j;"
-    // Name of the defined symbol for _rt_ = -1
+      "\\s*_rt_(.+)\\s*:=.*".r // "_rt_ : i..j;"
+    // val regTau =
+    //   "\\s*(.+)\\s*:=\\s*_rt_\\s*=\\s*-1\\s*;\\s*".r // "_rt_ : i..j;"
+      // Name of the defined symbol for _rt_ = -1
     var tau = ""
     lines.foreach { line =>
       line match
         case regModuleMain(name) =>
           if (name == "main") then {
             inMain = true
+            newLines.append("MODULE _rtmc_main\n")
           } else {
             inMain = false
             newLines.append(line)
           }
-        case regAlphabet(j) =>
-          alphabetSize = j.toInt
-        case regLetter(sigma, value) =>
+        case regLetter(sigma) =>
           alphabet.append(sigma.strip())
-          alphabetDef.append(line)
-          alphabetDef.append("\n")
-        case regTau(sigma) =>
-          tau = sigma.strip()
-          alphabet.append(sigma.strip())
-          alphabetDef.append(line)
-          alphabetDef.append("\n")
+          newLines.append(line)
         case regError(spec) =>
           invarErr = true
-        case _ => newLines.append(line)
+        case _ => 
+          newLines.append(line)
     }
-    if (alphabetSize <= -2) {
-      throw ParseError("Alphabet could not be identified. The SMV model must contain variable _rt_ of type -1..n")
+    if (alphabet.length <= 0) {
+      throw ParseError(
+        "Alphabet could not be identified. The SMV model must contain defines _rt_.*"
+      )
     }
     if (!invarErr) {
       throw ParseError(
         "The main module must contain the precise specification \"INVARSPEC !err\" where err is a define."
       )
     }
-    if (tau == ""){
-      throw ParseError(
-        "Could not find the defined symbol tau for _rt_ = -1"
-      )      
-    }
-    val alphabetAsArgs = alphabet.mkString(", ")
-    val visibleAlphabet = (alphabet.toSet - tau).toList
-    val fsm = "MODULE _rtmc_main(%s)\n%s\n".format(
-      alphabetAsArgs,
-      newLines.mkString("\n")
-    )
+    val alphabetAsArgs = alphabet.map("fsm._rt_"+_).mkString(", ")
+    val fsm = newLines.mkString("\n")
     val strB = StringBuilder()
     strB.append("MODULE main\n")
-    strB.append("IVAR\n\t _rt_ : -1..%d;\n".format(alphabetSize));
-    strB.append("DEFINE\n")
-    strB.append("%s\n".format(alphabetDef.toString))
     strB.append("VAR\n")
-    strB.append("\tfsm : _rtmc_main(%s);\n".format(alphabetAsArgs))
-    strB.append("\ttime : _rtmc_time(%s);\n".format(visibleAlphabet.mkString(", ")))
-    strB.append("INVARSPEC\n\t time.accepting -> !fsm.err\n")
-
-    // System.out.println(fsm)
-    // System.out.println(strB.toString)
-    SMVStructure(fsm, strB.toString, visibleAlphabet)
+    strB.append("\tfsm : _rtmc_main;\n")
+    strB.append(
+      "\ttime : _rtmc_time(%s);\n".format(alphabetAsArgs)
+    )
+    strB.append("\nDEFINE\t _rt_excl := ")
+    val uniquePairs = for {
+      x <- alphabet
+      y <- alphabet
+      if x < y
+    } yield (x, y)
+    // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & !fsm._rt_%s | !fsm._rt_%s & fsm._rt_%s".format(x,y,x,y)).mkString(" | "))
+    strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
+    strB.append(";\n")
+    strB.append("INVARSPEC\n\t !_rt_excl & (time.accepting -> !fsm.err)\n")
+    SMVStructure(fsm, strB.toString, alphabet.toList)
   }
   def fsm = _structure.fsm
   def main = _structure.main
@@ -158,10 +149,10 @@ class SMVIntersectionOracle(
       .map("state = q" + _.toString)
       .mkString("| ")
 
-    val states = hypothesis.getStates().asScala
+    val states = hypothesis.getStates().asScala.toList
 
     timeModuleB.append(
-      "MODULE _rtmc_time(%s)\nVAR\n".format(smv.alphabet.mkString(", "))
+      "\nMODULE _rtmc_time(%s)\nVAR\n".format(smv.alphabet.mkString(", "))
     )
     timeModuleB.append(
       "\t state : {%s};\n".format(
@@ -172,34 +163,38 @@ class SMVIntersectionOracle(
     )
     timeModuleB.append("INIT\n\t %s\n".format(initialStates))
     timeModuleB.append("\nASSIGN\n")
-    timeModuleB.append("\t next(state) := case\n")
-    states foreach
+    if (states.length > 1) {
+      timeModuleB.append("\t next(state) := case\n")
+      states foreach { state =>
         {
-            state =>
-            {
-              for (sigma <- alphabet) {
-                  val succs = hypothesis.getSuccessors(state, sigma);
-                  for (succ <- succs) {
-                      timeModuleB.append(
-                      "\t state = q%s & %s : q%s;\n".format(
-                          state,
-                          sigma,
-                          succ
-                      )
-                      )
-                  }
-              }
+          for (sigma <- alphabet) {
+            val succs = hypothesis.getSuccessors(state, sigma);
+            for (succ <- succs) {
+              timeModuleB.append(
+                "\t state = q%s & %s : q%s;\n".format(
+                  state,
+                  sigma,
+                  succ
+                )
+              )
             }
+          }
         }
+      }
+      timeModuleB.append("\t TRUE : state;\n")
+      timeModuleB.append("esac;\n")
+    }
     states foreach { state =>
       if (hypothesis.isAccepting(state)) then {
-                  acceptingStates.append("q" + state.toString)
+        acceptingStates.append("q" + state.toString)
       }
     }
 
-    timeModuleB.append("\t TRUE : state;\n")
-    timeModuleB.append("esac;\n")
-    timeModuleB.append("DEFINE\n\t accepting := %s;\n\n".format(acceptingStates.map("state = " + _).mkString(" | ")))
+    timeModuleB.append(
+      "DEFINE\n\t accepting := %s;\n\n".format(
+        acceptingStates.map("state = " + _).mkString(" | ")
+      )
+    )
     val newSMV = StringBuilder()
     newSMV.append(smv.fsm)
     newSMV.append(timeModuleB.toString)
@@ -223,42 +218,47 @@ class SMVIntersectionOracle(
           productFile.delete()
           throw Exception("Come back later")
       }
+    System.out.println(cmd)
     val output = cmd.!!
-    // System.out.println(output)
-    // productFile.delete()
-    if (output.contains("Trace Type: Counterexample")){
-        val cexStr = output.split("Trace Type: Counterexample")(1).strip()
-        val cexLines = cexStr.split("\n")
-        val regInput ="\\s*-> Input:.*<-\\s*".r
-        val regState ="\\s*-> State:.*<-\\s*".r
-        val regAssignmentTRUE = "\\s*(.+)\\s*=\\s*TRUE\\s*".r
-        val trace = ListBuffer[String]()
-        var readingInput = false
-        var lastLetter = ""
-        cexLines foreach{
-            line =>
-                line match {
-                    case regAssignmentTRUE(v) => 
-                      val vStripped = v.strip()
-                      if (readingInput && alphabet.contains(vStripped)){
-                        lastLetter = vStripped
-                      }
-                    case regInput() =>
-                        readingInput = true
-                    case regState() =>
-                        trace.append(lastLetter)
-                        readingInput = false
-                    case _ => ()
-                }
+    System.out.println(output)    
+    //productFile.delete()
+    if (output.contains("Trace Type: Counterexample")) {
+      if(output.contains("_rt_excl = TRUE")){
+        throw ParseError("The real-time labels _rt_ must be mutually exclusive")
+      }
+      val cexStr = output.split("Trace Type: Counterexample")(1).strip()
+      val cexLines = cexStr.split("\n")
+      val regInput = "\\s*-> Input:.*<-\\s*".r
+      val regState = "\\s*-> State:.*<-\\s*".r
+      val regAssignmentTRUE = "\\s*fsm._rt_(.+)\\s*=\\s*TRUE\\s*".r
+      val trace = ListBuffer[String]()
+      var readingInput = false
+      var lastLetter = ""
+      // System.out.println("Trace:\n" + cexLines.mkString("\n"))
+      cexLines foreach { line =>
+        line match {
+          case regAssignmentTRUE(v) =>
+            val vStripped = v.strip()
+            if (readingInput && alphabet.contains(vStripped)) {
+              lastLetter = vStripped
             }
-        Some(FSMOracles.CounterExample(cexStr,trace.toList.tail))
+          case regInput() =>
+            readingInput = true
+          case regState() =>
+            trace.append(lastLetter)
+            readingInput = false
+          case _ => ()
+        }
+      }
+      Some(FSMOracles.CounterExample(cexStr, trace.toList.tail))
     } else {
-        None
+      None
     }
   }
 }
 object FSMOracles {
-  case class CounterExample(cexDescription : String, cexTrace : List[String]) extends Exception
+  case class CounterExample(cexDescription: String, cexTrace: List[String])
+      extends Exception
 
   object Factory {
     def getSMVOracle(

@@ -44,8 +44,8 @@ object Main {
           .text("smv is the finite state model in smv format"),
         opt[Boolean]("verbose")
           .action((_, c) => c.copy(verbose = true)),
-        opt[Boolean]("fullZG")
-          .action((_, c) => c.copy(fullZG = true))
+        opt[Boolean]("keepTmpFiles")
+          .action((_, c) => c.copy(keepTmpFiles = true))
       )
     }
     // val regInput ="\\s*-> Input:.*<-\\s*".r
