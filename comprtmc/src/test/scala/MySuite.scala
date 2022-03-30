@@ -1,6 +1,5 @@
 // For more information on writing tests, see
 // https://scalameta.org/munit/docs/getting-started.html
-/*
 package fr.irisa.comprtmc
 import net.automatalib.words.Word
 import net.automatalib.words.Alphabet;
@@ -29,7 +28,7 @@ import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.serialization.aut._
-
+/*
 class BasicTests extends munit.FunSuite {
   test("example test that succeeds") {
     val obtained = 42
@@ -132,3 +131,9 @@ class DFATest extends munit.FunSuite {
   }
 }
 */
+
+class SMVTest extends munit.FunSuite {
+  test("smv"){
+    val inp = SMV(File("resources/examples/genbuf2b3unrealy.smv"))
+  }
+}

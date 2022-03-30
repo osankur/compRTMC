@@ -14,6 +14,7 @@ import net.automatalib.util.automata.builders.AutomatonBuilders;
 
 import scala.collection.mutable._
 import collection.JavaConverters._
+
 object Main {
   val logger = LoggerFactory.getLogger("CompRTMC")
 
@@ -73,6 +74,7 @@ object Main {
     // OParser.parse returns Option[Config]
     OParser.parse(parser1, args, ProgramConfiguration()) match {
       case Some(config) =>
+        globalConfiguration = config
         if (!config.taFile.exists()){
           logger.error(("%s File " + config.taFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
@@ -81,6 +83,7 @@ object Main {
           logger.error(("%s File " + config.fsmFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
         }
+        
         logger.info("SMV File: " + config.fsmFile)
         val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(config.fsmFile)
         logger.info("Alphabet: " + fsmIntersectOracle.alphabet)

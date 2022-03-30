@@ -20,7 +20,7 @@ IVAR
     i_hready : boolean;
     controllable_ndecide : boolean;
     controllable_nhgrant0 : boolean;
-    nondet : boolean;
+    _rt_err : boolean;
 VAR
     err : boolean;
     --latches
@@ -371,7 +371,6 @@ DEFINE
     a572 := !a426 & !a408;
     --outputs
     o0 := a392;
-    _rt_err := nondet;
     _rt_res1 := !_rt_err & (reg_controllable_hgrant2_out | reg_controllable_hmaster1_out & sys_fair0done_out | reg_stateG3_0_out);
     _rt_res2 := !_rt_err & !_rt_res1 & (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out & reg_stateG3_1_out);
     _rt_end1 := !_rt_err & !_rt_res1 & !_rt_res2 & 

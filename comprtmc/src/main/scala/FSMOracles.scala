@@ -52,14 +52,10 @@ class SMV(inputFile: java.io.File) {
     var inMain = false // are we reading inside module main?
     val regModuleMain = "\\s*MODULE\\s*(.*)\\s*".r
     val regError = "\\s*INVARSPEC\\s*!([a-zA-Z0-9_]*)\\s*".r
-    // val regAlphabet =
-    //   "\\s*_rt_\\s*:\\s*-1..([0-9]*)\\s*;\\s*".r // "_rt_ : i..j;"
     val regLetter =
-      "\\s*_rt_(.+)\\s*:=.*".r // "_rt_ : i..j;"
-    // val regTau =
-    //   "\\s*(.+)\\s*:=\\s*_rt_\\s*=\\s*-1\\s*;\\s*".r // "_rt_ : i..j;"
-      // Name of the defined symbol for _rt_ = -1
-    var tau = ""
+      "\\s*_rt_(.+)\\s*:=.*".r
+    val regInputLetter = "\\s*_rt_(.+)\\s*:\\s*boolean;\\s*".r
+
     lines.foreach { line =>
       line match
         case regModuleMain(name) =>
@@ -71,6 +67,9 @@ class SMV(inputFile: java.io.File) {
             newLines.append(line)
           }
         case regLetter(sigma) =>
+          alphabet.append(sigma.strip())
+          newLines.append(line)
+        case regInputLetter(sigma) =>
           alphabet.append(sigma.strip())
           newLines.append(line)
         case regError(spec) =>
@@ -97,7 +96,7 @@ class SMV(inputFile: java.io.File) {
     strB.append(
       "\ttime : _rtmc_time(%s);\n".format(alphabetAsArgs)
     )
-    strB.append("\nDEFINE\t _rt_excl := ")
+    strB.append("\nDEFINE\t _rt_nonexcl := ")
     val uniquePairs = for {
       x <- alphabet
       y <- alphabet
@@ -106,7 +105,7 @@ class SMV(inputFile: java.io.File) {
     // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & !fsm._rt_%s | !fsm._rt_%s & fsm._rt_%s".format(x,y,x,y)).mkString(" | "))
     strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
     strB.append(";\n")
-    strB.append("INVARSPEC\n\t !_rt_excl & (time.accepting -> !fsm.err)\n")
+    strB.append("INVARSPEC\n\t !_rt_nonexcl & (time.accepting -> !fsm.err)\n")
     SMVStructure(fsm, strB.toString, alphabet.toList)
   }
   def fsm = _structure.fsm
@@ -115,8 +114,7 @@ class SMV(inputFile: java.io.File) {
 }
 
 class SMVIntersectionOracle(
-    smv: SMV,
-    tmpDirName: String = "./.crtmc/"
+    smv: SMV
 ) extends FSMIntersectionOracle {
   sealed trait ModelChecker
   case object NuSMV extends ModelChecker {
@@ -133,7 +131,7 @@ class SMVIntersectionOracle(
   private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
   private var algorithm: Algorithm = BDD
   private var modelChecker: ModelChecker = NuSMV
-  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   override def alphabet = smv.alphabet
@@ -205,11 +203,12 @@ class SMVIntersectionOracle(
   override def checkIntersection(
       timeModule: DFA[_, String]
   ): Option[FSMOracles.CounterExample] = {
+    val regInvariantTrue ="\\s*-- invariant.*is true\\s*".r
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".smv").toFile()
     val pw = PrintWriter(productFile)
     pw.write(makeIntersectionMonitor(timeModule))
-    pw.close()
+    pw.close()    
     val cmd =
       this.algorithm match {
         case BDD =>
@@ -220,10 +219,12 @@ class SMVIntersectionOracle(
       }
     System.out.println(cmd)
     val output = cmd.!!
-    System.out.println(output)    
-    //productFile.delete()
+    // System.out.println(output)    
+    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      productFile.delete()
+    }    
     if (output.contains("Trace Type: Counterexample")) {
-      if(output.contains("_rt_excl = TRUE")){
+      if(output.contains("_rt_nonexcl = TRUE")){
         throw ParseError("The real-time labels _rt_ must be mutually exclusive")
       }
       // The output should contain the counterexample twice
@@ -244,7 +245,7 @@ class SMVIntersectionOracle(
       var readingInput = false
       var lastLetter = ""
       // System.out.println("Trace:\n" + cexLines.mkString("\n"))
-      // System.out.println("Alphabet: " + alphabet)
+      System.out.println("Alphabet: " + alphabet)
       cexLines foreach { line =>
         line match {
           case regAssignmentTRUE(v) =>
@@ -264,8 +265,10 @@ class SMVIntersectionOracle(
         }
       }
       Some(FSMOracles.CounterExample(cexStr, trace.toList.filter(_ != "")))
-    } else {
+    } else if (regInvariantTrue.matches(output)){
       None
+    } else {
+      throw ParseError("FSM Model checker returned an error")
     }
   }
 }
@@ -276,9 +279,8 @@ object FSMOracles {
   object Factory {
     def getSMVOracle(
         smvFile: File,
-        tmpDirName: String = "./.crtmc/"
     ): FSMIntersectionOracle = {
-      SMVIntersectionOracle(SMV(smvFile), tmpDirName = tmpDirName)
+      SMVIntersectionOracle(SMV(smvFile))
     }
   }
 }

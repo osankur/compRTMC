@@ -11,11 +11,14 @@ object FSMFormat {
     case object Murphi extends FSMFormat
 }
 
-case class ProgramConfiguration(
-    fsmFile : File = new File("."),
-    taFile: File = new File("."),
-    fsmFormat : FSMFormat.FSMFormat = FSMFormat.SMV,
-    keepTmpFiles: Boolean = false,
-    verbose : Boolean = false,
-    )
-    
+object ProgramConfiguration {
+    case class ProgramConfiguration(
+        fsmFile : File = new File("."),
+        taFile: File = new File("."),
+        fsmFormat : FSMFormat.FSMFormat = FSMFormat.SMV,
+        keepTmpFiles: Boolean = false,
+        verbose : Boolean = false,
+        tmpDirName : String = ".crtmc/"
+        )
+    var globalConfiguration = ProgramConfiguration()
+}

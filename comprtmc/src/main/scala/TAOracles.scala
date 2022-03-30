@@ -268,12 +268,11 @@ abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boo
 
 class TCheckerMembershipOracle(
     ta : TCheckerTA,
-    alphabet: Alphabet[String],
-    tmpDirName: String = "./.crtmc/"
+    alphabet: Alphabet[String]
 ) extends TAMembershipOracle {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
-  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   private var _elapsed : Long = 0
@@ -319,29 +318,26 @@ class TCheckerMembershipOracle(
     pw.write(taMonitorMaker.makeWordMonitor(trace))
     pw.close()
 
-    val certFile =
-      Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
-    
-
     // Model check product automaton
-    val cmd = "tck-reach -a covreach %s -l %s -c %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString)
+    val cmd = "tck-reach -a reach %s -l %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel)
     System.out.println(cmd)
     var beginTime = System.nanoTime()
     val output = cmd.!!
     this._elapsed = this._elapsed + (System.nanoTime() - beginTime)
     
-    productFile.delete()
+    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      productFile.delete()
+    }    
     System.out.println(BLUE + "Membership query: " + trace + RESET)
     // System.out.println(BLUE + output + RESET)
     if (output.contains("REACHABLE false")) then {
-      // System.out.println("Query: " + RED + "(false)" + RESET)
-      certFile.delete()
+      System.out.println("Query: " + RED + "(false)" + RESET)
       None
     } else if (output.contains("REACHABLE true")) then {
-      // System.out.println("Query: " + GREEN + "(true)" + RESET)
-      val timedCex = Source.fromFile(certFile).mkString
-      certFile.delete()
+      System.out.println("Query: " + GREEN + "(true)" + RESET)
+      val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
+      val timedCex = parts(1)
       Some(timedCex)
     } else {
       throw FailedTAModelChecking(output)
@@ -351,14 +347,13 @@ class TCheckerMembershipOracle(
 
 class TCheckerInclusionOracle(
     ta: TCheckerTA,
-    alphabet: Alphabet[String],
-    tmpDirName: String = "./.crtmc/"
+    alphabet: Alphabet[String]
 ) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerInclusionOracle])
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet)
   private val alphabetSet = alphabet.asScala.toSet
 
-  val tmpDirPath = FileSystems.getDefault().getPath(tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   override def findCounterExample(
@@ -371,32 +366,30 @@ class TCheckerInclusionOracle(
     pw.write(taMonitorMaker.makeInclusionMonitor(hypothesis))
     pw.close()
 
-    val certFile =
-      Files.createTempFile(tmpDirPath, "certEq", ".dot").toFile()
-
     // Model check product automaton
-    System.out.println("Running TChecker for an " + YELLOW + "inclusion query" + RESET)
-    val cmd = "tck-reach -a covreach %s -l %s -c %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile.toString)
+    System.out.println(YELLOW + "Inclusion query: " + RESET)
+    val cmd = "tck-reach -a reach %s -l %s"
+      .format(productFile.toString, taMonitorMaker.acceptLabel)
     System.out.println(cmd)
     val output = cmd.!!
-    
-    // productFile.delete()
+    System.out.println(output)
+    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      productFile.delete()
+    }    
     if (output.contains("REACHABLE false")) then {
       System.out.println(GREEN + "Inclusion holds" + RESET)
-      certFile.delete()
-      null // Inclusion holds
+      null
     } else if (output.contains("REACHABLE true")) then {
-      val lines = Source.fromFile(certFile).getLines().toList
-      certFile.delete()
-      val word = ta.getTraceFromCexDescription(lines).filter(alphabet.contains(_))
+      val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
+      val cexLines = parts(1).split("\n").toList
+      val word = ta.getTraceFromCexDescription(cexLines).filter(alphabet.contains(_))
+      System.out.println(ta.getTraceFromCexDescription(cexLines))
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
       System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
       System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
       // Visualization.visualize(hypothesis, alphabet);
       return query
     } else {
-      certFile.delete()
       throw FailedTAModelChecking(output)
     }
   }
@@ -409,16 +402,14 @@ object TAOracles {
 
   object Factory{
     def getTCheckerOracles(taFile: File,
-      alphabet: List[String],
-      tmpDirName: String = "./.crtmc/") : (TAMembershipOracle, EquivalenceOracle.DFAEquivalenceOracle[String]) = {        
+      alphabet: List[String]) : (TAMembershipOracle, EquivalenceOracle.DFAEquivalenceOracle[String]) = {        
         val alph = Alphabets.fromList(alphabet)
         val ta = TCheckerTA(taFile)
-        (TCheckerMembershipOracle(ta, alph, tmpDirName), TCheckerInclusionOracle(ta, alph, tmpDirName))
+        (TCheckerMembershipOracle(ta, alph), TCheckerInclusionOracle(ta, alph))
       }
 
     def getUppaalOracles(ta: UppaalTA,
-      alphabet: List[String],
-      tmpDirName: String = "./.crtmc/") : (MembershipOracle[String, java.lang.Boolean], EquivalenceOracle.DFAEquivalenceOracle[String]) = {
+      alphabet: List[String]) : (MembershipOracle[String, java.lang.Boolean], EquivalenceOracle.DFAEquivalenceOracle[String]) = {
         throw Exception("Not yet implemented")
       }
 
