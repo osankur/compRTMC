@@ -1,0 +1,80 @@
+
+MODULE main
+IVAR
+    command : {cmd_open_gate1, cmd_close_gate1, cmd_open_gate2, cmd_close_gate2, cmd_obs_go, cmd_stop, 
+        agent_left, agent_right, agent_up, agent_down,
+        obs_move};
+
+VAR
+    obstacle_y : 0..4;
+    obs_dir : {obs_up, obs_down};
+    x : 0..4;
+    y : 0..4;
+    gate1_open : boolean;
+    gate2_open : boolean;
+    toolate : boolean;
+ASSIGN
+    init(toolate) := FALSE;
+    next(toolate) := case
+        command = cmd_stop : TRUE;
+        TRUE : toolate;
+    esac;
+    init(gate1_open) := FALSE;
+    next(gate1_open) := case
+        command = cmd_open_gate1 : TRUE;
+        command = cmd_close_gate1 : FALSE;
+        TRUE : gate1_open;
+    esac;
+    init(gate2_open) := FALSE;
+    next(gate2_open) := case
+        command = cmd_open_gate2 : TRUE;
+        command = cmd_close_gate2 : FALSE;
+        TRUE : gate2_open;
+    esac;
+
+    init(obs_dir) := obs_down;
+    init(obstacle_y) := 0;
+    next(obstacle_y) := case
+        obs_dir = obs_down & obstacle_y = 0 & command = cmd_obs_go & !(x = 2 & y = 1) : 1;
+        obs_dir = obs_down & obstacle_y = 2 & command = cmd_obs_go & !(x = 2 & y = 3) : 3;
+        command = obs_move & obs_dir = obs_down & (obstacle_y = 1 | obstacle_y = 3) & !(x = 2 & y = obstacle_y+1): obstacle_y + 1;
+        obs_dir = obs_up & obstacle_y = 2 & command = cmd_obs_go & !(x = 2 & y = 1): 1;
+        command = obs_move & obs_dir = obs_up & obstacle_y > 0 & obstacle_y != 2 & !(x = 2 & y = obstacle_y - 1): obstacle_y - 1;
+        TRUE : obstacle_y;
+    esac;
+    next(obs_dir) := case
+        obs_dir = obs_down & y = 4 : obs_up;
+        obs_dir = obs_up & y = 0 : obs_down;
+        TRUE : obs_dir;
+    esac;
+
+    init(x) := 0;
+    init(y) := 0;
+    next(x) := case
+        -- crossing gate1
+        command = agent_right & x = 0 & y = 2 & gate1_open : 1;
+        command = agent_right & x = 1 & y = 2 & obstacle_y != 2 : 2;
+        command = agent_left & x = 2 & y =2 : 1;
+        command = agent_left & x = 1 & y = 2 & gate1_open : 0;
+        -- crossing gate 2
+        command = agent_right & x = 2 & y = 0 & gate2_open : 3;
+        command = agent_left & x = 3 & y = 0 & gate2_open & obstacle_y != 0: 2;
+        command = agent_right & x = 3 : 4;
+        TRUE : x;
+    esac;
+    next(y) := case
+        command = agent_up & (x=0 | x = 4) & y > 0 : y - 1;
+        command = agent_down & (x=0 | x = 4) & y < 4 : y + 1;
+        command = agent_up & x = 2 & y > 0 & obstacle_y != y -1 : y - 1;
+        command = agent_down & x = 2 & y < 4 & obstacle_y != y +1 : y + 1;
+        TRUE : y;
+    esac;
+DEFINE
+    _rt_open_gate1 := command = cmd_open_gate1;
+    _rt_close_gate1 := command = cmd_close_gate1;
+    _rt_open_gate2 := command = cmd_open_gate2;
+    _rt_close_gate2 := command = cmd_close_gate2;
+    _rt_obs_go := command = cmd_obs_go;
+    _rt_stop := command = cmd_stop;
+    err := !toolate & (x=4 & y=4);
+INVARSPEC !err

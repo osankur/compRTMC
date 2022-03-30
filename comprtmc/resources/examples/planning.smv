@@ -1,0 +1,56 @@
+
+MODULE main
+IVAR
+    command : {cmd_open_gate1, cmd_close_gate1, cmd_open_gate2, cmd_close_gate2, cmd_open_gate3, cmd_close_gate3};
+    dir : {left, right, up, down};
+VAR
+    x : 0..3;
+    y : 0..3;
+    gate1 : boolean;
+    gate2 : boolean;
+    gate3 : boolean;
+ASSIGN
+    init(gate1) := FALSE;
+    next(gate1) := case
+        command = cmd_open_gate1 : TRUE;
+        command = cmd_close_gate1 : FALSE;
+        TRUE : gate1;
+    esac;
+    init(gate2) := FALSE;
+    next(gate2) := case
+        command = cmd_open_gate2 : TRUE;
+        command = cmd_close_gate2 : FALSE;
+        TRUE : gate2;
+    esac;
+    init(gate3) := FALSE;
+    next(gate3) := case
+        command = cmd_open_gate3 : TRUE;
+        command = cmd_close_gate3 : FALSE;
+        TRUE : gate3;
+    esac;
+
+    init(x) := 0;
+    init(y) := 0;
+    next(x) := case
+        dir = right & x = 0 & (!gate1 | y>=2) : 1;
+        dir = right & x = 1 & (!gate2 | y<=0) : 2;
+        dir = right & x = 2 & (!gate3 | y>=2) : 3;
+        dir = right & x < 3 : x+1;
+        dir = left & x = 1 & !gate1 : 0;
+        dir = left & x < 3 : x+1;
+        TRUE : x;
+    esac;
+    next(y) := case
+        dir = up & y >0 : y - 1;
+        dir = down & y < 3 : y+1;
+        TRUE : y;
+    esac;
+DEFINE
+    _rt_open_gate1 := command = cmd_open_gate1;
+    _rt_close_gate1 := command = cmd_close_gate1;
+    _rt_open_gate2 := command = cmd_open_gate2;
+    _rt_close_gate2 := command = cmd_close_gate2;
+    _rt_open_gate3 := command = cmd_open_gate3;
+    _rt_close_gate3 := command = cmd_close_gate3;
+    err := x=3 & y=0;
+INVARSPEC !err

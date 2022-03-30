@@ -66,7 +66,7 @@ class CompSafetyAlgorithm(
                             // Check feasability with TChecker
                             System.out.println(RED + "*** FSM Counterexample found: " + trace + RESET + "\n")
                             val word = Word.fromList(trace)
-                            Visualization.visualize(hypothesis, inputs)
+                            
                             //  if feasible: return counterexample
                             //  otherwise, create query to rule out the trace
                             taMembershipOracle.getTimedWitness(Word.epsilon,word) match{
@@ -74,7 +74,7 @@ class CompSafetyAlgorithm(
                                     throw ProductCounterExample(cexDescription, trace, timedTrace)
                                 case None => 
                                     System.out.println(GREEN + "*** It was spurious\n" + RESET)
-                                    
+                                    Visualization.visualize(hypothesis, inputs)
                                     DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
                             }                             
                             

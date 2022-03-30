@@ -1,0 +1,34 @@
+system:untimed
+
+event:open_gate1
+event:open_gate2
+event:close_gate1
+event:close_gate2
+event:obs_go
+event:stop
+event:tau
+
+clock:3:cl
+clock:1:gc
+
+process:gate1
+location:gate1:q0{initial:}
+location:gate1:q1
+edge:gate1:q0:q1:close_gate1{provided:cl[0]>=5 && cl[0]<=10:do:cl[0]=0}
+edge:gate1:q1:q0:open_gate1{provided:cl[0]>=5 && cl[0] <=10:do:cl[0]=0}
+
+process:gate2
+location:gate2:q0{initial:}
+location:gate2:q1
+edge:gate2:q0:q1:close_gate1{provided:cl[1]>=5 && cl[1]<=10:do:cl[1]=0}
+edge:gate2:q1:q0:open_gate1{provided:cl[1]>=5 && cl[1] <=10:do:cl[1]=0}
+
+process:obstacle
+location:obstacle:q0{initial:}
+location:obstacle:q1
+edge:obstacle:q0:q0:obs_go{provided:cl[2]>=10 && cl[2]<=20:do:cl[2]=0}
+
+process:monitor
+location:monitor:mi{initial::invariant:gc<=30}
+location:monitor:stop
+edge:monitor:mi:stop:stop{provided:gc>10}
