@@ -22,3 +22,7 @@ object ProgramConfiguration {
         )
     var globalConfiguration = ProgramConfiguration()
 }
+
+var posQueries = Set[String]()
+var negQueries = Set[String]()
+var lastTrace = List[String]()

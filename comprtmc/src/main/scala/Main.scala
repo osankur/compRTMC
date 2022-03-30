@@ -1,5 +1,6 @@
 package fr.irisa.comprtmc
 
+import scala.sys.process._
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import io.AnsiColor._
@@ -82,9 +83,10 @@ object Main {
         if (!config.fsmFile.exists()){
           logger.error(("%s File " + config.fsmFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
-        }
-        
+        }        
         logger.info("SMV File: " + config.fsmFile)
+        logger.info("TA File: " + config.taFile)
+        "./remove_temp.sh".!
         val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(config.fsmFile)
         logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
         val (taMemOracle, taIncOracle) = TAOracles.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 

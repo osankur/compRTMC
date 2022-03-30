@@ -159,7 +159,6 @@ class TCheckerMonitorMaker (
     // The monitor shall join all previously asynchronous transitions on the letters of the alphabet
     ta.eventsOfProcesses.foreach(
       (proc, syncEvents) => 
-        System.out.println("Making sync for %s on %s".format(proc, syncEvents))
         syncEvents.intersect(alphabet.toSet).diff(syncEventsOfProcesses.getOrElse(proc, Set[String]())).foreach(
           e => strB.append("sync:%s@%s:%s@%s\n".format(monitorProcessName,e,proc,e))
         )
@@ -333,8 +332,10 @@ class TCheckerMembershipOracle(
     // System.out.println(BLUE + output + RESET)
     if (output.contains("REACHABLE false")) then {
       System.out.println("Query: " + RED + "(false)" + RESET)
+      negQueries = negQueries + trace.mkString(" ")
       None
     } else if (output.contains("REACHABLE true")) then {
+      posQueries = posQueries + trace.mkString(" ")
       System.out.println("Query: " + GREEN + "(true)" + RESET)
       val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
       val timedCex = parts(1)
@@ -377,7 +378,7 @@ class TCheckerInclusionOracle(
       productFile.delete()
     }    
     if (output.contains("REACHABLE false")) then {
-      System.out.println(GREEN + "Inclusion holds" + RESET)
+      System.out.println(GREEN + "TA Inclusion holds: hypothesis found" + RESET)
       null
     } else if (output.contains("REACHABLE true")) then {
       val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
@@ -387,6 +388,8 @@ class TCheckerInclusionOracle(
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
       System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
       System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
+      posQueries = posQueries + word.mkString(" ")
+
       // Visualization.visualize(hypothesis, alphabet);
       return query
     } else {

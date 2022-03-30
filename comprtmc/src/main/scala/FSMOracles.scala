@@ -1,7 +1,7 @@
 package fr.irisa.comprtmc
 
 import io.AnsiColor._
-  import scala.sys.process._
+import scala.sys.process._
 
 import scala.io.Source
 import scala.collection.mutable.StringBuilder
@@ -203,7 +203,7 @@ class SMVIntersectionOracle(
   override def checkIntersection(
       timeModule: DFA[_, String]
   ): Option[FSMOracles.CounterExample] = {
-    val regInvariantTrue ="\\s*-- invariant.*is true\\s*".r
+    val regInvariantTrue ="[\\s\\S]*-- invariant.*is true[\\s\\S]*".r
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".smv").toFile()
     val pw = PrintWriter(productFile)
@@ -217,9 +217,9 @@ class SMVIntersectionOracle(
           productFile.delete()
           throw Exception("Come back later")
       }
+    System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
-    // System.out.println(output)    
     if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
@@ -234,33 +234,21 @@ class SMVIntersectionOracle(
           val reg = ".*Trace Type: Counterexample.*|.*#######.*|.*Trace Description: AG alpha Counterexample.*".r
           val parts = reg.split(output).map(_.strip()).filter(_.length > 0)
           (parts(1).strip, parts(2).strip())
-          // val parts = output.split("Trace Type: Counterexample")
-          // (parts(1).strip(), parts(2).strip())
         }
+      System.out.println(cexVerboseStr)
       val cexLines = cexVerboseStr.split("\n")
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
       val regAssignmentTRUE = "\\s*fsm._rt_(.+)\\s*=\\s*TRUE\\s*".r
       val trace = ListBuffer[String]()
       var readingInput = false
-      var lastLetter = ""
-      // System.out.println("Trace:\n" + cexLines.mkString("\n"))
-      System.out.println("Alphabet: " + alphabet)
       cexLines foreach { line =>
         line match {
           case regAssignmentTRUE(v) =>
-            // System.out.println("Assigning %s\n\t%s".format(v,line))
             val vStripped = v.strip()
             if (alphabet.contains(vStripped)) {
-              lastLetter = vStripped
+              trace.append(vStripped)
             }
-          case regInput() =>
-            // System.out.println("Input: %s\n\tAdding %s".format(line,lastLetter))
-            readingInput = true
-            trace.append(lastLetter)
-          case regState() =>
-            readingInput = false
-            // System.out.println("State: %s".format(line))
           case _ => ()
         }
       }
@@ -268,7 +256,8 @@ class SMVIntersectionOracle(
     } else if (regInvariantTrue.matches(output)){
       None
     } else {
-      throw ParseError("FSM Model checker returned an error")
+      System.out.println(output)
+      throw ParseError("FSM Model checker did not return an expected result")
     }
   }
 }

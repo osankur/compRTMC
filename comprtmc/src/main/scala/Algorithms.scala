@@ -54,6 +54,8 @@ class CompSafetyAlgorithm(
             hypothesis: DFA[_, String],
             inputs: java.util.Collection[? <: String]
         ): DefaultQuery[String, java.lang.Boolean] = {
+            assert(inputs.size == fsmIntersectionOracle.alphabet.length)
+            assert(posQueries.intersect(negQueries).isEmpty)
             taInclusionOracle.findCounterExample(hypothesis,inputs) match {                
                 case null =>
                     fsmIntersectionOracle.checkIntersection(hypothesis) match{
@@ -64,17 +66,28 @@ class CompSafetyAlgorithm(
                         case Some(FSMOracles.CounterExample(cexDescription, trace)) =>
                             // FSM x hypothesis contains a counterexample trace
                             // Check feasability with TChecker
-                            System.out.println(RED + "*** FSM Counterexample found: " + trace + RESET + "\n")
+                            System.out.println(RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n")
+                            System.out.println(YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n")
                             val word = Word.fromList(trace)
+                            if (trace == lastTrace){
+                                Visualization.visualize(hypothesis, inputs)
+
+                                throw Exception("DONE")
+                            } else {
+                                lastTrace = trace;
+                            }
                             
+
                             //  if feasible: return counterexample
                             //  otherwise, create query to rule out the trace
                             taMembershipOracle.getTimedWitness(Word.epsilon,word) match{
                                 case Some(timedTrace) => 
                                     throw ProductCounterExample(cexDescription, trace, timedTrace)
                                 case None => 
-                                    System.out.println(GREEN + "*** It was spurious\n" + RESET)
-                                    Visualization.visualize(hypothesis, inputs)
+                                    System.out.println(GREEN + "Equiv. Query: Cex was spurious\n" + RESET)
+                                    System.out.println(DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE))
+                                    negQueries = negQueries + word.mkString(" ")
+                                    // Visualization.visualize(hypothesis, inputs)
                                     DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
                             }                             
                             
@@ -108,7 +121,6 @@ class CompSafetyAlgorithm(
 
         // enable logging of models
         experiment.setLogModels(true);
-        
         try {
             experiment.run();
             System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
