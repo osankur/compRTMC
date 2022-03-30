@@ -37,7 +37,7 @@ object Main {
           .action((x, c) => 
             val format = 
               if (x.toString.contains(".smv")){
-                FSMFormat.SMV
+                FSM.SMV
               }else {
                 throw Exception("The FSM format must be .smv")
               }                
@@ -45,9 +45,29 @@ object Main {
             )
           .text("smv is the finite state model in smv format"),
         opt[Boolean]("verbose")
-          .action((_, c) => c.copy(verbose = true)),
+          .action((_, c) => c.copy(verbose = true))
+          .valueName("(true|false)"),
         opt[Boolean]("keepTmpFiles")
           .action((_, c) => c.copy(keepTmpFiles = true))
+          .valueName("(true|false)"),
+        opt[String]("fsmModelChecker")
+          .action((mc, c) => {
+            mc match{
+              case "nuXmv" => c.copy(fsmModelChecker = FSM.NuXmv)
+              case "NuSMV" => c.copy(fsmModelChecker = FSM.NuSMV, fsmAlgorithm = FSM.BDDAlgorithm)
+              case _ => throw Exception("Unknown model checker")
+            }
+          })
+          .text("FSM Model checker: NuSMV or nuXmv"),
+        opt[String]("fsmAlgorithm")
+          .action((mc, c) => {
+            mc match{
+              case "BDD" => c.copy(fsmAlgorithm = FSM.BDDAlgorithm)
+              case "IC3" => c.copy(fsmAlgorithm = FSM.IC3Algorithm)
+              case _ => throw Exception("Unknown algorithm")
+            }
+          })
+          .text("FSM Model checking algorithm: BDD or IC3")
       )
     }
     // val regInput ="\\s*-> Input:.*<-\\s*".r
@@ -83,9 +103,12 @@ object Main {
         if (!config.fsmFile.exists()){
           logger.error(("%s File " + config.fsmFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
-        }        
+        }
         logger.info("SMV File: " + config.fsmFile)
         logger.info("TA File: " + config.taFile)
+        if (config.fsmAlgorithm == FSM.IC3Algorithm && config.fsmModelChecker != FSM.NuXmv){
+          throw Exception("IC3 is only available with nuXmv")
+        }
         "./remove_temp.sh".!
         val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(config.fsmFile)
         logger.info("Alphabet: " + fsmIntersectOracle.alphabet)

@@ -116,21 +116,9 @@ class SMV(inputFile: java.io.File) {
 class SMVIntersectionOracle(
     smv: SMV
 ) extends FSMIntersectionOracle {
-  sealed trait ModelChecker
-  case object NuSMV extends ModelChecker {
-    override def toString: String = "NuSMV"
-  }
-  case object nuXmv extends ModelChecker {
-    override def toString: String = "nuXmv"
-  }
-
-  sealed trait Algorithm
-  case object BDD extends Algorithm
-  case object IC3 extends Algorithm
 
   private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
-  private var algorithm: Algorithm = BDD
-  private var modelChecker: ModelChecker = NuSMV
+
   val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
@@ -210,16 +198,16 @@ class SMVIntersectionOracle(
     pw.write(makeIntersectionMonitor(timeModule))
     pw.close()    
     val cmd =
-      this.algorithm match {
-        case BDD =>
-          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(this.modelChecker)
-        case IC3 =>
-          productFile.delete()
-          throw Exception("Come back later")
+      ProgramConfiguration.globalConfiguration.fsmAlgorithm match {
+        case FSM.BDDAlgorithm =>
+          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
+        case FSM.IC3Algorithm =>
+          "echo \"read_model -i %s; go_msat; check_invar_ic3; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
       }
     System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
+    // System.out.println(output)
     if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
@@ -231,11 +219,14 @@ class SMVIntersectionOracle(
       // Return the first occurrence (nonverbose), but use the second occurrence (verbose) to extract trace
       val (cexStr,cexVerboseStr) = 
         {
-          val reg = ".*Trace Type: Counterexample.*|.*#######.*|.*Trace Description: AG alpha Counterexample.*".r
+          // val reg = ".*Trace Type: Counterexample.*|.*#######.*|.*Trace Description: AG alpha Counterexample.*".r
+          val reg = ".*Trace Type: Counterexample.*".r
           val parts = reg.split(output).map(_.strip()).filter(_.length > 0)
           (parts(1).strip, parts(2).strip())
         }
-      System.out.println(cexVerboseStr)
+      // System.out.println(cexStr)
+      // System.out.println("*** VERBOSE *** ")
+      // System.out.println(cexVerboseStr)
       val cexLines = cexVerboseStr.split("\n")
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
@@ -249,7 +240,7 @@ class SMVIntersectionOracle(
             if (alphabet.contains(vStripped)) {
               trace.append(vStripped)
             }
-          case _ => ()
+          case _ =>()
         }
       }
       Some(FSMOracles.CounterExample(cexStr, trace.toList.filter(_ != "")))

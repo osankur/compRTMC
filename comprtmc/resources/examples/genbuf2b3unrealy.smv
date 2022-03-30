@@ -46,10 +46,7 @@ reg_controllable_BtoR_REQ0_out : boolean;
 reg_i_StoB_REQ0_out : boolean;
 ASSIGN
 init(err) := FALSE;
-next(err) := case
-    _rt_err : TRUE;
-    TRUE : err;
-esac;
+next(err) := _rt_err | err;
 init(n29) := FALSE;
 next(n29) := TRUE;
 init(reg_stateG7_0_out) := FALSE;

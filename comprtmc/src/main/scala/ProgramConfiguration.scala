@@ -5,17 +5,34 @@ import java.io.File
 
 case class ParseError(msg : String) extends Exception(msg)
 
-object FSMFormat {
+object FSM {
     sealed trait FSMFormat
     case object SMV extends FSMFormat
     case object Murphi extends FSMFormat
+
+    sealed trait ModelChecker
+    case object NuSMV extends ModelChecker {
+    override def toString: String = "NuSMV"
+    }
+    case object NuXmv extends ModelChecker {
+    override def toString: String = "nuXmv"
+    }
+
+    case object PReach extends ModelChecker {
+    override def toString: String = "preach"
+    }
+    sealed trait ModelCheckingAlgorithm
+    case object BDDAlgorithm extends ModelCheckingAlgorithm
+    case object IC3Algorithm extends ModelCheckingAlgorithm
 }
 
 object ProgramConfiguration {
     case class ProgramConfiguration(
         fsmFile : File = new File("."),
         taFile: File = new File("."),
-        fsmFormat : FSMFormat.FSMFormat = FSMFormat.SMV,
+        fsmFormat : FSM.FSMFormat = FSM.SMV,
+        fsmModelChecker : FSM.ModelChecker = FSM.NuXmv,
+        fsmAlgorithm : FSM.ModelCheckingAlgorithm = FSM.IC3Algorithm,
         keepTmpFiles: Boolean = false,
         verbose : Boolean = false,
         tmpDirName : String = ".crtmc/"

@@ -1,0 +1,22 @@
+system:genbuf5f5n
+
+event:release1
+event:task1
+event:task2
+event:err
+event:tau
+clock:1:x
+clock:1:y
+
+process:A
+location:A:q0{initial::urgent:}
+location:A:qres1
+location:A:qres2
+location:A:qerr{labels:err}
+
+edge:A:q0:qres1:task1{do:x=0}
+edge:A:qres1:q0:tau{provided:x <= 5 && x <=8}
+edge:A:q0:qres2:task2{do:x=0}
+edge:A:qres2:q0:tau{provided:x <= 8 && x <= 10}
+edge:A:q0:q0:release1{provided:y<=20:do:y=0}
+edge:A:q0:qerr:err{provided:y>20}

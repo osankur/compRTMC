@@ -71,8 +71,7 @@ class CompSafetyAlgorithm(
                             val word = Word.fromList(trace)
                             if (trace == lastTrace){
                                 Visualization.visualize(hypothesis, inputs)
-
-                                throw Exception("DONE")
+                                throw Exception("The following counterexample trace was seen twice: " + trace)
                             } else {
                                 lastTrace = trace;
                             }
