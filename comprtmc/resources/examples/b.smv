@@ -1,6 +1,6 @@
 MODULE main
 IVAR
-	_rt_ : -1..3;
+	a : boolean;
 VAR
 	state : {q0, q1, q2};
 	bit : boolean;
@@ -12,7 +12,6 @@ ASSIGN
 		state = q1 & a : q2;
 		state = q0 & !a : q0;
 		state = q1 & !a : q1;
-		tau : state;
 		TRUE : state;
 	esac;
 	next(bit) := case
@@ -20,10 +19,7 @@ ASSIGN
 		TRUE : bit;
 	esac;
 DEFINE
-	a := _rt_ = 0;
-	b := _rt_ = 1;
-	c := _rt_ = 2;
-	d := _rt_ = 3;
-	tau := _rt_ = -1;
+	_rt_a := a;
+	_rt_b := !a;
 	err := bit;
 INVARSPEC !err

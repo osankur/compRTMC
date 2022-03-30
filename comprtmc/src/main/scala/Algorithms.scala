@@ -59,7 +59,7 @@ class CompSafetyAlgorithm(
                     fsmIntersectionOracle.checkIntersection(hypothesis) match{
                         case None => 
                             // Verification succeeded
-                            //Visualization.visualize(hypothesis, inputs)
+                            // Visualization.visualize(hypothesis, inputs)
                             null
                         case Some(FSMOracles.CounterExample(cexDescription, trace)) =>
                             // FSM x hypothesis contains a counterexample trace
@@ -113,7 +113,7 @@ class CompSafetyAlgorithm(
             experiment.run();
             System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
             val result = experiment.getFinalHypothesis();
-            
+            Visualization.visualize(result, alph)
             System.out.println(SimpleProfiler.getResults());
             System.out.println(experiment.getRounds().getSummary());
             System.out.println("States: " + result.size());
@@ -128,7 +128,7 @@ class CompSafetyAlgorithm(
                 System.out.println("\nSMV trace:")
                 System.out.println(YELLOW + smvTrace + RESET)
                 System.out.println("\nTA trace:")
-                System.out.println(YELLOW + taTrace + RESET)
+                System.out.println(YELLOW + taTrace + RESET)                
             case ParseError(msg) =>
                 System.out.println(RED + msg + RESET)
             case e => throw e

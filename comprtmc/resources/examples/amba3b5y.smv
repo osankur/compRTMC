@@ -376,8 +376,10 @@ DEFINE
     _rt_res2 := !_rt_err & !_rt_res1 & (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out & reg_stateG3_1_out);
     _rt_end1 := !_rt_err & !_rt_res1 & !_rt_res2 & 
         (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out | reg_stateG3_1_out);    
---bad
---constraints
---justice
---fairness
+
+-- The following formulas hold so that the model is nontrivial
+-- EG EF _rt_res1
+-- EG EF _rt_res2
+-- EG EF _rt_end1
+
 INVARSPEC !err

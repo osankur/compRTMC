@@ -1,7 +1,7 @@
 package fr.irisa.comprtmc
 
 import io.AnsiColor._
-import scala.sys.process._
+  import scala.sys.process._
 
 import scala.io.Source
 import scala.collection.mutable.StringBuilder
@@ -213,7 +213,7 @@ class SMVIntersectionOracle(
     val cmd =
       this.algorithm match {
         case BDD =>
-          "%s %s".format(this.modelChecker, productFile)
+          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(this.modelChecker)
         case IC3 =>
           productFile.delete()
           throw Exception("Come back later")
@@ -226,8 +226,17 @@ class SMVIntersectionOracle(
       if(output.contains("_rt_excl = TRUE")){
         throw ParseError("The real-time labels _rt_ must be mutually exclusive")
       }
-      val cexStr = output.split("Trace Type: Counterexample")(1).strip()
-      val cexLines = cexStr.split("\n")
+      // The output should contain the counterexample twice
+      // Return the first occurrence (nonverbose), but use the second occurrence (verbose) to extract trace
+      val (cexStr,cexVerboseStr) = 
+        {
+          val reg = ".*Trace Type: Counterexample.*|.*#######.*|.*Trace Description: AG alpha Counterexample.*".r
+          val parts = reg.split(output).map(_.strip()).filter(_.length > 0)
+          (parts(1).strip, parts(2).strip())
+          // val parts = output.split("Trace Type: Counterexample")
+          // (parts(1).strip(), parts(2).strip())
+        }
+      val cexLines = cexVerboseStr.split("\n")
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
       val regAssignmentTRUE = "\\s*fsm._rt_(.+)\\s*=\\s*TRUE\\s*".r
@@ -235,22 +244,26 @@ class SMVIntersectionOracle(
       var readingInput = false
       var lastLetter = ""
       // System.out.println("Trace:\n" + cexLines.mkString("\n"))
+      // System.out.println("Alphabet: " + alphabet)
       cexLines foreach { line =>
         line match {
           case regAssignmentTRUE(v) =>
+            // System.out.println("Assigning %s\n\t%s".format(v,line))
             val vStripped = v.strip()
-            if (readingInput && alphabet.contains(vStripped)) {
+            if (alphabet.contains(vStripped)) {
               lastLetter = vStripped
             }
           case regInput() =>
+            // System.out.println("Input: %s\n\tAdding %s".format(line,lastLetter))
             readingInput = true
-          case regState() =>
             trace.append(lastLetter)
+          case regState() =>
             readingInput = false
+            // System.out.println("State: %s".format(line))
           case _ => ()
         }
       }
-      Some(FSMOracles.CounterExample(cexStr, trace.toList.tail))
+      Some(FSMOracles.CounterExample(cexStr, trace.toList.filter(_ != "")))
     } else {
       None
     }
