@@ -1,4 +1,4 @@
-system:untimed
+system:maze_planning1
 
 event:open_gate1
 event:open_gate2

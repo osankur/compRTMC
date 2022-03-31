@@ -23,6 +23,7 @@ IVAR
     _rt_err : boolean;
 VAR
     err : boolean;
+    cnt : 0..4;
     --latches
     n41 : boolean;
     reg_controllable_hgrant2_out : boolean;
@@ -61,6 +62,11 @@ VAR
     sys_fair2done_out : boolean;
     reg_controllable_hmaster0_out : boolean;
 ASSIGN
+    init(cnt) := 0;
+    next(cnt) := case
+        cnt < 4 : cnt+1;
+        TRUE : 0;
+    esac;
     init(err) := FALSE;
     next(err) := _rt_err;
     init(n41) := FALSE;
@@ -371,10 +377,9 @@ DEFINE
     a572 := !a426 & !a408;
     --outputs
     o0 := a392;
-    _rt_res1 := !_rt_err & (reg_controllable_hgrant2_out | reg_controllable_hmaster1_out & sys_fair0done_out | reg_stateG3_0_out);
-    _rt_res2 := !_rt_err & !_rt_res1 & (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out & reg_stateG3_1_out);
-    _rt_end1 := !_rt_err & !_rt_res1 & !_rt_res2 & 
-        (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out | reg_stateG3_1_out);    
+    _rt_release := !_rt_err & cnt = 4;
+    _rt_task1 := !_rt_err & !_rt_release & (reg_controllable_hgrant2_out | reg_controllable_hmaster1_out & sys_fair0done_out | reg_stateG3_0_out);
+    _rt_task2 := !_rt_err & !_rt_release & !_rt_task1 & (env_fair1done_out | reg_controllable_locked_out | sys_fair3done_out & reg_stateG3_1_out);
 
 -- The following formulas hold so that the model is nontrivial
 -- EG EF _rt_res1

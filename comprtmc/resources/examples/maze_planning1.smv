@@ -4,7 +4,6 @@ IVAR
     command : {cmd_open_gate1, cmd_close_gate1, cmd_open_gate2, cmd_close_gate2, cmd_obs_go, cmd_stop, 
         agent_left, agent_right, agent_up, agent_down,
         obs_move};
-
 VAR
     obstacle_y : 0..4;
     obs_dir : {obs_up, obs_down};
