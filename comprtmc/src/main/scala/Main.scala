@@ -70,29 +70,7 @@ object Main {
           .text("FSM Model checking algorithm: BDD or IC3")
       )
     }
-    // val regInput ="\\s*-> Input:.*<-\\s*".r
-    // val regState ="\\s*-> State:.*<-\\s*".r
-    // val regAssignmentTRUE = "\\s*(.+)\\s*=\\s*TRUE\\s*".r
-    // val trace = ListBuffer[String]()
-    // var readingInput = false    
-    // val cexLines = "adasdkj asfajh dsad".split("\n")
-    // cexLines foreach{
-    //     line =>
-    //         line match {
-    //             case regAssignmentTRUE(v) => 
-    //                 val vStripped = v.strip()
-    //                 if (readingInput ){
-    //                     trace.append(vStripped)
-    //                 }
-    //             case regInput() =>
-    //                 System.out.println("")
-    //                 readingInput = true
-    //             case regState() =>
-    //                 readingInput = false
-    //             case _ => ()
-    //         }
-    //     }
-    // OParser.parse returns Option[Config]
+
     OParser.parse(parser1, args, ProgramConfiguration()) match {
       case Some(config) =>
         globalConfiguration = config

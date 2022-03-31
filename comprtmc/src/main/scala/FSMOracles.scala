@@ -219,30 +219,53 @@ class SMVIntersectionOracle(
       // Return the first occurrence (nonverbose), but use the second occurrence (verbose) to extract trace
       val (cexStr,cexVerboseStr) = 
         {
-          // val reg = ".*Trace Type: Counterexample.*|.*#######.*|.*Trace Description: AG alpha Counterexample.*".r
           val reg = ".*Trace Type: Counterexample.*".r
           val parts = reg.split(output).map(_.strip()).filter(_.length > 0)
           (parts(1).strip, parts(2).strip())
         }
-      // System.out.println(cexStr)
-      // System.out.println("*** VERBOSE *** ")
-      // System.out.println(cexVerboseStr)
-      val cexLines = cexVerboseStr.split("\n")
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
       val regAssignmentTRUE = "\\s*fsm._rt_(.+)\\s*=\\s*TRUE\\s*".r
+      val regError = "fsm.err = TRUE"
       val trace = ListBuffer[String]()
       var readingInput = false
-      cexLines foreach { line =>
-        line match {
+      val cexLines = regState.split(cexVerboseStr) // List of all states in the cex
+      val filteredStates = ListBuffer[String]() // List of all states but those with fsm.err = TRUE
+      var errorHasBeenSeen = false
+
+      // We remove states with fsm.err = TRUE since sync labels take arbitrary values along these states, and we want to cut the trace when err is reached
+      for ((state,i) <- cexLines.zipWithIndex){
+        if (state.contains(regError)){
+          errorHasBeenSeen = true;
+        }
+        if (!errorHasBeenSeen){
+          filteredStates.append(state)
+        }
+        // System.out.println("-> state %d (error: ".format(i) + state.contains(regError)+ ")\n")
+        // System.out.println(state.split("\n").filter(!_.contains("fsm.a")).filter(_.length >0).mkString("\n"))
+      }
+      filteredStates.foreach{
+        _.split("\n").foreach{
           case regAssignmentTRUE(v) =>
             val vStripped = v.strip()
             if (alphabet.contains(vStripped)) {
               trace.append(vStripped)
             }
           case _ =>()
-        }
+          }
       }
+      // cexLines foreach { line =>
+      //   line match {
+      //     case regAssignmentTRUE(v) =>
+      //       val vStripped = v.strip()
+      //       if (!errorHasBeenSeen && alphabet.contains(vStripped)) {
+      //         trace.append(vStripped)
+      //       }
+      //     case regError() =>
+      //       //errorHasBeenSeen = true
+      //     case _ =>
+      //   }
+      // }
       Some(FSMOracles.CounterExample(cexStr, trace.toList.filter(_ != "")))
     } else if (regInvariantTrue.matches(output)){
       None

@@ -1,7 +1,9 @@
 MODULE main
-IVAR 
-    _rt_err : boolean;
+IVAR
+_rt_err : boolean;
 VAR
+cnt : 0..3;
+err : boolean;
 --inputs
 i_RtoB_ACK1 : boolean;
 controllable_BtoR_REQ0 : boolean;
@@ -17,8 +19,6 @@ controllable_ENQ : boolean;
 i_StoB_REQ1 : boolean;
 controllable_DEQ : boolean;
 --latches
-
-err : boolean;
 n29 : boolean;
 reg_stateG7_0_out : boolean;
 reg_controllable_BtoR_REQ1_out : boolean;
@@ -45,8 +45,13 @@ sys_fair2done_out : boolean;
 reg_controllable_BtoR_REQ0_out : boolean;
 reg_i_StoB_REQ0_out : boolean;
 ASSIGN
+init(cnt) := 0;
+next(cnt) := case
+    cnt < 3 : cnt+1;
+    TRUE : 0;
+esac;
 init(err) := FALSE;
-next(err) := _rt_err | err;
+next(err) := err | _rt_err;
 init(n29) := FALSE;
 next(n29) := TRUE;
 init(reg_stateG7_0_out) := FALSE;
@@ -271,10 +276,9 @@ a414 := !a338 & !a332;
 --outputs
 o0 := a294;
 DEFINE
-    _rt_res1 := !_rt_err & (reg_stateG12_out | reg_controllable_BtoR_REQ0_out);
-    _rt_res2 := !_rt_err & !_rt_res1 & (reg_i_RtoB_ACK1_out | reg_nstateG7_1_out | reg_i_nEMPTY_out);
-    _rt_end1 := !_rt_err & !_rt_res1 & !_rt_res2 & 
-        (env_fair0done_out | sys_fair1done_out);
+    _rt_release := !_rt_err & (cnt = 3);
+    _rt_task1 := !_rt_release & !_rt_err & (reg_stateG12_out | reg_controllable_BtoR_REQ0_out);
+    _rt_task2 := !_rt_release & !_rt_err & !_rt_task1 & (reg_i_RtoB_ACK1_out | reg_nstateG7_1_out | reg_i_nEMPTY_out);
 INVARSPEC !err
 --bad
 --constraints
