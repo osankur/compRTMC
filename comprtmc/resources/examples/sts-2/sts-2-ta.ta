@@ -1,0 +1,31 @@
+event:go
+event:set_drive
+event:poll1
+event:poll2
+event:cpoll
+event:tau_reset_z1
+event:tau_reset_z2
+event:tau_reset_yz
+event:tau_reset_z
+event:tau_yleq2
+event:tau_ygt2
+
+clock:1:z1
+clock:1:z2
+clock:1:y
+clock:1:z
+
+process:rtconstraints
+clock:1:x
+location:rtconstraints:init{initial::invariant: z1 < 1 && z2 < 1 && z < 1}
+edge:rtconstraints:init:init:go{provided:x==0}
+edge:rtconstraints:init:init:poll1{provided:x>0 && z1 > 0}
+edge:rtconstraints:init:init:poll2{provided:x>0 && z2 > 0}
+edge:rtconstraints:init:init:tau_reset_z1{do:z1=0}
+edge:rtconstraints:init:init:tau_reset_z2{do:z1=0}
+edge:rtconstraints:init:init:set_drive{do:x=0;y=0;z=0}
+edge:rtconstraints:init:init:cpoll{provided:x>0 && z>0}
+edge:rtconstraints:init:init:tau_reset_yz{do:y=0;z=0}
+edge:rtconstraints:init:init:tau_yleq2{provided:y<=2}
+edge:rtconstraints:init:init:tau_ygt2{provided:y>2}
+edge:rtconstraints:init:init:tau_reset_z{do:z=0}

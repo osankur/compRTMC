@@ -42,4 +42,4 @@ object ProgramConfiguration {
 
 var posQueries = Set[String]()
 var negQueries = Set[String]()
-var lastTrace = List[String]()
+var lastTrace : List[String] = null

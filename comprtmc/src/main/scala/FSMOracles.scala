@@ -207,7 +207,7 @@ class SMVIntersectionOracle(
     System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
-    // System.out.println(output)
+    System.out.println(output)
     if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    

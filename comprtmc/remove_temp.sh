@@ -1,1 +1,1 @@
-rm .crtmc/*
+rm -f .crtmc/*

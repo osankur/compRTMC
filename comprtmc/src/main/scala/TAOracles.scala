@@ -256,9 +256,10 @@ abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boo
   /**
    * Returns witness timed trace if the given word is in the untimed language
    */
-  def getTimedWitness(
+  def answerQuery(
       prefix: Word[String],
-      suffix: Word[String]
+      suffix: Word[String],
+      generateWitness : Boolean
   ): Option[String]
 
   def systemElapsedTime : Long
@@ -295,7 +296,10 @@ class TCheckerMembershipOracle(
       prefix: Word[String],
       suffix: Word[String]
   ): java.lang.Boolean = {
-    getTimedWitness(prefix,suffix) match {
+    val pr = prefix.asList.asScala
+    val su = suffix.asList.asScala
+    // System.out.println(pr.toList.mkString(" ") + " ||| " + su.mkString(" "))
+    answerQuery(prefix,suffix, false) match {
       case None => false
       case _ => true
     }
@@ -304,9 +308,10 @@ class TCheckerMembershipOracle(
   /**
    * Returns witness timed trace if the given word is in the untimed language
    */
-  override def getTimedWitness(
+  override def answerQuery(
       prefix: Word[String],
-      suffix: Word[String]
+      suffix: Word[String],
+      generateWitness : Boolean
   ): Option[String] = {
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
 
@@ -318,8 +323,17 @@ class TCheckerMembershipOracle(
     pw.close()
 
     // Model check product automaton
-    val cmd = "tck-reach -a reach %s -l %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel)
+    var certFile : java.io.File = null
+    
+    val cmd = 
+        if (generateWitness){
+          certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
+          "tck-reach -a reach %s -l %s -C %s"
+            .format(productFile.toString, taMonitorMaker.acceptLabel,certFile.toString)
+        } else {
+          "tck-reach -a covreach %s -l %s"
+            .format(productFile.toString, taMonitorMaker.acceptLabel)
+        }
     System.out.println(cmd)
     var beginTime = System.nanoTime()
     val output = cmd.!!
@@ -328,19 +342,33 @@ class TCheckerMembershipOracle(
     if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
-    System.out.println(BLUE + "Membership query: " + trace + RESET)
-    // System.out.println(BLUE + output + RESET)
+    System.out.print(BLUE + "Membership query: " + trace + RESET)
     if (output.contains("REACHABLE false")) then {
-      System.out.println("Query: " + RED + "(false)" + RESET)
+      System.out.println(RED + " (false)" + RESET)
       negQueries = negQueries + trace.mkString(" ")
+      if (generateWitness){
+        certFile.delete()
+      }
       None
     } else if (output.contains("REACHABLE true")) then {
       posQueries = posQueries + trace.mkString(" ")
-      System.out.println("Query: " + GREEN + "(true)" + RESET)
-      val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
-      val timedCex = parts(1)
-      Some(timedCex)
+      System.out.println(GREEN + " (true)" + RESET)
+      if (generateWitness){
+        // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
+        // val timedCex = parts(1)
+        val timedCex = Source.fromFile(certFile).getLines.mkString("\n")
+        certFile.delete()
+        Some(timedCex)
+      } else {
+        if (generateWitness){
+          certFile.delete()
+        }
+        Some("")
+      }
     } else {
+      if (generateWitness){
+        certFile.delete()
+      }      
       throw FailedTAModelChecking(output)
     }
   }
@@ -367,10 +395,12 @@ class TCheckerInclusionOracle(
     pw.write(taMonitorMaker.makeInclusionMonitor(hypothesis))
     pw.close()
 
+    var certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
+
     // Model check product automaton
     System.out.println(YELLOW + "Inclusion query: " + RESET)
-    val cmd = "tck-reach -a reach %s -l %s"
-      .format(productFile.toString, taMonitorMaker.acceptLabel)
+    val cmd = "tck-reach -a reach %s -l %s -C %s" 
+      .format(productFile.toString, taMonitorMaker.acceptLabel, certFile)
     System.out.println(cmd)
     val output = cmd.!!
     System.out.println(output)
@@ -378,11 +408,12 @@ class TCheckerInclusionOracle(
       productFile.delete()
     }    
     if (output.contains("REACHABLE false")) then {
-      System.out.println(GREEN + "TA Inclusion holds: hypothesis found" + RESET)
+      System.out.println(GREEN + "TA Inclusion holds: hypothesis with " + hypothesis.size + "states found" + RESET)
       null
     } else if (output.contains("REACHABLE true")) then {
-      val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
-      val cexLines = parts(1).split("\n").toList
+      // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
+      // val cexLines = parts(1).split("\n").toList
+      val cexLines = Source.fromFile(certFile).getLines.toList
       val word = ta.getTraceFromCexDescription(cexLines).filter(alphabet.contains(_))
       System.out.println(ta.getTraceFromCexDescription(cexLines))
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)

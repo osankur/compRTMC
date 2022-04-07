@@ -79,7 +79,7 @@ class CompSafetyAlgorithm(
 
                             //  if feasible: return counterexample
                             //  otherwise, create query to rule out the trace
-                            taMembershipOracle.getTimedWitness(Word.epsilon,word) match{
+                            taMembershipOracle.answerQuery(Word.epsilon,word, true) match{
                                 case Some(timedTrace) => 
                                     throw ProductCounterExample(cexDescription, trace, timedTrace)
                                 case None => 

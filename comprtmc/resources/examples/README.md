@@ -14,6 +14,7 @@ The timed automaton model tracks the execution time of each phase and sends a _r
 
 # Maze planning
 - maze_planning1
+- maze_planning2 (TODO)
 
 This is a high-level planning problem with real-time constraints.
 An agent must go from a start cell to a goal cell in a grid maze. Some cells are obstacles,
@@ -25,4 +26,35 @@ The model is turn-based: at each synchronous step, only one of these entities (a
 makes a move.
 The goal is to find a plan for the agent avoiding all obstacles and reaching the destination within bounded time.
 The model is described in maze_planning1.png: the red segments are doors, and the blue point is the obstacle that moves
-vertically back and forth, pausing at y=0 (top) and y=2 (middle).   
+vertically back and forth, pausing at y=0 (top) and y=2 (middle).
+
+The second model should contain a Boolean program to specify the behavior of a moving obstacle.
+(Such as a Boolean counter whose bits determine the direction to go or how long to wait)
+
+# Priority-Based Scheduling
+- prio_sched_2{a,b}.smv and prio_sched_2.ta
+- prio_sched_3a.smv and prio_sched_3.ta
+
+Priority-based scheduler without preemption between two or three processes.
+Each process sends signal _rt_readyi whenever it is ready to execute its rt task.
+Whenever the scheduler is available, it schedules process 1 if it is ready,
+otherwise, process 2 if it is ready, otherwise process 3, and if non of them are ready,
+then schedules a low priority task called idle.
+Each task ends with a _rt_release signal, while _rt_miss means a deadline miss, and leads to the error state.
+
+At each bigstep, the smv model is queried to know whether processes are _rt_ready.
+Whether a process is ready depends on its internal state described by the given circuit.
+Moreover, the timed automaton model constrains the interarrival times (time elapsed between two _rt_readyi),
+the task execution times, and the deadline for each process.
+
+A single circuit model determines the joint behavior of all task arrivals.
+- a: bs16y.aag
+- b: moving_obstacle_8x8_1glitches.aag
+
+Currently the difficult part is the TA learning 
+
+# STS-2
+DEFINE
+	err := _loc_ = L_Go_Go_Drive1 | _loc_ = L_Go_Go_Drive2 | _loc_ = L_Go_Go_Ready1 | _loc_ = L_Go_Go_Drive2 | _loc_ = L_Go_Go_Fin1 | _loc_ = L_Go_Go_Fin2;
+INVARSPEC !err
+
