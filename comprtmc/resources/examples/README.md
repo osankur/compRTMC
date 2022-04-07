@@ -1,7 +1,8 @@
 # Monoprocessor real-time scheduling benchmarks
-- genbuf2b3unrealy
-- genbuf5f5n
-- amba3b5y
+The `mono_scheduling` directory:
+- `genbuf2b3unrealy`
+- `genbuf5f5n`
+- `amba3b5y`
 
 These benchmarks consist in executing the given synchronous program with real-time constraints.
 The smv models contain state predicates such as _rt_task1, _rt_task2, _rt_release. 
@@ -13,6 +14,7 @@ The goal is to check whether all reachable phases have an execution time bounded
 The timed automaton model tracks the execution time of each phase and sends a _rt_err signal to the smv model in case of a deadline violation.
 
 # Maze planning
+The `planning` directory
 - maze_planning1
 - maze_planning2 (TODO)
 
@@ -32,6 +34,7 @@ The second model should contain a Boolean program to specify the behavior of a m
 (Such as a Boolean counter whose bits determine the direction to go or how long to wait)
 
 # Priority-Based Scheduling
+The `prio_scheduling` directory:
 - prio_sched_2{a,b}.smv and prio_sched_2.ta
 - prio_sched_3a.smv and prio_sched_3.ta
 
@@ -53,8 +56,5 @@ A single circuit model determines the joint behavior of all task arrivals.
 
 Currently the difficult part is the TA learning 
 
-# STS-2
-DEFINE
-	err := _loc_ = L_Go_Go_Drive1 | _loc_ = L_Go_Go_Drive2 | _loc_ = L_Go_Go_Ready1 | _loc_ = L_Go_Go_Drive2 | _loc_ = L_Go_Go_Fin1 | _loc_ = L_Go_Go_Fin2;
-INVARSPEC !err
-
+# STS
+See `sts/README.md`

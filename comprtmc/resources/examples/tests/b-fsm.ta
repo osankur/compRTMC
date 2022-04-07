@@ -3,6 +3,8 @@
 # (no consecutive b's)
 # q2_bit with label error is reached 
 #
+# Each event of the synchronization alphabet must be marked with `# _extern_` on the same line
+# The error state must contain the attribute `labels:error`
 system:b_fsm
 
 int:1:0:1:0:bit

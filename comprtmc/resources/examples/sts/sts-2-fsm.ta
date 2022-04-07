@@ -23,7 +23,7 @@
 # Mutual exclusion can be verified by checking that there cannot be two 
 # processes A in location Go at the same time.
 
-system:sts_2_1_2
+system:sts_2_1_2_fsm
 
 event:tau
 event:err
@@ -45,36 +45,17 @@ event:poll_not_EC_drive2
 event:poll_EC_not_drive2
 event:poll_not_EC_not_drive2
 #
-event:set_drive
-event:poll1
-event:poll2
-event:cpoll
-event:tau_reset_z1
-event:tau_reset_z2
-event:tau_reset_yz
-event:tau_reset_z
-event:tau_yleq2
-event:tau_ygt2
+event:set_drive # _extern_
+event:poll1 # _extern_
+event:poll2 # _extern_
+event:cpoll # _extern_
+event:tau_reset_z1 # _extern_
+event:tau_reset_z2 # _extern_
+event:tau_reset_yz # _extern_
+event:tau_reset_z # _extern_
+event:tau_yleq2 # _extern_
+event:tau_ygt2 # _extern_
 
-clock:1:z1
-clock:1:z2
-clock:1:y
-clock:1:z
-
-process:rtconstraints
-clock:1:x
-location:rtconstraints:init{initial::invariant: z1 < 1 && z2 < 1 && z < 1}
-edge:rtconstraints:init:init:go{provided:x==0}
-edge:rtconstraints:init:init:poll1{provided:x>0 && z1 > 0}
-edge:rtconstraints:init:init:poll2{provided:x>0 && z2 > 0}
-edge:rtconstraints:init:init:tau_reset_z1{do:z1=0}
-edge:rtconstraints:init:init:tau_reset_z2{do:z1=0}
-edge:rtconstraints:init:init:set_drive{do:x=0;y=0;z=0}
-edge:rtconstraints:init:init:cpoll{provided:x>0 && z>0}
-edge:rtconstraints:init:init:tau_reset_yz{do:y=0;z=0}
-edge:rtconstraints:init:init:tau_yleq2{provided:y<=2}
-edge:rtconstraints:init:init:tau_ygt2{provided:y>2}
-edge:rtconstraints:init:init:tau_reset_z{do:z=0}
 
 # Process InOut
 process:InOut
@@ -244,31 +225,24 @@ edge:Ctrl:Fin1:Fin1:tau_ygt2{provided:pc==1 : do:pc=3}
 edge:Ctrl:Fin2:Fin2:tau_yleq2{provided:pc==1 : do:pc=2}
 edge:Ctrl:Fin2:Fin2:tau_ygt2{provided:pc==1 : do:pc=3}
 
-sync:Ctrl@poll_EC1:InOut@poll_EC1:rtconstraints@cpoll
-sync:Ctrl@poll_not_EC1:InOut@poll_not_EC1:rtconstraints@cpoll
-sync:Ctrl@poll_EC2:InOut@poll_EC2:rtconstraints@cpoll
-sync:Ctrl@poll_not_EC2:InOut@poll_not_EC2:rtconstraints@cpoll
-sync:Ctrl@set_drive2:InOut@set_drive2:rtconstraints@set_drive
-sync:Ctrl@set_not_drive2:InOut@set_not_drive2:rtconstraints@set_drive
-sync:Ctrl@set_drive1:InOut@set_drive1:rtconstraints@set_drive
-sync:Ctrl@set_not_drive1:InOut@set_not_drive1:rtconstraints@set_drive
+sync:Ctrl@poll_EC1:InOut@poll_EC1
+sync:Ctrl@poll_not_EC1:InOut@poll_not_EC1
+sync:Ctrl@poll_EC2:InOut@poll_EC2
+sync:Ctrl@poll_not_EC2:InOut@poll_not_EC2
+sync:Ctrl@set_drive2:InOut@set_drive2
+sync:Ctrl@set_not_drive2:InOut@set_not_drive2
+sync:Ctrl@set_drive1:InOut@set_drive1
+sync:Ctrl@set_not_drive1:InOut@set_not_drive1
 
-sync:Ctrl@tau_reset_z:rtconstraints@tau_reset_z
-sync:Ctrl@tau_reset_yz:rtconstraints@tau_reset_yz
-sync:Ctrl@tau_yleq2:rtconstraints@tau_yleq2
-sync:Ctrl@tau_ygt2:rtconstraints@tau_ygt2
-
-sync:A1@poll_EC_drive1:InOut@poll_EC_drive1:rtconstraints@poll1
-sync:A1@poll_EC_not_drive1:InOut@poll_EC_not_drive1:rtconstraints@poll1
-sync:A1@poll_not_EC_drive1:InOut@poll_not_EC_drive1:rtconstraints@poll1
-sync:A1@poll_not_EC_not_drive1:InOut@poll_not_EC_not_drive1:rtconstraints@poll1
-sync:A1@tau_reset_z1:rtconstraints@tau_reset_z1
-sync:A2@poll_EC_drive2:InOut@poll_EC_drive2:rtconstraints@poll2
-sync:A2@poll_EC_not_drive2:InOut@poll_EC_not_drive2:rtconstraints@poll2
-sync:A2@poll_not_EC_drive2:InOut@poll_not_EC_drive2:rtconstraints@poll2
-sync:A2@poll_not_EC_not_drive2:InOut@poll_not_EC_not_drive2:rtconstraints@poll2
-sync:A2@tau_reset_z2:rtconstraints@tau_reset_z2
+sync:A1@poll_EC_drive1:InOut@poll_EC_drive1
+sync:A1@poll_EC_not_drive1:InOut@poll_EC_not_drive1
+sync:A1@poll_not_EC_drive1:InOut@poll_not_EC_drive1
+sync:A1@poll_not_EC_not_drive1:InOut@poll_not_EC_not_drive1
+sync:A2@poll_EC_drive2:InOut@poll_EC_drive2
+sync:A2@poll_EC_not_drive2:InOut@poll_EC_not_drive2
+sync:A2@poll_not_EC_drive2:InOut@poll_not_EC_drive2
+sync:A2@poll_not_EC_not_drive2:InOut@poll_not_EC_not_drive2
 
 sync:A1@err:A2@err
 
-sync:InOut@go:Ctrl@go:A1@go:A2@go:rtconstraints@go
+sync:InOut@go:Ctrl@go:A1@go:A2@go

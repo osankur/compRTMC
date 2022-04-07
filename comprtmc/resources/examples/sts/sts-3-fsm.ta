@@ -1,0 +1,323 @@
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+# Inspired from the model introduced in Section 3.3.3 in
+# Henning Dierks; 'Time; Abstraction and Heuristics';
+# Habilitation Thesis; Department of Computer Science;
+# University of Oldenburg; 2005 (http://www.avacs.org/Publikationen/Open/dierks05.pdf)
+
+
+# Mutual exclusion can be verified by checking that there cannot be two 
+# processes A in location Go at the same time.
+
+system:sts_3_1_2
+
+event:tau
+event:go
+event:err
+event:set_drive1
+event:set_not_drive1
+event:poll_EC1
+event:poll_not_EC1
+event:poll_EC_drive1
+event:poll_not_EC_drive1
+event:poll_EC_not_drive1
+event:poll_not_EC_not_drive1
+event:set_drive2
+event:set_not_drive2
+event:poll_EC2
+event:poll_not_EC2
+event:poll_EC_drive2
+event:poll_not_EC_drive2
+event:poll_EC_not_drive2
+event:poll_not_EC_not_drive2
+event:set_drive3
+event:set_not_drive3
+event:poll_EC3
+event:poll_not_EC3
+event:poll_EC_drive3
+event:poll_not_EC_drive3
+event:poll_EC_not_drive3
+event:poll_not_EC_not_drive3
+
+# _rt_ alphabet
+event:set_drive      # _extern_
+event:cpoll          # _extern_
+event:tau_reset_z    # _extern_
+event:tau_yleq2      # _extern_
+event:tau_ygt2       # _extern_
+event:tau_reset_yz   # _extern_
+event:poll1          # _extern_
+event:tau_reset_z1   # _extern_
+event:poll2          # _extern_
+event:tau_reset_z2   # _extern_
+event:poll3          # _extern_
+event:tau_reset_z3   # _extern_
+
+# Process InOut
+process:InOut
+int:1:0:1:0:EC1
+int:1:0:1:0:drive1
+int:1:0:1:0:EC2
+int:1:0:1:0:drive2
+int:1:0:1:0:EC3
+int:1:0:1:0:drive3
+location:InOut:init{initial:}
+location:InOut:L
+edge:InOut:init:L:go
+edge:InOut:L:L:set_drive1{do:drive1=1}
+edge:InOut:L:L:set_not_drive1{do:drive1=0}
+edge:InOut:L:L:tau{do:EC1=1}
+edge:InOut:L:L:tau{do:EC1=0}
+edge:InOut:L:L:poll_EC1{provided:EC1==1}
+edge:InOut:L:L:poll_not_EC1{provided:EC1==0}
+edge:InOut:L:L:poll_EC_drive1{provided:EC1==1&&drive1==1}
+edge:InOut:L:L:poll_not_EC_drive1{provided:EC1==0&&drive1==1}
+edge:InOut:L:L:poll_EC_not_drive1{provided:EC1==1&&drive1==0}
+edge:InOut:L:L:poll_not_EC_not_drive1{provided:EC1==0&&drive1==0}
+edge:InOut:L:L:set_drive2{do:drive2=1}
+edge:InOut:L:L:set_not_drive2{do:drive2=0}
+edge:InOut:L:L:tau{do:EC2=1}
+edge:InOut:L:L:tau{do:EC2=0}
+edge:InOut:L:L:poll_EC2{provided:EC2==1}
+edge:InOut:L:L:poll_not_EC2{provided:EC2==0}
+edge:InOut:L:L:poll_EC_drive2{provided:EC2==1&&drive2==1}
+edge:InOut:L:L:poll_not_EC_drive2{provided:EC2==0&&drive2==1}
+edge:InOut:L:L:poll_EC_not_drive2{provided:EC2==1&&drive2==0}
+edge:InOut:L:L:poll_not_EC_not_drive2{provided:EC2==0&&drive2==0}
+edge:InOut:L:L:set_drive3{do:drive3=1}
+edge:InOut:L:L:set_not_drive3{do:drive3=0}
+edge:InOut:L:L:tau{do:EC3=1}
+edge:InOut:L:L:tau{do:EC3=0}
+edge:InOut:L:L:poll_EC3{provided:EC3==1}
+edge:InOut:L:L:poll_not_EC3{provided:EC3==0}
+edge:InOut:L:L:poll_EC_drive3{provided:EC3==1&&drive3==1}
+edge:InOut:L:L:poll_not_EC_drive3{provided:EC3==0&&drive3==1}
+edge:InOut:L:L:poll_EC_not_drive3{provided:EC3==1&&drive3==0}
+edge:InOut:L:L:poll_not_EC_not_drive3{provided:EC3==0&&drive3==0}
+
+# Process A1
+process:A1
+# clock:1:y1
+#clock:1:z1
+int:1:0:1:0:polled_drive1
+int:1:0:1:0:polled_EC_A1
+int:1:0:3:0:pc1
+location:A1:init{initial:}
+location:A1:Stop
+location:A1:Wait
+location:A1:Go
+location:A1:Err{labels:err1}
+edge:A1:init:Stop:go
+edge:A1:Stop:Stop:poll_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=1}
+edge:A1:Stop:Stop:poll_not_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=1}
+edge:A1:Stop:Stop:poll_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=0}
+edge:A1:Stop:Stop:poll_not_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=0}
+edge:A1:Stop:Stop:tau{provided:pc1==1 : do:pc1=3}
+edge:A1:Stop:Stop:tau_reset_z1{provided:pc1==3&&polled_EC_A1==0 : do:pc1=0;}
+edge:A1:Stop:Wait:tau_reset_z1{provided:pc1==3&&polled_EC_A1==1 : do:pc1=0;}
+edge:A1:Wait:Wait:poll_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=1}
+edge:A1:Wait:Wait:poll_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=0}
+edge:A1:Wait:Wait:poll_not_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=1}
+edge:A1:Wait:Wait:poll_not_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=0}
+edge:A1:Wait:Wait:tau{provided:pc1==1 : do:pc1=3}
+edge:A1:Wait:Wait:tau_reset_z1{provided:pc1==3&&polled_EC_A1==0 : do:pc1=0}
+edge:A1:Wait:Wait:tau_reset_z1{provided:pc1==3&&polled_drive1==0 : do:pc1=0}
+edge:A1:Wait:Go:tau_reset_z1{provided:pc1==3&&polled_EC_A1==1&&polled_drive1==1 : do:pc1=0;}
+edge:A1:Go:Go:poll_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=1}
+edge:A1:Go:Go:poll_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=1;polled_drive1=0}
+edge:A1:Go:Go:poll_not_EC_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=1}
+edge:A1:Go:Go:poll_not_EC_not_drive1{provided:pc1==0: do:pc1=1;polled_EC_A1=0;polled_drive1=0}
+edge:A1:Go:Go:tau{provided:pc1==1 : do:pc1=3}
+edge:A1:Go:Go:tau_reset_z1{provided:pc1==3&&polled_drive1==1 : do:pc1=0;}
+edge:A1:Go:Stop:tau_reset_z1{provided:pc1==3&&polled_drive1==0 : do:pc1=0;}
+edge:A1:Go:Err:err
+
+# Process A2
+process:A2
+# clock:1:y2
+#clock:1:z2
+int:1:0:1:0:polled_drive2
+int:1:0:1:0:polled_EC_A2
+int:1:0:3:0:pc2
+location:A2:init{initial:}
+location:A2:Stop
+location:A2:Wait
+location:A2:Go
+location:A2:Err{labels:err2}
+edge:A2:init:Stop:go
+edge:A2:Stop:Stop:poll_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=1}
+edge:A2:Stop:Stop:poll_not_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=1}
+edge:A2:Stop:Stop:poll_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=0}
+edge:A2:Stop:Stop:poll_not_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=0}
+edge:A2:Stop:Stop:tau{provided:pc2==1 : do:pc2=3}
+edge:A2:Stop:Stop:tau_reset_z2{provided:pc2==3&&polled_EC_A2==0 : do:pc2=0;}
+edge:A2:Stop:Wait:tau_reset_z2{provided:pc2==3&&polled_EC_A2==1 : do:pc2=0;}
+edge:A2:Wait:Wait:poll_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=1}
+edge:A2:Wait:Wait:poll_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=0}
+edge:A2:Wait:Wait:poll_not_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=1}
+edge:A2:Wait:Wait:poll_not_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=0}
+edge:A2:Wait:Wait:tau{provided:pc2==1 : do:pc2=3}
+edge:A2:Wait:Wait:tau_reset_z2{provided:pc2==3&&polled_EC_A2==0 : do:pc2=0}
+edge:A2:Wait:Wait:tau_reset_z2{provided:pc2==3&&polled_drive2==0 : do:pc2=0}
+edge:A2:Wait:Go:tau_reset_z2{provided:pc2==3&&polled_EC_A2==1&&polled_drive2==1 : do:pc2=0;}
+edge:A2:Go:Go:poll_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=1}
+edge:A2:Go:Go:poll_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=1;polled_drive2=0}
+edge:A2:Go:Go:poll_not_EC_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=1}
+edge:A2:Go:Go:poll_not_EC_not_drive2{provided:pc2==0: do:pc2=1;polled_EC_A2=0;polled_drive2=0}
+edge:A2:Go:Go:tau{provided:pc2==1 : do:pc2=3}
+edge:A2:Go:Go:tau_reset_z2{provided:pc2==3&&polled_drive2==1 : do:pc2=0;}
+edge:A2:Go:Stop:tau_reset_z2{provided:pc2==3&&polled_drive2==0 : do:pc2=0;}
+edge:A2:Go:Err:err
+
+# Process A3
+process:A3
+# clock:1:y3
+#clock:1:z3
+int:1:0:1:0:polled_drive3
+int:1:0:1:0:polled_EC_A3
+int:1:0:3:0:pc3
+location:A3:init{initial:}
+location:A3:Stop
+location:A3:Wait
+location:A3:Go
+location:A3:Err{labels:err3}
+edge:A3:init:Stop:go
+edge:A3:Stop:Stop:poll_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=1}
+edge:A3:Stop:Stop:poll_not_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=1}
+edge:A3:Stop:Stop:poll_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=0}
+edge:A3:Stop:Stop:poll_not_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=0}
+edge:A3:Stop:Stop:tau{provided:pc3==1 : do:pc3=3}
+edge:A3:Stop:Stop:tau_reset_z3{provided:pc3==3&&polled_EC_A3==0 : do:pc3=0;}
+edge:A3:Stop:Wait:tau_reset_z3{provided:pc3==3&&polled_EC_A3==1 : do:pc3=0;}
+edge:A3:Wait:Wait:poll_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=1}
+edge:A3:Wait:Wait:poll_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=0}
+edge:A3:Wait:Wait:poll_not_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=1}
+edge:A3:Wait:Wait:poll_not_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=0}
+edge:A3:Wait:Wait:tau{provided:pc3==1 : do:pc3=3}
+edge:A3:Wait:Wait:tau_reset_z3{provided:pc3==3&&polled_EC_A3==0 : do:pc3=0}
+edge:A3:Wait:Wait:tau_reset_z3{provided:pc3==3&&polled_drive3==0 : do:pc3=0}
+edge:A3:Wait:Go:tau_reset_z3{provided:pc3==3&&polled_EC_A3==1&&polled_drive3==1 : do:pc3=0;}
+edge:A3:Go:Go:poll_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=1}
+edge:A3:Go:Go:poll_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=1;polled_drive3=0}
+edge:A3:Go:Go:poll_not_EC_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=1}
+edge:A3:Go:Go:poll_not_EC_not_drive3{provided:pc3==0: do:pc3=1;polled_EC_A3=0;polled_drive3=0}
+edge:A3:Go:Go:tau{provided:pc3==1 : do:pc3=3}
+edge:A3:Go:Go:tau_reset_z3{provided:pc3==3&&polled_drive3==1 : do:pc3=0;}
+edge:A3:Go:Stop:tau_reset_z3{provided:pc3==3&&polled_drive3==0 : do:pc3=0;}
+edge:A3:Go:Err:err
+
+# Process Ctrl
+process:Ctrl
+#clock:1:y
+#clock:1:z
+int:1:0:3:0:pc
+int:1:0:1:0:polled_EC1
+int:1:0:1:0:polled_EC2
+int:1:0:1:0:polled_EC3
+location:Ctrl:init{initial:}
+location:Ctrl:Ready1
+location:Ctrl:Drive1
+location:Ctrl:Fin1
+location:Ctrl:Ready2
+location:Ctrl:Drive2
+location:Ctrl:Fin2
+location:Ctrl:Ready3
+location:Ctrl:Drive3
+location:Ctrl:Fin3
+edge:Ctrl:init:Ready3:go
+edge:Ctrl:Ready1:Ready1:poll_EC1{provided:pc==0: do:pc=1;polled_EC1=1}
+edge:Ctrl:Ready1:Ready1:poll_not_EC1{provided:pc==0: do:pc=1;polled_EC1=0}
+edge:Ctrl:Ready1:Ready1:poll_EC2{provided:pc==0: do:pc=1;polled_EC2=1}
+edge:Ctrl:Ready1:Ready1:poll_not_EC2{provided:pc==0: do:pc=1;polled_EC2=0}
+edge:Ctrl:Ready1:Ready1:tau_reset_z{provided:pc==3&&polled_EC1==0 : do:pc=0}
+edge:Ctrl:Ready1:Ready1:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Ready1:Ready2:tau_reset_z{provided:pc==3&&polled_EC2==1&&polled_EC1==0 : do:pc=0}
+edge:Ctrl:Ready1:Drive1:set_drive1{provided:pc==3&&polled_EC1==1 : do:pc=0}
+edge:Ctrl:Drive1:Drive1:poll_EC1{provided:pc==0: do:pc=1;polled_EC1=1}
+edge:Ctrl:Drive1:Drive1:poll_not_EC1{provided:pc==0: do:pc=1;polled_EC1=0}
+edge:Ctrl:Drive1:Drive1:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Drive1:Drive1:tau_reset_z{provided:pc==3&&polled_EC1==1 : do:pc=0}
+edge:Ctrl:Drive1:Fin1:set_not_drive1{provided:pc==3&&polled_EC1==0 : do:pc=0}
+edge:Ctrl:Fin1:Fin1:poll_EC1{provided:pc==0: do:pc=1;polled_EC1=1}
+edge:Ctrl:Fin1:Fin1:poll_not_EC1{provided:pc==0: do:pc=1;polled_EC1=0}
+edge:Ctrl:Fin1:Fin1:tau_yleq2{provided:pc==1 : do:pc=2}
+edge:Ctrl:Fin1:Fin1:tau_reset_z{provided:pc==2 : do:pc=0}
+edge:Ctrl:Fin1:Fin1:tau_ygt2{provided:pc==1 : do:pc=3}
+edge:Ctrl:Fin1:Fin1:tau_reset_z{provided:pc==3&&polled_EC1==0 : do:pc=0}
+edge:Ctrl:Fin1:Ready2:tau_reset_yz{provided:pc==3&&polled_EC1==1 : do:pc=0}
+edge:Ctrl:Ready2:Ready2:poll_EC2{provided:pc==0: do:pc=1;polled_EC2=1}
+edge:Ctrl:Ready2:Ready2:poll_not_EC2{provided:pc==0: do:pc=1;polled_EC2=0}
+edge:Ctrl:Ready2:Ready2:poll_EC3{provided:pc==0: do:pc=1;polled_EC3=1}
+edge:Ctrl:Ready2:Ready2:poll_not_EC3{provided:pc==0: do:pc=1;polled_EC3=0}
+edge:Ctrl:Ready2:Ready2:tau_reset_z{provided:pc==3&&polled_EC2==0 : do:pc=0}
+edge:Ctrl:Ready2:Ready2:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Ready2:Ready3:tau_reset_z{provided:pc==3&&polled_EC3==1&&polled_EC2==0 : do:pc=0}
+edge:Ctrl:Ready2:Drive2:set_drive2{provided:pc==3&&polled_EC2==1 : do:pc=0}
+edge:Ctrl:Drive2:Drive2:poll_EC2{provided:pc==0: do:pc=1;polled_EC2=1}
+edge:Ctrl:Drive2:Drive2:poll_not_EC2{provided:pc==0: do:pc=1;polled_EC2=0}
+edge:Ctrl:Drive2:Drive2:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Drive2:Drive2:tau_reset_z{provided:pc==3&&polled_EC2==1 : do:pc=0}
+edge:Ctrl:Drive2:Fin2:set_not_drive2{provided:pc==3&&polled_EC2==0 : do:pc=0}
+edge:Ctrl:Fin2:Fin2:poll_EC2{provided:pc==0: do:pc=1;polled_EC2=1}
+edge:Ctrl:Fin2:Fin2:poll_not_EC2{provided:pc==0: do:pc=1;polled_EC2=0}
+edge:Ctrl:Fin2:Fin2:tau_yleq2{provided:pc==1 : do:pc=2}
+edge:Ctrl:Fin2:Fin2:tau_reset_z{provided:pc==2 : do:pc=0}
+edge:Ctrl:Fin2:Fin2:tau_ygt2{provided:pc==1 : do:pc=3}
+edge:Ctrl:Fin2:Fin2:tau_reset_z{provided:pc==3&&polled_EC2==0 : do:pc=0}
+edge:Ctrl:Fin2:Ready3:tau_reset_yz{provided:pc==3&&polled_EC2==1 : do:pc=0}
+edge:Ctrl:Ready3:Ready3:poll_EC3{provided:pc==0: do:pc=1;polled_EC3=1}
+edge:Ctrl:Ready3:Ready3:poll_not_EC3{provided:pc==0: do:pc=1;polled_EC3=0}
+edge:Ctrl:Ready3:Ready3:poll_EC1{provided:pc==0: do:pc=1;polled_EC1=1}
+edge:Ctrl:Ready3:Ready3:poll_not_EC1{provided:pc==0: do:pc=1;polled_EC1=0}
+edge:Ctrl:Ready3:Ready3:tau_reset_z{provided:pc==3&&polled_EC3==0 : do:pc=0}
+edge:Ctrl:Ready3:Ready3:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Ready3:Ready1:tau_reset_z{provided:pc==3&&polled_EC1==1&&polled_EC3==0 : do:pc=0}
+edge:Ctrl:Ready3:Drive3:set_drive3{provided:pc==3&&polled_EC3==1 : do:pc=0}
+edge:Ctrl:Drive3:Drive3:poll_EC3{provided:pc==0: do:pc=1;polled_EC3=1}
+edge:Ctrl:Drive3:Drive3:poll_not_EC3{provided:pc==0: do:pc=1;polled_EC3=0}
+edge:Ctrl:Drive3:Drive3:tau{provided:pc==1 : do:pc=3}
+edge:Ctrl:Drive3:Drive3:tau_reset_z{provided:pc==3&&polled_EC3==1 : do:pc=0}
+edge:Ctrl:Drive3:Fin3:set_not_drive3{provided:pc==3&&polled_EC3==0 : do:pc=0}
+edge:Ctrl:Fin3:Fin3:poll_EC3{provided:pc==0: do:pc=1;polled_EC3=1}
+edge:Ctrl:Fin3:Fin3:poll_not_EC3{provided:pc==0: do:pc=1;polled_EC3=0}
+edge:Ctrl:Fin3:Fin3:tau_yleq2{provided:pc==1 : do:pc=2}
+edge:Ctrl:Fin3:Fin3:tau_reset_z{provided:pc==2 : do:pc=0}
+edge:Ctrl:Fin3:Fin3:tau_ygt2{provided:pc==1 : do:pc=3}
+edge:Ctrl:Fin3:Fin3:tau_reset_z{provided:pc==3&&polled_EC3==0 : do:pc=0}
+edge:Ctrl:Fin3:Ready1:tau_reset_yz{provided:pc==3&&polled_EC3==1 : do:pc=0}
+
+sync:Ctrl@poll_EC1:InOut@poll_EC1
+sync:Ctrl@poll_not_EC1:InOut@poll_not_EC1
+sync:Ctrl@set_drive1:InOut@set_drive1
+sync:Ctrl@set_not_drive1:InOut@set_not_drive1
+sync:A1@poll_EC_drive1:InOut@poll_EC_drive1
+sync:A1@poll_EC_not_drive1:InOut@poll_EC_not_drive1
+sync:A1@poll_not_EC_drive1:InOut@poll_not_EC_drive1
+sync:A1@poll_not_EC_not_drive1:InOut@poll_not_EC_not_drive1
+sync:Ctrl@poll_EC2:InOut@poll_EC2
+sync:Ctrl@poll_not_EC2:InOut@poll_not_EC2
+sync:Ctrl@set_drive2:InOut@set_drive2
+sync:Ctrl@set_not_drive2:InOut@set_not_drive2
+sync:A2@poll_EC_drive2:InOut@poll_EC_drive2
+sync:A2@poll_EC_not_drive2:InOut@poll_EC_not_drive2
+sync:A2@poll_not_EC_drive2:InOut@poll_not_EC_drive2
+sync:A2@poll_not_EC_not_drive2:InOut@poll_not_EC_not_drive2
+sync:Ctrl@poll_EC3:InOut@poll_EC3
+sync:Ctrl@poll_not_EC3:InOut@poll_not_EC3
+sync:Ctrl@set_drive3:InOut@set_drive3
+sync:Ctrl@set_not_drive3:InOut@set_not_drive3
+sync:A3@poll_EC_drive3:InOut@poll_EC_drive3
+sync:A3@poll_EC_not_drive3:InOut@poll_EC_not_drive3
+sync:A3@poll_not_EC_drive3:InOut@poll_not_EC_drive3
+sync:A3@poll_not_EC_not_drive3:InOut@poll_not_EC_not_drive3
+sync:InOut@go:Ctrl@go:A1@go:A2@go:A3@go
+sync:A1@err:A2@err

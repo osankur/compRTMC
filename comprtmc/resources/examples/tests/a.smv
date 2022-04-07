@@ -1,0 +1,31 @@
+@TIME_DOMAIN continuous
+MODULE main
+IVAR
+	a : boolean;
+VAR
+	state : {q0, q1, q2};
+	bit : boolean;
+	x : clock;
+	y : clock;
+ASSIGN
+	init(state) := q0;
+	init(bit) := FALSE;
+	next(state) := case
+		state = q0 & a : q1;
+		state = q1 & a : q2;
+		state = q0 & !a : q0;
+		state = q1 & !a : q0;
+		TRUE : state;
+	esac;
+	next(x) := case
+		state = q1 & a : 0;
+		TRUE : x;
+	esac;
+	next(bit) := case
+		state = q2 & x >= 5 & time <= 10 : {TRUE};
+		TRUE : bit;
+	esac;
+DEFINE
+	err := bit;
+
+INVARSPEC !err 

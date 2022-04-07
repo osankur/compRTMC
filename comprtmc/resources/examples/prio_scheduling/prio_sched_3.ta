@@ -1,0 +1,60 @@
+#
+# Scheduling of tasks with priorities. 3 tasks are scheduled.
+# Task 1 has priority over 2 which has prioriy over 3.
+#
+system:multi3
+
+event:ready0
+event:ready1
+event:ready2
+event:sched0
+event:sched1
+event:sched2
+event:idle
+event:miss
+event:release
+event:tau
+
+clock:3:y
+clock:1:x
+# int:3:0:1:0:r # r[i] means that proci is ready for executing a task
+
+# x[i] is the time elapsed since the end of the latest period of proc i
+# when executing a task, y[i] is the time elapsed
+process:Sched
+location:Sched:wait{initial::urgent:}
+location:Sched:p0{invariant:x <= 5}
+location:Sched:p1{invariant:x <= 4}
+location:Sched:p2{invariant:x <= 5}
+location:Sched:idle{invariant: x <= 5}
+
+edge:Sched:wait:p0:sched0{do : x = 0}
+edge:Sched:p0:wait:release{provided: x >= 3 && x <= 5} # C0 = [3,5]
+
+edge:Sched:wait:p1:sched1{do : x = 0}
+edge:Sched:p1:wait:release{provided: x >= 2 && x <= 4} # C1 = [2,4]
+
+edge:Sched:wait:p2:sched2{do : x = 0}
+edge:Sched:p2:wait:release{provided: x >= 2 && x <= 5} # C2 = [2,5]
+
+edge:Sched:wait:idle:idle{do : x = 0}
+edge:Sched:idle:wait:idle{provided: x <= 5}
+
+process:Proc0
+location:Proc0:q{initial:}
+location:Proc0:sink0{labels:p0miss}
+edge:Proc0:q:q:ready0{provided: y[0] >= 15 : do : y[0] = 0}
+edge:Proc0:q:sink0:miss{provided: y[0] >= 20}
+
+process:Proc1
+location:Proc1:q{initial:}
+location:Proc1:sink1{labels:p1miss}
+edge:Proc1:q:q:ready1{provided: y[1] >= 10 : do : y[1] = 0}
+edge:Proc1:q:sink1:miss{provided: y[1] > 10}
+
+
+process:Proc2
+location:Proc2:q{initial:}
+location:Proc2:sink2{labels:p2miss}
+edge:Proc2:q:q:ready2{provided: y[2] >= 25 : do : y[2] = 0}
+edge:Proc2:q:sink2:miss{provided: y[2] > 40} # 25 leads to an error

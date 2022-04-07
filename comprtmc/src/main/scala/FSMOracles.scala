@@ -296,7 +296,7 @@ class TCheckerIntersectionOracle(
   }
   override def checkIntersection(hypothesis: DFA[?, String]): 
     Option[FSMOracles.CounterExample] = {
-      val productTA = taMonitorMaker.makeIntersectionMonitor(hypothesis, false)
+      val productTA = taMonitorMaker.makeDFAIntersecter(hypothesis, false)
       System.out.println("Checking intersection: ")
       taMonitorMaker.checkEmpty(productTA, taMonitorMaker.productAcceptLabel, true) match {
         case None => 

@@ -207,7 +207,7 @@ class TCheckerMonitorMaker (
     * intersection is non-empty.
     * @pre This assumes that all states of the TA are accepting
     */
-  def makeWordMonitor(word: Buffer[String]): String = {
+  def makeWordIntersecter(word: Buffer[String]): String = {
     // Build product automaton
     val strB = StringBuilder()
     strB.append(ta.core)
@@ -240,7 +240,7 @@ class TCheckerMonitorMaker (
     * 
     * @arg complement whether given DFA should be complemented.
     */
-  def makeIntersectionMonitor(hypothesis: DFA[_, String], complement : Boolean): String = {
+  def makeDFAIntersecter(hypothesis: DFA[_, String], complement : Boolean): String = {
     val strStates = StringBuilder()
     val strTransitions = StringBuilder()
     // val alphabetSet = alphabet.asScala.toSet
@@ -431,7 +431,7 @@ class TCheckerMembershipOracle(
   ): Option[String] = {
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     this._nbQueries += 1
-    val monitorDescription = taMonitorMaker.makeWordMonitor(trace)
+    val monitorDescription = taMonitorMaker.makeWordIntersecter(trace)
     val verdict = taMonitorMaker.checkEmpty(monitorDescription, taMonitorMaker.monitorAcceptLabel, generateWitness)
     System.out.print(BLUE + "Membership query: " + trace + RESET)
     verdict match {
@@ -468,7 +468,7 @@ class TCheckerInclusionOracle(
     val productFile =
       Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
     val pw = PrintWriter(productFile)
-    pw.write(taMonitorMaker.makeIntersectionMonitor(hypothesis, true))
+    pw.write(taMonitorMaker.makeDFAIntersecter(hypothesis, true))
     pw.close()
 
     var certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
