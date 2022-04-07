@@ -1,0 +1,38 @@
+system:sts3_ta
+
+
+# _rt_alphabet
+event:set_drive
+event:cpoll
+event:tau_reset_z
+event:tau_yleq2
+event:tau_ygt2
+event:tau_reset_yz
+event:poll1
+event:tau_reset_z1
+event:poll2
+event:tau_reset_z2
+event:poll3
+event:tau_reset_z3
+
+process:rtconstraints
+clock:1:x
+clock:1:y
+clock:1:z
+clock:1:z1
+clock:1:z2
+clock:1:z3
+location:rtconstraints:init{initial::invariant: z < 1 && z1 < 1&& z2 < 1&& z3 < 1}
+edge:rtconstraints:init:init:go{provided:x==0}
+edge:rtconstraints:init:init:set_drive{do:x=0;y=0;z=0}
+edge:rtconstraints:init:init:cpoll{provided:x>0 && z>0}
+edge:rtconstraints:init:init:tau_reset_yz{do:y=0;z=0}
+edge:rtconstraints:init:init:tau_yleq2{provided:y<=2}
+edge:rtconstraints:init:init:tau_ygt2{provided:y>2}
+edge:rtconstraints:init:init:tau_reset_z{do:z=0}
+edge:rtconstraints:init:init:poll1{provided:x>0 && z1 > 0}
+edge:rtconstraints:init:init:tau_reset_z1{do:z1=0}
+edge:rtconstraints:init:init:poll2{provided:x>0 && z2 > 0}
+edge:rtconstraints:init:init:tau_reset_z2{do:z2=0}
+edge:rtconstraints:init:init:poll3{provided:x>0 && z3 > 0}
+edge:rtconstraints:init:init:tau_reset_z3{do:z3=0}
