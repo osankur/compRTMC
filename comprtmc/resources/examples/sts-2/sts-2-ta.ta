@@ -1,3 +1,4 @@
+system:sts2ta
 event:go
 event:set_drive
 event:poll1

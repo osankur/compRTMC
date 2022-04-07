@@ -6,12 +6,14 @@ object Main extends App{
     var go = ("","");
     val poll1 = ArrayBuffer[(String,String)]();
     val poll2 = ArrayBuffer[(String,String)]();
+    val poll3 = ArrayBuffer[(String,String)]();
     val cpoll = ArrayBuffer[(String,String)]();
     val tau_reset_ygt2 = ArrayBuffer[(String,String)]();
     val tau_reset_yleq2 = ArrayBuffer[(String,String)]();
     val tau_reset_z = ArrayBuffer[(String,String)]();
     val tau_reset_z1 = ArrayBuffer[(String,String)]();
     val tau_reset_z2 = ArrayBuffer[(String,String)]();
+    val tau_reset_z3 = ArrayBuffer[(String,String)]();
     val tau_reset_yz = ArrayBuffer[(String,String)]();
     val set_drive = ArrayBuffer[(String,String)]();
     val err = ArrayBuffer[(String,String)]()
@@ -30,10 +32,14 @@ object Main extends App{
                     poll1.append((no,g))
                 } else if (label.contains("A2_poll")){
                     poll2.append((no,g))
+                } else if (label.contains("A3_poll")){
+                    poll3.append((no,g))
                 } else if (label.contains("tau_reset_z1")){
                     tau_reset_z1.append((no,g))
                 } else if (label.contains("tau_reset_z2")){
                     tau_reset_z2.append((no,g))
+                } else if (label.contains("tau_reset_z3")){
+                    tau_reset_z3.append((no,g))
                 } else if (label.contains("Ctrl_tau_reset_z")){
                     tau_reset_z.append((no,g));
                 } else if (label.contains("Ctrl_tau_reset_yz")){
@@ -52,15 +58,21 @@ object Main extends App{
     }
     //System.out.println("\t_go_ := (_edge_ = %s);".format(go._1,go._2))
     val printSync = { (pair : (String,String)) => "(_edge_ = " + pair._1 + "& " + pair._2 + ") "}
-    System.out.println("\t_rt_pollone := %s;\n".format(poll1.map(printSync).mkString(" | ")))
-    System.out.println("\t_rt_polltwo := %s;".format(poll2.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_poll1 := %s;\n".format(poll1.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_poll2 := %s;".format(poll2.map(printSync).mkString(" | ")))
+    if (poll3.length > 0){
+        System.out.println("\t_rt_poll3 := %s;".format(poll3.map(printSync).mkString(" | ")))
+    }
     System.out.println("\t_rt_cpoll := %s;".format(cpoll.map(printSync).mkString(" | ")))
-    System.out.println("\t_rt_tau_ygttwo := %s;".format(tau_reset_ygt2.map(printSync).mkString(" | ")))
-    System.out.println("\t_rt_tau_yleqtwo := %s;".format(tau_reset_yleq2.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_tau_ygt2 := %s;".format(tau_reset_ygt2.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_tau_yleq2 := %s;".format(tau_reset_yleq2.map(printSync).mkString(" | ")))
     System.out.println("\t_rt_tau_reset_yz := %s;".format(tau_reset_yz.map(printSync).mkString(" | ")))
     System.out.println("\t_rt_tau_reset_z := %s;".format(tau_reset_z.map(printSync).mkString(" | ")))
-    System.out.println("\t_rt_tau_reset_zone := %s;".format(tau_reset_z1.map(printSync).mkString(" | ")))
-    System.out.println("\t_rt_tau_reset_ztwo := %s;".format(tau_reset_z2.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_tau_reset_z1 := %s;".format(tau_reset_z1.map(printSync).mkString(" | ")))
+    System.out.println("\t_rt_tau_reset_z2 := %s;".format(tau_reset_z2.map(printSync).mkString(" | ")))
+    if (tau_reset_z2.length > 0){
+        System.out.println("\t_rt_tau_reset_z3 := %s;".format(tau_reset_z3.map(printSync).mkString(" | ")))
+    }
     System.out.println("\t_rt_set_drive := %s;".format(set_drive.map(printSync).mkString(" | ")))
     System.out.println("\tto_err := %s;".format(err.map(printSync).mkString(" | ")))
 }

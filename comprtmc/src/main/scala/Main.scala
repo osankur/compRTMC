@@ -31,19 +31,19 @@ object Main {
           .valueName("<ta>")
           .action((x, c) => c.copy(taFile = x))
           .text("ta is the timed automaton to be processed"),
-        opt[File]("smv")
+        opt[File]("fsm")
           .required()
-          .valueName("<smv>")
+          .valueName("<fsm>")
           .action((x, c) => 
-            val format = 
               if (x.toString.contains(".smv")){
-                FSM.SMV
-              }else {
-                throw Exception("The FSM format must be .smv")
-              }                
-            c.copy(fsmFile = x, fsmFormat = format)
+                c.copy(fsmFile = x, fsmFormat = FSM.SMV)
+              }else if (x.toString.contains(".ta")){
+                c.copy(fsmFile = x, fsmFormat = FSM.TCheckerTA, fsmModelChecker=FSM.TCheckerModelChecker)
+              } else {
+                throw Exception("Unknown fsm format")
+              }
             )
-          .text("smv is the finite state model in smv format"),
+          .text("fsm is the finite state model in smv or ta format"),
         opt[Boolean]("verbose")
           .action((_, c) => c.copy(verbose = true))
           .valueName("(true|false)"),
@@ -55,6 +55,7 @@ object Main {
             mc match{
               case "nuXmv" => c.copy(fsmModelChecker = FSM.NuXmv)
               case "NuSMV" => c.copy(fsmModelChecker = FSM.NuSMV, fsmAlgorithm = FSM.BDDAlgorithm)
+              case "tck-reach" => c.copy(fsmModelChecker = FSM.TCheckerModelChecker)
               case _ => throw Exception("Unknown model checker")
             }
           })
@@ -82,14 +83,22 @@ object Main {
           logger.error(("%s File " + config.fsmFile.getAbsolutePath() + " does not exist%s").format(RED,RESET))
           return
         }
-        logger.info("SMV File: " + config.fsmFile)
+        logger.info("FSM File: " + config.fsmFile)
         logger.info("TA File: " + config.taFile)
         if (config.fsmAlgorithm == FSM.IC3Algorithm && config.fsmModelChecker != FSM.NuXmv){
           throw Exception("IC3 is only available with nuXmv")
         }
+        if (config.fsmFormat == FSM.TCheckerTA && config.fsmModelChecker != FSM.TCheckerModelChecker){
+          throw Exception("TChecker model checker must be used with FSM files with extension .ta")
+        }
         "./remove_temp.sh".!
-        val fsmIntersectOracle = FSMOracles.Factory.getSMVOracle(config.fsmFile)
+        val fsmIntersectOracle : FSMIntersectionOracle = config.fsmFormat match{
+          case FSM.SMV => FSMOracles.Factory.getSMVOracle(config.fsmFile)
+          case FSM.TCheckerTA => FSMOracles.Factory.getTCheckerOracle(config.fsmFile)
+          case _ => throw Exception("FSM Format not supported")
+        }
         logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
+        
         val (taMemOracle, taIncOracle) = TAOracles.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
         val alg = CompSafetyAlgorithm(fsmIntersectOracle, taMemOracle, taIncOracle)
         alg.run()

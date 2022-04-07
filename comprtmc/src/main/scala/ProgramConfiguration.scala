@@ -9,6 +9,7 @@ object FSM {
     sealed trait FSMFormat
     case object SMV extends FSMFormat
     case object Murphi extends FSMFormat
+    case object TCheckerTA extends FSMFormat
 
     sealed trait ModelChecker
     case object NuSMV extends ModelChecker {
@@ -17,6 +18,9 @@ object FSM {
     case object NuXmv extends ModelChecker {
     override def toString: String = "nuXmv"
     }
+    case object TCheckerModelChecker extends ModelChecker {
+    override def toString: String = "tck-reach"
+    }
 
     case object PReach extends ModelChecker {
     override def toString: String = "preach"
@@ -24,6 +28,7 @@ object FSM {
     sealed trait ModelCheckingAlgorithm
     case object BDDAlgorithm extends ModelCheckingAlgorithm
     case object IC3Algorithm extends ModelCheckingAlgorithm
+    case object DefaultAlgorithm extends ModelCheckingAlgorithm
 }
 
 object ProgramConfiguration {
@@ -32,7 +37,7 @@ object ProgramConfiguration {
         taFile: File = new File("."),
         fsmFormat : FSM.FSMFormat = FSM.SMV,
         fsmModelChecker : FSM.ModelChecker = FSM.NuXmv,
-        fsmAlgorithm : FSM.ModelCheckingAlgorithm = FSM.IC3Algorithm,
+        fsmAlgorithm : FSM.ModelCheckingAlgorithm = FSM.DefaultAlgorithm,
         keepTmpFiles: Boolean = false,
         verbose : Boolean = false,
         tmpDirName : String = ".crtmc/"

@@ -23,11 +23,20 @@ import java.io.File
 import java.io.PrintWriter
 import java.nio.file._
 
+
 abstract class FSMIntersectionOracle {
+  /** Synchronization alphabet between FSM and TA
+   */
   def alphabet: List[String]
 
+  /** Check the intersection of the given dfa with the FSM.
+   * 
+   *  @return None if the intersection is empty, and CounterExample(cexStr, trace) object
+   *  where cexStr is the textual description as output by the model checker, and
+   *  trace is a word over `alphabet` that is in the intersection of the two languages.
+   */
   def checkIntersection(
-      otherModule: DFA[_, String]
+      dfa: DFA[_, String]
   ): Option[FSMOracles.CounterExample]
 
 }
@@ -201,7 +210,7 @@ class SMVIntersectionOracle(
       ProgramConfiguration.globalConfiguration.fsmAlgorithm match {
         case FSM.BDDAlgorithm =>
           "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
-        case FSM.IC3Algorithm =>
+        case _ =>
           "echo \"read_model -i %s; go_msat; check_invar_ic3; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
       }
     System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
@@ -275,6 +284,31 @@ class SMVIntersectionOracle(
     }
   }
 }
+
+
+class TCheckerIntersectionOracle(
+    fsm: TCheckerTA
+) extends FSMIntersectionOracle {
+  private val taMonitorMaker = TCheckerMonitorMaker(fsm, Alphabets.fromList(this.alphabet), Some("error"))
+
+  override def alphabet : List[String] = {
+    fsm.externEvents
+  }
+  override def checkIntersection(hypothesis: DFA[?, String]): 
+    Option[FSMOracles.CounterExample] = {
+      val productTA = taMonitorMaker.makeIntersectionMonitor(hypothesis, false)
+      System.out.println("Checking intersection: ")
+      taMonitorMaker.checkEmpty(productTA, taMonitorMaker.productAcceptLabel, true) match {
+        case None => 
+          None
+        case Some(cexStr) => 
+          val trace = fsm.getTraceFromCexDescription(cexStr.split("\n").toList).filter(alphabet.contains(_))
+          Some(FSMOracles.CounterExample(cexStr,trace))
+      }
+    }
+}
+
+
 object FSMOracles {
   case class CounterExample(cexDescription: String, cexTrace: List[String])
       extends Exception
@@ -285,5 +319,11 @@ object FSMOracles {
     ): FSMIntersectionOracle = {
       SMVIntersectionOracle(SMV(smvFile))
     }
+    def getTCheckerOracle(
+        taFile: File,
+    ): FSMIntersectionOracle = {
+      TCheckerIntersectionOracle(TCheckerTA(taFile))
+    }
+
   }
 }
