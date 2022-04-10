@@ -134,6 +134,6 @@ class DFATest extends munit.FunSuite {
 
 class SMVTest extends munit.FunSuite {
   test("smv"){
-    val inp = SMV(File("resources/examples/genbuf2b3unrealy.smv"))
+    val inp = SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
   }
 }

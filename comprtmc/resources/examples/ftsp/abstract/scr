@@ -1,0 +1,5 @@
+read_model -i /tmp/ftsp-abs-3-timed.tsmv
+go_time
+timed_check_invar
+quit
+

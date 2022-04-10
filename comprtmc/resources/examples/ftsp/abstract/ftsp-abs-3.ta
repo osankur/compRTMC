@@ -1,0 +1,27 @@
+system:ftsp_abs_3
+
+event:wakeup1
+event:wakeup2
+event:wakeup3
+event:tau
+clock:3:x
+
+process:Process1
+location:Process1:q0{initial::invariant:x[0]<=11}
+location:Process1:q1{invariant:x[0]<=11}
+location:Process1:mark{labels:mark}
+edge:Process1:q0:q1:tau{do : x[0] = 0}
+edge:Process1:q1:q1:wakeup1{provided:x[0] >= 9 && x[0] <= 11: do : x[0] = 0}
+
+process:Process2
+location:Process2:q0{initial::invariant:x[1]<=11}
+location:Process2:q1{invariant:x[1]<=11}
+edge:Process2:q0:q1:tau{do : x[1] = 0}
+edge:Process2:q1:q1:wakeup2{provided:x[1] >= 9 && x[1] <= 11 : do : x[1] = 0}
+
+process:Process3
+location:Process3:q0{initial::invariant:x[2]<=11}
+location:Process3:q1{invariant:x[2]<=11}
+edge:Process3:q0:q1:tau{do : x[2] = 0}
+edge:Process3:q1:q1:wakeup3{provided:x[2] >= 9 && x[2] <= 11 : do : x[2] = 0}
+

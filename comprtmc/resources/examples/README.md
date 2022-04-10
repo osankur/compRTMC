@@ -54,7 +54,37 @@ A single circuit model determines the joint behavior of all task arrivals.
 - a: bs16y.aag
 - b: moving_obstacle_8x8_1glitches.aag
 
-Currently the difficult part is the TA learning 
+Currently the difficult part is the TA learning which takes a lot of time while FSM model checking is very fast.
+The timed model checker of nuXmv is currently much faster.
 
 # STS
 See `sts/README.md`
+
+# Mutex (TODO)
+From TChecker benchmarks database
+
+# FTSP
+## Concrete
+The FTSP protocol with a line topology with given number of processes
+in which each process wakes up within a period that varies in [9,11].
+The specification is that after a given number of steps, all processes agree that process 1 is the leader.
+
+- `concrete/ftsp-line-X.xml` Uppaal model
+- `concrete/ftsp-line-X.tsmv` nuXmv timed automaton model
+- `concrete/ftsp-line-X.smv` FSM model for compositional alg.
+- `concerete/ftsp-line-X.ta` TA model for compositional alg.
+  
+The script `concrete/ftsp-concrete.py` can be used to generate the above smv and tsmv files.
+
+## Abstract
+Abstract FTSP protocol in an arbitrary network in which a particular line is modeled concretely.
+The models is inspired from the incremental model checking method of Sankur, Talpin TACAS 2017.
+In this abstraction, the first n-1 processes are initialized in states where they 
+are already stabilized, and the n-th process is initialized in an arbitrary state.
+
+- `concrete/ftsp-abs-X.xml` Uppaal model
+- `concrete/ftsp-abs-X.tsmv` nuXmv timed automaton model
+- `concrete/ftsp-abs-X.smv` FSM model for compositional alg.
+- `concerete/ftsp-abs-X.ta` TA model for compositional alg.
+
+# Pick one: Fischer or CSMA/CD (TODO)

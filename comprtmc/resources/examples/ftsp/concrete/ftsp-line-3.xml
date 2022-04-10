@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>const int N = 3;        // Number of processes
+const int MAX_HB = 8;
+const int MAX_SEQ = 10;
+const int MAX_NUMENTRIES = 4;
+const int TH_HB = 3;
+const int MAX_COUNT = 30;
+
+int[0,MAX_COUNT] counter = 0;
+typedef int[0,N+1] pid_t; // Processes are numbered 1...N; 0 and N+1 are dummy processes
+typedef int[1,N] real_pid_t; 
+chan wakeup[pid_t];
+chan receive[pid_t];
+
+int[0,N+1] msg_root;
+int[0,MAX_SEQ] msg_seq;
+
+int[0,MAX_SEQ] myseq[real_pid_t];</declaration>
+	<template>
+		<name x="5" y="5">Timer</name>
+		<parameter>real_pid_t i</parameter>
+		<declaration>// Place local declarations here.
+clock x;</declaration>
+		<location id="id0" x="0" y="0">
+			<name x="-10" y="-34">q</name>
+			<label kind="invariant" x="-10" y="17">x&lt;=11</label>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-85" y="-110">x&gt;=9 &amp;&amp; x&lt;= 11</label>
+			<label kind="synchronisation" x="-51" y="-93">wakeup[i]!</label>
+			<label kind="assignment" x="-41" y="-67">x=0</label>
+			<nail x="-59" y="-59"/>
+			<nail x="34" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Process</name>
+		<parameter>real_pid_t id</parameter>
+		<declaration>int[0,MAX_HB] hb = 0;
+int[0,N+1] myroot = N+1;
+int[0,MAX_NUMENTRIES] numentries = 0;
+</declaration>
+		<location id="id1" x="-136" y="-8">
+			<name x="-153" y="8">idle</name>
+		</location>
+		<location id="id2" x="459" y="-8">
+			<name x="449" y="-42">send_left</name>
+			<committed/>
+		</location>
+		<location id="id3" x="255" y="161">
+			<name x="230" y="178">send_right</name>
+			<committed/>
+		</location>
+		<location id="id4" x="-42" y="161">
+			<name x="-52" y="127">normalize</name>
+			<committed/>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-110" y="119">myseq[1] == 0 || myseq[2] == 0 || myseq[3] == 0</label>
+			<nail x="-128" y="128"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-680" y="238">!((msg_root &gt; myroot) | 
+(myroot == id &amp;&amp; hb &lt; TH_HB) | 
+(msg_root == myroot &amp;&amp; msg_seq &lt;= myseq[id]))</label>
+			<label kind="synchronisation" x="-425" y="229">receive[id]?</label>
+			<label kind="assignment" x="-705" y="306">hb = (msg_root &lt; id)? 0 : hb,
+myroot = (msg_root &lt; myroot)? msg_root : myroot,
+numentries = (numentries + 1 &lt;= MAX_NUMENTRIES)? numentries + 1 : MAX_NUMENTRIES,
+myseq[id] = msg_seq</label>
+			<nail x="-340" y="195"/>
+			<nail x="-340" y="323"/>
+			<nail x="-170" y="323"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-127" y="51">myseq[1] &gt;= 1 &amp;&amp; myseq[2] &gt;= 1 &amp;&amp; myseq[3] &gt;=1</label>
+			<label kind="assignment" x="-118" y="76">myseq[1] = myseq[1] - 1,
+myseq[2] = myseq[2] - 1,
+myseq[3] = myseq[3] - 1</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="51" y="178">receive[id+1]!</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-705" y="17">((msg_root &gt; myroot) | 
+(myroot == id &amp;&amp; hb &lt; TH_HB) | 
+(msg_root == myroot &amp;&amp; msg_seq &lt;= myseq[id]))</label>
+			<label kind="synchronisation" x="-459" y="0">receive[id]?</label>
+			<nail x="-374" y="-8"/>
+			<nail x="-365" y="119"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="323" y="119">receive[id-1]!</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-510" y="-263">myroot != id &amp;&amp; numentries &lt; MAX_NUMENTRIES</label>
+			<label kind="synchronisation" x="-374" y="-187">wakeup[id]?</label>
+			<label kind="assignment" x="-484" y="-238">hb=(hb+1&lt;= MAX_HB)? hb+1 : MAX_HB, 
+myroot = (hb &gt;= MAX_HB)? id : myroot,
+counter = (id == 1 &amp;&amp; counter &lt; MAX_COUNT)? counter+1 : counter</label>
+			<nail x="-340" y="-119"/>
+			<nail x="-136" y="-255"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="68" y="0">myroot == id || numentries &gt;= MAX_NUMENTRIES</label>
+			<label kind="synchronisation" x="-34" y="0">wakeup[id]?</label>
+			<label kind="assignment" x="-68" y="-102">hb=(hb+1&lt;= MAX_HB)? hb+1 : MAX_HB, 
+myroot = (hb &gt;= MAX_HB)? id : myroot, 
+myseq[id] = (myroot == id)? ((myseq[id]+1 &lt;= MAX_SEQ)? myseq[id]+1 : MAX_SEQ): myseq[id], 
+msg_root = myroot, 
+msg_seq = myseq[id],
+counter = (id == 1 &amp;&amp; counter &lt; MAX_COUNT)? counter+1 : counter</label>
+		</transition>
+	</template>
+	<template>
+		<name>Dummy</name>
+		<location id="id5" x="0" y="0">
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="0" y="76">receive[N+1]?</label>
+			<nail x="68" y="59"/>
+			<nail x="0" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-51" y="-136">receive[0]?</label>
+			<nail x="-68" y="-102"/>
+			<nail x="17" y="-110"/>
+		</transition>
+	</template>
+	<system>//p1 = Process(1);
+//p2 = Process(2); 
+//t1 = Timer(1); 
+//t2 = Timer(2);
+d = Dummy();
+system Process, Timer, d;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] forall (i : real_pid_t) (counter == MAX_COUNT imply Process(i).myroot == 1)</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

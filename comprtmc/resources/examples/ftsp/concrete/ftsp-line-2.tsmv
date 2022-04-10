@@ -1,0 +1,94 @@
+@TIME_DOMAIN continuous
+MODULE proc(id, wake_up, receiving, msg_root, msg_seqn, normalize)
+VAR
+	state : {idle, broadcasting};
+	hb : 0..8;
+	myroot : 1..3;
+	numentries : 0..4;
+	myseq : 0..10;
+ASSIGN
+	init(state) := idle;
+	init(hb) := 0;
+	init(myroot) := 3; -- undefined
+	init(numentries) := 0;
+	init(myseq) := 0;
+
+	next(state) := case
+		wake_up & state=idle & (next(myroot) = id | myroot = id | numentries >= 4) : broadcasting;
+		state=broadcasting : idle;
+        TRUE : idle;
+	esac;
+	next(hb) := case
+		wake_up & hb < 8 : hb + 1;
+		receiving & !ignoreMsg & msg_root < id : 0;
+		TRUE : hb;
+	esac;
+	next(myroot) := case
+		wake_up & myroot != id & hb >= 8 : id;
+		receiving & msg_root < myroot : msg_root;
+		TRUE : myroot;
+	esac;
+	next(numentries) := case
+		receiving & !ignoreMsg & numentries < 4 : numentries + 1;
+		TRUE : numentries;
+	esac;
+	next(myseq) := case
+		state = broadcasting & myroot = id & myseq < 8 : myseq + 1;
+		receiving & !ignoreMsg : msg_seqn;
+		normalize & (myseq >= 1) : myseq - 1; -- Normalization
+		TRUE : myseq;
+	esac;
+DEFINE
+	ignoreMsg := (msg_root > myroot 
+					| myroot = id & hb < 3
+					| msg_root = myroot & msg_seqn <= myseq);
+
+MODULE main
+VAR
+    cmd : {idle, decrement_seqn, wake1, wake2};
+	counter : 0..20;
+    proc1 : proc(1, _rt_wakeup1, receiving1, msg_root, msg_seqn, cmd = decrement_seqn);
+    proc2 : proc(2, _rt_wakeup2, receiving2, msg_root, msg_seqn, cmd = decrement_seqn);
+    x1 : clock;
+    x2 : clock;
+ASSIGN
+    init(counter) := 0;
+    next(counter) := case
+        cmd = wake1 & counter < 20 : counter + 1;
+        TRUE : counter;
+    esac;
+    init(x1) := 0;
+    next(x1) := case
+        cmd = wake1 : 0;
+        TRUE : x1;
+    esac;
+    init(x2) := 0;
+    next(x2) := case
+        cmd = wake2 : 0;
+        TRUE : x2;
+    esac;
+INVAR
+    (someone_broadcasting -> cmd = idle)
+	& (!someone_broadcasting & proc1.myseq >= 1 & proc2.myseq >= 1 -> cmd = decrement_seqn)
+	& (cmd = decrement_seqn -> proc1.myseq >= 1 & proc2.myseq >= 1)
+    & (cmd = wake1 -> x1 >= 9)
+    & (cmd = wake2 -> x2 >= 9)
+    & (TRUE -> x1 <= 11 & x2 <= 11)
+DEFINE
+    err := counter = 20 & (proc1.myroot != 1 | proc2.myroot != 1);
+    _rt_wakeup1 := x1 >= 9 & cmd = wake1;
+    receiving1 := proc2.state = broadcasting;
+    _rt_wakeup2 := x2 >= 9 & cmd = wake2;
+    receiving2 := proc1.state = broadcasting;
+    msg_root := case
+        proc1.state = broadcasting : proc1.myroot;
+        proc2.state = broadcasting : proc2.myroot;
+        TRUE : 3;
+    esac;
+    msg_seqn := case
+        proc1.state = broadcasting : proc1.myseq;
+        proc2.state = broadcasting : proc2.myseq;
+        TRUE : 10;
+    esac;
+    someone_broadcasting := proc1.state = broadcasting | proc2.state = broadcasting;    
+INVARSPEC !err
