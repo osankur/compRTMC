@@ -429,6 +429,8 @@ class TCheckerMembershipOracle(
       suffix: Word[String],
       generateWitness : Boolean
   ): Option[String] = {
+    Counters.incrementCounter("taMembershipOracle")
+
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     this._nbQueries += 1
     val monitorDescription = taMonitorMaker.makeWordIntersecter(trace)
@@ -465,6 +467,8 @@ class TCheckerInclusionOracle(
       hypothesis: DFA[_, String],
       inputs: java.util.Collection[? <: String]
   ): DefaultQuery[String, java.lang.Boolean] = {
+    Counters.incrementCounter("taInclusionOracle")
+
     val productFile =
       Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
     val pw = PrintWriter(productFile)
@@ -474,7 +478,7 @@ class TCheckerInclusionOracle(
     var certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
 
     // Model check product automaton
-    System.out.println(YELLOW + "Inclusion query: " + RESET)
+    System.out.println(YELLOW + "Inclusion query (|DFA| = " + hypothesis.size + ")" + RESET)
     val cmd = "tck-reach -a reach %s -l %s -C %s" 
       .format(productFile.toString, taMonitorMaker.monitorAcceptLabel, certFile)
     System.out.println(cmd)

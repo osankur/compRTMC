@@ -56,6 +56,7 @@ class CompSafetyAlgorithm(
         ): DefaultQuery[String, java.lang.Boolean] = {
             assert(inputs.size == fsmIntersectionOracle.alphabet.length)
             assert(posQueries.intersect(negQueries).isEmpty)
+            System.out.println(Counters.toString)
             taInclusionOracle.findCounterExample(hypothesis,inputs) match {                
                 case null =>
                     fsmIntersectionOracle.checkIntersection(hypothesis) match{

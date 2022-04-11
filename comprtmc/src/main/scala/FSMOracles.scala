@@ -200,6 +200,8 @@ class SMVIntersectionOracle(
   override def checkIntersection(
       timeModule: DFA[_, String]
   ): Option[FSMOracles.CounterExample] = {
+    Counters.incrementCounter("SMVIntersectionOracle")
+
     val regInvariantTrue ="[\\s\\S]*-- invariant.*is true[\\s\\S]*".r
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".smv").toFile()
@@ -298,6 +300,8 @@ class TCheckerIntersectionOracle(
     Option[FSMOracles.CounterExample] = {
       val productTA = taMonitorMaker.makeDFAIntersecter(hypothesis, false)
       System.out.println("Checking intersection: ")
+      Counters.incrementCounter("TCheckerIntersectionOracle")
+
       taMonitorMaker.checkEmpty(productTA, taMonitorMaker.productAcceptLabel, true) match {
         case None => 
           None

@@ -9,6 +9,7 @@ Compositional model checking algorithms for timed automata
   - ftsp-abs benchmarks : try adding data abstraction to go further
   - async
   - jobshop scheduling
+  
 - Trace abstraction refinement algorithm on deterministic timed automata
 - Faster learning options:
   - Use statistical simulations to generate (pos,neg) while `covering' the ta statistically
