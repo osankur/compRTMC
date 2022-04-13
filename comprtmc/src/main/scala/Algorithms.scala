@@ -27,6 +27,8 @@ import net.automatalib.visualization.Visualization;
 
 import de.learnlib.algorithms.kv.dfa.KearnsVaziraniDFA
 import de.learnlib.algorithms.kv.dfa.KearnsVaziraniDFABuilder
+import de.learnlib.algorithms.ttt.dfa.TTTLearnerDFA
+import de.learnlib.algorithms.ttt.dfa.TTTLearnerDFABuilder
 import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFA
 import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFABuilder
 
@@ -111,10 +113,14 @@ class CompSafetyAlgorithm(
             .withAlphabet(alph)
             .withOracle(taMembershipOracle)
             .create()
+        val ttt = TTTLearnerDFABuilder[String]()
+            .withAlphabet(alph)
+            .withOracle(taMembershipOracle)
+            .create()
 
         val eqOracle = EqOracle(fsmIntersectionOracle, taInclusionOracle)
         // val experiment: DFAExperiment[String] = DFAExperiment(lstar, eqOracle, alph);
-        val experiment: DFAExperiment[String] = DFAExperiment(dt, eqOracle, alph);
+        val experiment: DFAExperiment[String] = DFAExperiment(ttt, eqOracle, alph);
 
         // turn on time profiling
         experiment.setProfile(true);

@@ -38,6 +38,20 @@ TODO: Find a distributed protocol.
 
 TODO: ring protocol, see disc01.pdf
 
+# Robust Leader Election
+The `leader/`  directory contains models for a leader election protocol inspired from the following paper:
+_Delporte-Gallet, Devismes, Fauconnier. Robust Stabilizing Leader Election. SSS'07._
+
+Here, processes are asynchronous and communicate by broadcast. Each process wakes up within a given period,
+and broadcasts its current id, and keeps the minimum seen id as the leader. However, if no message was seen
+from the current leader for a while (a certain number of wake-ups), then the node declares itself leader.
+
+The model allows one node to crash, that is, to disappear and stop all interactions for a given period of time.
+At most a given number of crashes (`max_crash = 3`) are allowed. The specification is that after `max_cnt` steps
+after the last crash, all nodes should agree that the least node is the leader.
+
+TODO also find unsafe instances
+
 # Mutex (TODO)
 From TChecker benchmarks database
 
@@ -74,9 +88,6 @@ On these instances, SAT-based algorithms do not perform well. The learning algor
 This succeeds in ~1m20s.
 
 `nuXmv-time.sh ftsp-abs-3-timed.tsmv` takes > 9m
-
-
-# Pick one: Fischer or CSMA/CD (TODO)
 
 # Monoprocessor real-time scheduling benchmarks
 The `mono_scheduling` directory:
