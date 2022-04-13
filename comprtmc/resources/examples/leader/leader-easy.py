@@ -11,23 +11,28 @@ import sys
 
 #-- Delporte-Gallet, Devismes, Fauconnier. SSS'07. Robust Stabilizing Leader Election.
 computation = [
-        [(7,11), (2,4), (3,3)],
+        [(7,11), (5,6), (3,5)], # unsafe for max_cnt=15
+        [(7,10), (4,6), (3,5)],
+        [(3,8), (4,7), (3,6)],
+        [(7,11), (2,4), (3,3)], # unsafe
         [(4,4), (4,4), (4,4)],
         [(1,1), (1,1), (1,1)],
     ]
 crash_time = [
         (15,23),
-        (8,8),
+        (7,23),
+        (3,19),
         (5,5)
     ]   
-timeout_delay = 3
-max_cnt = 15
+max_cnt = 20
 max_crash = 3
 max_hb = 4
-def dump(n, computation, crash_time, timeout_delay, max_cnt, max_crash, timedSMV):
+def dump(n, computation, crash_time, max_cnt, max_crash, timedSMV):
+    all_ids = "{" + ", ".join([F"{i}" for i in range(n)]) + "}"
+    all_hbs = "{" + ", ".join([F"{i}" for i in range(max_hb)]) + "}"
     if timedSMV:
         print("@TIME_DOMAIN continuous")
-    print("MODULE proc(id, wakeup, crash, broadcasting, recv_id)")
+    print("MODULE proc(id, wakeup, crash, broadcasting, sender_id, recv_id)")
     print("VAR")
     print("\tstate : {ok, sending, crashed};")
     print(F"\tleader : 0..{n};")
@@ -36,13 +41,15 @@ def dump(n, computation, crash_time, timeout_delay, max_cnt, max_crash, timedSMV
     init(leader) := id;
     next(leader) := case
         wakeup & hb = {max_hb}: id;
-        broadcasting & recv_id < id : recv_id;
+        state = ok & broadcasting & recv_id < id : recv_id;
+        state = crashed : {all_ids};
         TRUE : leader;
     esac;
     init(hb) := 0;
     next(hb) := case
         wakeup & hb < {max_hb} : hb + 1;
-        broadcasting & recv_id <= leader : 0;
+        state != sending & sender_id < id & broadcasting  : 0;
+        state = crashed : {all_hbs};
         TRUE : hb;
     esac;
     next(state) := case
@@ -70,7 +77,7 @@ FROZENVAR
     #for i in range(1,n):
     #    print(F"p{i} : proc(id{i}, cmd = cmd_wakeup_ok{i}, cmd = cmd_wakeup_timeout{i}, FALSE, cmd = cmd_received{i}, msg);")
     for i in range(0,n):
-        print(F"p{i} : proc(id{i}, cmd = cmd_wakeup{i}, cmd = cmd_crash{i}, cmd = cmd_broadcast, msg);")
+        print(F"p{i} : proc(id{i}, cmd = cmd_wakeup{i}, cmd = cmd_crash{i}, cmd = cmd_broadcast, sender_id, msg);")
     if timedSMV:
         print(F"""
      y : array 0..{n-1} of clock;
@@ -122,6 +129,11 @@ DEFINE
     for i in range(n):
         print(F"\tp{i}.state = sending : p{i}.leader;")
     print(F"""\tTRUE : {n};\nesac;""")
+    print("sender_id := case")
+    for i in range(n):
+        print(F"\tp{i}.state = sending : {i};")
+    print(F"\tTRUE : {n};")
+    print("esac;")
     print("\tstable := " + " & ".join([F"p{i}.leader = 0" for i in range(n)]) + ";")
     print("\terr := cnt=15 & !stable;")
     for i in range(n):
@@ -146,7 +158,7 @@ DEFINE
         # print(F"edge:P{i}:ok:ok:received{i}" + "{do : " + F"x[{i}] = 0" + "}",file=ta_fout)
         # print(F"edge:P{i}:ok:crashed:crash" + "{" + F"do : y[{i}] = 0" + "}",file=ta_fout)
         # print(F"edge:P{i}:crashed:ok:wakeup_ok{i}" + "{provided: " + F"y[{i}] >= {crash_time[0]} && y[{i}] <= {crash_time[1]} : do : y[{i}] = 0" + "}",file=ta_fout)
-        for i in range(1,n):
+        for i in range(0,n):
             print(F"process:P{i}", file=ta_fout)
             print(F"location:P{i}:ok" + "{initial::invariant:" + F"y[{i}] <= {computation[i][1]}" + "}",file=ta_fout)
             print(F"location:P{i}:crashed" + "{invariant:" + F"y[{i}] <= {crash_time[1]}" + "}",file=ta_fout)
@@ -166,6 +178,6 @@ def main():
     timedSMV = args.timedSMV
     i = args.index
     assert(i >= 0 and i <= len(computation)-1)
-    dump(n, computation[i], crash_time[i], timeout_delay, max_cnt, max_crash, timedSMV)
+    dump(n, computation[i], crash_time[i], max_cnt, max_crash, timedSMV)
 if __name__ == "__main__":
     main()

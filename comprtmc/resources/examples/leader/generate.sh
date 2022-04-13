@@ -1,4 +1,4 @@
-for n in `seq 2 2`
+for n in `seq 2 3`
 do
     for i in `seq 0 2`
     do
