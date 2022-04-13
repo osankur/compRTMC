@@ -39,46 +39,33 @@ VAR
 	state : {idle, broadcasting};
 """)
 print(F"""
-	hb : 0..{max_heartbeats};
-	myroot : 1..{n+1};
-	numentries : 0..{max_numentries};
+	-- hb : 0..{max_heartbeats};
 	myseq : 0..{max_myseq};
 INIT
-	0 <= hb & hb <= 4 &
+	-- 0 <= hb & hb <= 4 &
 	0 <= myseq & myseq <= 2
 ASSIGN
 	init(state) := idle;
-	init(myroot) := 1;
-	init(numentries) := 4;
 	next(state) := case
-		wake_up & state=idle & (next(myroot) = id | myroot = id | numentries >= {max_numentries}) : broadcasting;
+		wake_up & state=idle : broadcasting;
 		state=broadcasting : idle;
         TRUE : idle;
 	esac;
-	next(hb) := case
-		wake_up & hb < {max_heartbeats} : hb + 1;
-		receiving & !ignoreMsg & msg_root < id : 0;
-		TRUE : hb;
-	esac;
-	next(myroot) := case
-		wake_up & myroot != id & hb >= {max_heartbeats} : id;
-		receiving & msg_root < myroot : msg_root;
-		TRUE : myroot;
-	esac;
-	next(numentries) := case
-		receiving & !ignoreMsg & numentries < {max_numentries} : numentries + 1;
-		TRUE : numentries;
-	esac;
+	-- next(hb) := case
+	--	wake_up & hb < {max_heartbeats} : hb + 1;
+	--	receiving & !ignoreMsg & msg_root < id : 0;
+	--	TRUE : hb;
+	--esac;
 	next(myseq) := case
-		state = broadcasting & myroot = id & myseq < {max_heartbeats} : myseq + 1;
+		state = broadcasting & 1 = id & myseq < {max_heartbeats} : myseq + 1;
 		receiving & !ignoreMsg : msg_seqn;
 		normalize & (myseq >= 1) : myseq - 1; -- Normalization
 		TRUE : myseq;
 	esac;
 DEFINE
-	ignoreMsg := (msg_root > myroot 
-					| myroot = id & hb < {hb_threshold}
-					| msg_root = myroot & msg_seqn <= myseq);
+	ignoreMsg := (msg_root > 1
+					| 1 = id -- & hb < {hb_threshold}
+					| msg_root = 1 & msg_seqn <= myseq);
 					""")
 
 print("""MODULE lastproc(id, wake_up, receiving, msg_root, msg_seqn, normalize)
@@ -169,8 +156,8 @@ if timed:
 	upInv = " & ".join(map(lambda x: F"x{x} <= {period[1]}", range(1,n+1)))
 	print(F"& (TRUE -> {upInv})")
 print("DEFINE")
-not_yet_converged = " | ".join(map(lambda x: F"proc{x}.myroot != 1", range(1,n+1)))
-print(F"""\terr := counter = {max_counter} & ({not_yet_converged});""")
+#not_yet_converged = " | ".join(map(lambda x: F"proc{x}.myroot != 1", range(1,n+1)))
+print(F"""\terr := counter = {max_counter} & (proc{n}.myroot != 1);""")
 for i in range(1,n+1):
 	if not timed:
 		print(F"\t_rt_wakeup{i} := cmd = wake{i};")
@@ -185,8 +172,9 @@ for i in range(1,n+1):
     expr = " | ".join(map(lambda x: F"proc{x}.state = broadcasting", neighbors))
     print(F"\treceiving{i} := {expr} | (cmd = others & others_sending_to_{i});")
 print("\tmsg_root := case")
-for i in range(1,n+1):
-    print(F"        proc{i}.state = broadcasting : proc{i}.myroot;")
+for i in range(1,n):
+    print(F"        proc{i}.state = broadcasting : 1;")
+print(F"        proc{n}.state = broadcasting : proc{n}.myroot;")
 print("    cmd = others : oth.msg_root;")
 print("    TRUE : 3;\n\tesac;")
 print("    msg_seqn := case")

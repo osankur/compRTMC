@@ -18,8 +18,9 @@ clock:1:z
 
 process:rtconstraints
 clock:1:x
-location:rtconstraints:init{initial::invariant: z1 < 1 && z2 < 1 && z < 1}
-edge:rtconstraints:init:init:go{provided:x==0}
+location:rtconstraints:init0{initial::urgent:}
+location:rtconstraints:init{invariant: z1 < 1 && z2 < 1 && z < 1}
+edge:rtconstraints:init0:init:go{provided:x==0}
 edge:rtconstraints:init:init:poll1{provided:x>0 && z1 > 0}
 edge:rtconstraints:init:init:poll2{provided:x>0 && z2 > 0}
 edge:rtconstraints:init:init:tau_reset_z1{do:z1=0}

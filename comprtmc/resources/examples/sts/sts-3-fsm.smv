@@ -48,7 +48,6 @@ ASSIGN
 	init(polled_EC3) := 0;
 	init(err) := FALSE;
 	next(err) := err | to_err;
-
 	next(_loc_) := case
 		_loc_ = init_init_init_init_init & _edge_ = 0 & TRUE : L_Stop_Stop_Stop_Ready3;
 		_loc_ = L_Stop_Stop_Stop_Ready3 & _edge_ = 1 & pc = 0 & EC1 = 1 : L_Stop_Stop_Stop_Ready3;

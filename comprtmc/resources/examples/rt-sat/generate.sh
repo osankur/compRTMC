@@ -48,6 +48,6 @@ if [ $class == "unsat" ]; then
     python3 rt-sat-smv.py unsat $timearg 3 > h3_nobound_unsat.$ext
     python3 rt-sat-smv.py sat $timearg 0 -b 90 > g0_90_unsat.$ext
     python3 rt-sat-smv.py sat $timearg 1 -b 100 > g1_100_unsat.$ext
-    python3 rt-sat-smv.py sat $timearg 2 -b 200 > g2_200_unsat.$ext
+    python3 rt-sat-smv.py sat $timearg 2 -b 90 > g2_90_unsat.$ext
 #
 fi

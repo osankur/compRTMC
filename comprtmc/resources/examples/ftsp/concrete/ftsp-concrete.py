@@ -87,8 +87,9 @@ for i in range(n):
 print("};\n" + F"\t counter : 0..{max_counter};")
 for i in range(n):
     print(F"proc{i+1} : proc({i+1}, _rt_wakeup{i+1}, receiving{i+1}, msg_root, msg_seqn, cmd = decrement_seqn);")
-for i in range(1,n+1):
-	print(F"x{i} : clock;")	
+if timed:
+	for i in range(1,n+1):
+		print(F"x{i} : clock;")	
 print(F"""ASSIGN
     init(counter) := 0;
     next(counter) := case

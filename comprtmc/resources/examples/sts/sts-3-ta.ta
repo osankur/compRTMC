@@ -1,6 +1,7 @@
 system:sts3_ta
 
 
+event:go
 # _rt_alphabet
 event:set_drive
 event:cpoll
@@ -22,8 +23,9 @@ clock:1:z
 clock:1:z1
 clock:1:z2
 clock:1:z3
-location:rtconstraints:init{initial::invariant: z < 1 && z1 < 1&& z2 < 1&& z3 < 1}
-edge:rtconstraints:init:init:go{provided:x==0}
+location:rtconstraints:init0{initial::urgent:}
+location:rtconstraints:init{invariant: z < 1 && z1 < 1&& z2 < 1&& z3 < 1}
+edge:rtconstraints:init0:init:go{provided:x==0}
 edge:rtconstraints:init:init:set_drive{do:x=0;y=0;z=0}
 edge:rtconstraints:init:init:cpoll{provided:x>0 && z>0}
 edge:rtconstraints:init:init:tau_reset_yz{do:y=0;z=0}

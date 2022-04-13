@@ -1,17 +1,38 @@
 # STS
 See `sts/README.md`
 
+TODO write smv fsm model.
+
 # Real-time Broadcast Protocols
 The `rt-sat/` directory contains rt-sat benchmarks from the TChecker benchmarks database.
 nuXmv is very quick on these.
 
-`rt-sat/harder` contains protocols made of n processes that each wakes up within a period interval,
+`rt-broadcast` contains protocols made of n processes that each wakes up within a period interval,
 and stays active within a time interval. If at least m of them are awake at the same time, they perform
 one step of a computation together and go back to sleep. The specification is whether a particular common
 configuration is reachable within a time bound.
 
-# Job-Shop Scheduling
-From TChecker benchmarks database
+- broadcast_2_2_a-*.{smv,ta}: 1-2m (1s)
+- broadcast_2_2_b-*.{smv,ta}: 9s (nuXmv 11s)
+- broadcast_2_2_c-*.{smv,ta}: 1m20 (nuXmv 27s)
+
+Currently, if the period+activations have a large gcd, then learning the DFA is hard, and nuXmv has also difficulties.
+nuXmv is either faster, or as fast as learning. Both time out on the same instances.
+ 
+TODO: !Try other fsm protocols for which nuXmv would be slower!
+    - Consider a self-stabilizing algorithm. Encode fairness with clock constraints (if enabled then taken within 20 time units)
+    - Introduce random errors or Byzantine behavior but with time constraints: bounded number of errors within a time window
+      and require self-stabilization within time bound under these constraints
+    
+    - Round based protocol: Each round has a duration within `[a,b]`, while fair events `e` must occur within `[0,d_e]`
+      Due to clock synchronization: between each round increment
+      Aspnes
+  
+TODO: Find a distributed protocol.
+    Add a wakeup period to each process.
+    Add a timed failure model.
+    The protocol should be distributed enough so that nuXmv fails
+    It should contain sufficiently many states so that Uppaal fails
 
 # Mutex (TODO)
 From TChecker benchmarks database
@@ -29,6 +50,10 @@ The specification is that after a given number of steps, all processes agree tha
   
 The script `concrete/ftsp-concrete.py` can be used to generate the above smv and tsmv files.
 
+nuXmv is too slow on these instances.
+Uppaal / TChecker are very fast.
+Learning takes ~1-2m on ftsp-line-3.smv versus 1-2s for Uppaal.
+
 ## Abstract
 Abstract FTSP protocol in an arbitrary network in which a particular line is modeled concretely.
 The models is inspired from the incremental model checking method of Sankur, Talpin TACAS 2017.
@@ -39,6 +64,13 @@ are already stabilized, and the n-th process is initialized in an arbitrary stat
 - `concrete/ftsp-abs-X.tsmv` nuXmv timed automaton model
 - `concrete/ftsp-abs-X.smv` FSM model for compositional alg.
 - `concerete/ftsp-abs-X.ta` TA model for compositional alg.
+
+On these instances, SAT-based algorithms do not perform well. The learning algorithm is run with NuSMV BDD:
+`java -jar target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar --fsm resources/examples/ftsp/abstract/ftsp-abs-3.smv --ta resources/examples/ftsp/abstract/ftsp-abs-3.ta --fsmModelChecker NuSMV`
+This succeeds in ~1m20s.
+
+`nuXmv-time.sh ftsp-abs-3-timed.tsmv` takes > 9m
+
 
 # Pick one: Fischer or CSMA/CD (TODO)
 
@@ -102,3 +134,5 @@ vertically back and forth, pausing at y=0 (top) and y=2 (middle).
 The second model should contain a Boolean program to specify the behavior of a moving obstacle.
 (Such as a Boolean counter whose bits determine the direction to go or how long to wait)
 
+# Real-Time Requirements
+From the FORMATS paper or ATVA submission...
