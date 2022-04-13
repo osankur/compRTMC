@@ -12,6 +12,8 @@
 --
 -- The circuit is bs16y.smv
 MODULE main
+FROZENVAR
+controllable_do_shift : boolean;
 VAR
 --inputs
 cmd : {check_ready0, check_ready1, cmd_sched, cmd_release, cmd_miss0, cmd_miss1};
@@ -19,7 +21,6 @@ is_ready0 : boolean;
 is_ready1 : boolean;
 err : boolean;
 nondet : boolean;
-controllable_do_shift : boolean;
 sh_0_ : boolean;
 sh_1_ : boolean;
 sh_2_ : boolean;

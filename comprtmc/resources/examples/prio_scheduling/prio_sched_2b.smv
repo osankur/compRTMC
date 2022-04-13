@@ -49,6 +49,7 @@ prev_movy_1 : boolean;
 prev_obsmove : boolean;
 AssumptionsAlreadyViolated : boolean;
 ASSIGN
+-- Scheduler
 init(cmd) := cmd_sched;
 next(cmd) := case
     cmd = check_ready0 : check_ready1;
@@ -72,6 +73,7 @@ next(is_ready1) := case
 esac;
 init(err) := FALSE;
 next(err) := err | _rt_miss0 | _rt_miss1;
+--
 init(IsNotFirstRound) := FALSE;
 next(IsNotFirstRound) := TRUE;
 init(prev_obsx_0_0_6) := FALSE;

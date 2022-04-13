@@ -12,9 +12,11 @@ and stays active within a time interval. If at least m of them are awake at the 
 one step of a computation together and go back to sleep. The specification is whether a particular common
 configuration is reachable within a time bound.
 
-- broadcast_2_2_a-*.{smv,ta}: 1-2m (1s)
-- broadcast_2_2_b-*.{smv,ta}: 9s (nuXmv 11s)
-- broadcast_2_2_c-*.{smv,ta}: 1m20 (nuXmv 27s)
+- broadcast_2_2_a-*.{smv,ta}: 22s (nuXmv 1s)
+- broadcast_2_2_b-*.{smv,ta}: 9s (nuXmv 22m)
+- broadcast_2_2_c-*.{smv,ta}: 12s (nuXmv 14m)
+- TODO find a few other timings
+- TODO show that nuXmv is faster when the error state is reachable.
 
 Currently, if the period+activations have a large gcd, then learning the DFA is hard, and nuXmv has also difficulties.
 nuXmv is either faster, or as fast as learning. Both time out on the same instances.
@@ -27,12 +29,14 @@ TODO: !Try other fsm protocols for which nuXmv would be slower!
     - Round based protocol: Each round has a duration within `[a,b]`, while fair events `e` must occur within `[0,d_e]`
       Due to clock synchronization: between each round increment
       Aspnes
-  
+
 TODO: Find a distributed protocol.
     Add a wakeup period to each process.
     Add a timed failure model.
     The protocol should be distributed enough so that nuXmv fails
     It should contain sufficiently many states so that Uppaal fails
+
+TODO: ring protocol, see disc01.pdf
 
 # Mutex (TODO)
 From TChecker benchmarks database
