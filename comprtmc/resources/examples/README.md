@@ -1,12 +1,4 @@
-# STS
-See `sts/README.md`
-
-TODO write smv fsm model.
-
 # Real-time Broadcast Protocols
-The `rt-sat/` directory contains rt-sat benchmarks from the TChecker benchmarks database.
-nuXmv is very quick on these.
-
 `rt-broadcast` contains protocols made of n processes that each wakes up within a period interval,
 and stays active within a time interval. If at least m of them are awake at the same time, they perform
 one step of a computation together and go back to sleep. The specification is whether a particular common
@@ -30,14 +22,8 @@ TODO: !Try other fsm protocols for which nuXmv would be slower!
       Due to clock synchronization: between each round increment
       Aspnes
 
-TODO: Find a distributed protocol.
-    Add a wakeup period to each process.
-    Add a timed failure model.
-    The protocol should be distributed enough so that nuXmv fails
-    It should contain sufficiently many states so that Uppaal fails
-
 TODO: ring protocol, see disc01.pdf
-
+    
 # Robust Leader Election
 The `leader/`  directory contains models for a leader election protocol inspired from the following paper:
 _Delporte-Gallet, Devismes, Fauconnier. Robust Stabilizing Leader Election. SSS'07._
@@ -51,9 +37,6 @@ At most a given number of crashes (`max_crash = 3`) are allowed. The specificati
 after the last crash, all nodes should agree that the least node is the leader.
 
 TODO also find unsafe instances
-
-# Mutex (TODO)
-From TChecker benchmarks database
 
 # FTSP
 ## Concrete
@@ -128,6 +111,14 @@ A single circuit model determines the joint behavior of all task arrivals.
 Currently the difficult part is the TA learning which takes a lot of time while FSM model checking is very fast.
 The timed model checker of nuXmv is currently much faster.
 
+# STS
+See `sts/README.md`
+
+For n=3, the alphabet is probably too big for learning.
+TODO write smv fsm model.
+
+# Mutex (TODO)
+From TChecker benchmarks database
 
 # Maze planning
 The `planning` directory
@@ -148,6 +139,10 @@ vertically back and forth, pausing at y=0 (top) and y=2 (middle).
 
 The second model should contain a Boolean program to specify the behavior of a moving obstacle.
 (Such as a Boolean counter whose bits determine the direction to go or how long to wait)
+
+# RT-SAT
+The `rt-sat/` directory contains rt-sat benchmarks from the TChecker benchmarks database.
+nuXmv is very quick on these.
 
 # Real-Time Requirements
 From the FORMATS paper or ATVA submission...

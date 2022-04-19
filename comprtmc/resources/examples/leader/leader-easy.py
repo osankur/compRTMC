@@ -13,8 +13,8 @@ import sys
 data = [ # computation_times, crash_times, max_cnt
         ([(4,4), (4,4), (3,3)],(15,23),20), # 55s with compRTMC(NuSMV). nuXmv > 6m.
         ([(1,1), (1,1), (1,2)],(0,3),20), # 1m49s with compRTMC(NuSMV).nuXmv: > 12m (out-of-memory)
-        ([(4,4), (4,4), (3,3)],(0,12)), # 44s with compRTMC(NuSMV). nuXmv:
-        ([(1,1), (1,1), (1,2)],(0,5),20), # 1m46s compRTMC(NuSMV).
+        ([(4,4), (4,4), (3,3)],(0,12)), # 44s with compRTMC(NuSMV). nuXmv: > 7m
+        ([(1,1), (1,1), (1,2)],(0,5),20), # 1m46s compRTMC(NuSMV). nuXmv > 4m
         ([(7,11), (2,4), (3,3)],(0,2),20), # unsafe
     ]
 max_crash = 3

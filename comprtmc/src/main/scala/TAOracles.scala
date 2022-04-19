@@ -1,4 +1,5 @@
-package fr.irisa.comprtmc
+package fr.irisa.comprtmc.ta
+
 import io.AnsiColor._
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,20 +14,32 @@ import scala.collection.mutable.StringBuilder
 import scala.collection.mutable.HashMap
 import de.learnlib.util.MQUtil;
 import java.io.File
+import java.io.InputStream
 import java.nio.file._
 import java.io.PrintWriter
+import java.io.ByteArrayInputStream
 import de.learnlib.api.oracle.EquivalenceOracle
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.api.oracle._
 import de.learnlib.api.oracle.MembershipOracle
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
-import net.automatalib.automata.fsa.DFA;
+import net.automatalib.automata.fsa.DFA
+import net.automatalib.util.automata.fsa.NFAs
+import net.automatalib.automata.fsa.NFA
+import net.automatalib.util.automata.fsa.DFAs
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words._
-import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.visualization.Visualization;
+import net.automatalib.automata.fsa.impl.compact.CompactNFA;
+
+
+
+import net.automatalib.serialization.aut.AUTSerializationProvider 
+
+import fr.irisa.comprtmc._
+import net.automatalib.automata.fsa.NFA
 
 case class BadTimedAutomaton(msg: String) extends Exception(msg)
 case class FailedTAModelChecking(msg: String) extends Exception(msg)
@@ -140,7 +153,7 @@ class TCheckerMonitorMaker (
     acceptingLabel : Option[String],
     monitorProcessName: String = "_crtmc_mon"
 )  {
-  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   private val acceptingLocations = {
@@ -202,10 +215,10 @@ class TCheckerMonitorMaker (
   def monitorAcceptLabel = "_crtmc_monitor_accept"
   def productAcceptLabel = "_crtmc_err"
 
-  /** Returns textual description of TA made of the product of given TA, and a
+  /** Returns textual description of TA made of the product of the TA, and a
     * monitor that reads a given word. The acceptLabel is reachable if the
     * intersection is non-empty.
-    * @pre This assumes that all states of the TA are accepting
+    * @pre all states of the TA are accepting
     */
   def makeWordIntersecter(word: Buffer[String]): String = {
     // Build product automaton
@@ -238,7 +251,7 @@ class TCheckerMonitorMaker (
     * When complement is set to true, we compute TA /\ comp(DFA), so the emptiness
     * of this intersection is equivalent to inclusion of TA in DFA.
     * 
-    * @arg complement whether given DFA should be complemented.
+    * @param complement whether given DFA should be complemented.
     */
   def makeDFAIntersecter(hypothesis: DFA[_, String], complement : Boolean): String = {
     val strStates = StringBuilder()
@@ -340,11 +353,11 @@ class TCheckerMonitorMaker (
     // this._elapsed = this._elapsed + (System.nanoTime() - beginTime)
     // System.out.println(output)
 
-    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+    if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("REACHABLE false")) then {
-      if (generateWitness && !ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      if (generateWitness && !configuration.globalConfiguration.keepTmpFiles){
         certFile.delete()
       }
       None
@@ -353,7 +366,7 @@ class TCheckerMonitorMaker (
         // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
         // val timedCex = parts(1)
         val timedCex = Source.fromFile(certFile).getLines.mkString("\n")
-        if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+        if (!configuration.globalConfiguration.keepTmpFiles){
           certFile.delete()
         }
         // System.out.println(timedCex)
@@ -362,7 +375,7 @@ class TCheckerMonitorMaker (
         Some("")
       }
     } else {
-      if (generateWitness && !ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      if (generateWitness && !configuration.globalConfiguration.keepTmpFiles){
         certFile.delete()
       }      
       throw FailedTAModelChecking(output)
@@ -372,7 +385,8 @@ class TCheckerMonitorMaker (
 }
 abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boolean]{
   /**
-   * Returns witness timed trace if the given word is in the untimed language
+   * Query TChecker whether the given untimed word prefix.suffix is accepted by the timed automaton.
+   * @return Returns witness timed trace if the given word is in the untimed language; None otherwise.
    */
   def answerQuery(
       prefix: Word[String],
@@ -429,7 +443,7 @@ class TCheckerMembershipOracle(
       suffix: Word[String],
       generateWitness : Boolean
   ): Option[String] = {
-    Counters.incrementCounter("taMembershipOracle")
+    statistics.Counters.incrementCounter("taMembershipOracle")
 
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     this._nbQueries += 1
@@ -439,15 +453,16 @@ class TCheckerMembershipOracle(
     verdict match {
       case None =>
         System.out.println(RED + " (false)" + RESET)
-        negQueries = negQueries + trace.mkString(" ")
+        statistics.negQueries = statistics.negQueries + trace.mkString(" ")
       case cex =>
-        posQueries = posQueries + trace.mkString(" ")
+        statistics.posQueries = statistics.posQueries + trace.mkString(" ")
         System.out.println(GREEN + " (true)" + RESET)
         cex
     }
     verdict
   }
 }
+
 /*
  * Oracle to check whether hypothesis is included in TA,
  * assuming that all locations of the TA are accepting.
@@ -460,14 +475,14 @@ class TCheckerInclusionOracle(
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet, None)
   private val alphabetSet = alphabet.asScala.toSet
 
-  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   override def findCounterExample(
       hypothesis: DFA[_, String],
       inputs: java.util.Collection[? <: String]
   ): DefaultQuery[String, java.lang.Boolean] = {
-    Counters.incrementCounter("taInclusionOracle")
+    statistics.Counters.incrementCounter("taInclusionOracle")
 
     val productFile =
       Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
@@ -484,7 +499,7 @@ class TCheckerInclusionOracle(
     System.out.println(cmd)
     val output = cmd.!!
     // System.out.println(output)
-    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+    if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("REACHABLE false")) then {
@@ -494,7 +509,7 @@ class TCheckerInclusionOracle(
       // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
       // val cexLines = parts(1).split("\n").toList
       val cexLines = Source.fromFile(certFile).getLines.toList
-      if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+      if (!configuration.globalConfiguration.keepTmpFiles){
         certFile.delete()
       }
       val word = ta.getTraceFromCexDescription(cexLines).filter(alphabet.contains(_))
@@ -502,7 +517,7 @@ class TCheckerInclusionOracle(
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
       System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
       System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
-      posQueries = posQueries + word.mkString(" ")
+      statistics.posQueries = statistics.posQueries + word.mkString(" ")
 
       // Visualization.visualize(hypothesis, alphabet);
       return query
@@ -513,23 +528,90 @@ class TCheckerInclusionOracle(
 
 }
 
+/*
+ * Oracle to compute interpolant automata from a given word that is not in the language.
+ */
+class TCheckerInterpolationOracle(
+    ta: File,
+    alphabet: List[String]
+) {
+
+  abstract class Answer
+  case class Empty(nfa : CompactNFA[String]) extends Answer
+  case class NonEmpty(cexDescription : String) extends Answer
+
+  private val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
+  tmpDirPath.toFile().mkdirs()
+
+  /**
+   * Use TChecker to check whether word is in the untimed language of the given ta.
+   * @return None if the word is accepted, and an interpolant automaton as an NFA
+   * otherwise, whose all words are rejected by the TA.
+   */
+  def checkWord(word : List[String]) : Answer = {
+    val certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
+    val wordArg = "\"%s\"".format(word.mkString(" "))
+    val alphabetArg = "\"%s\"".format(alphabet.mkString(" "))
+
+    val cmd = "tck-tar %s -i %s %s -C ".format(ta.toString, wordArg, alphabetArg, certFile.toString)
+    val output = cmd.!!
+    if (output.contains("REACHABLE true")){
+      val timedCex = Source.fromFile(certFile).getLines.mkString("\n")
+      if (!configuration.globalConfiguration.keepTmpFiles){
+        certFile.delete()
+      }
+      NonEmpty(timedCex)
+    } else {
+      val parts = output.split("Interpolant Automaton:")
+      if (parts.length != 2){
+        throw Exception("Unexpected output from tck-tar:\n" + output)
+      }
+      val regNbStates = "nb_states:([0-9]*)\\s*".r
+      var nbStates = 0
+      parts(1).split("\n").foreach{
+        case regNbStates(n) => nbStates = Integer.parseInt(n)
+        case _ => ()
+      }
+      if (nbStates == 0){
+        throw Exception("Could not parse number of states in interpolant automaton:\n" + parts(1))
+      }
+      val nfa = AutomatonBuilders.newNFA(Alphabets.fromList(alphabet)).create()
+      for (i <- 1 to nbStates){
+        nfa.addState()
+      }
+      val regTrans = "\\(([0-9]*),(.*),([0-9]*)\\)".r
+      val regInit = "init: (.*)".r
+      val regAccept = "accepting: (.*)".r
+      parts(1).split("\n").foreach{
+          case regTrans(p, sigma, q) =>
+            nfa.addTransition(Integer.parseInt(p.strip()), sigma.strip(), Integer.parseInt(q.strip()))
+          case regInit(p) =>
+            nfa.setInitial(Integer.parseInt(p), true)
+          case regAccept(p) =>
+            nfa.setAccepting(Integer.parseInt(p), true)
+      }
+      Empty(nfa)
+    }
+  }
+}
+
 
 class UppaalTA
 
-object TAOracles {
 
-  object Factory{
-    def getTCheckerOracles(taFile: File,
-      alphabet: List[String]) : (TAMembershipOracle, EquivalenceOracle.DFAEquivalenceOracle[String]) = {        
-        val alph = Alphabets.fromList(alphabet)
-        val ta = TCheckerTA(taFile)
-        (TCheckerMembershipOracle(ta, alph), TCheckerInclusionOracle(ta, alph))
-      }
-
-    def getUppaalOracles(ta: UppaalTA,
-      alphabet: List[String]) : (MembershipOracle[String, java.lang.Boolean], EquivalenceOracle.DFAEquivalenceOracle[String]) = {
-        throw Exception("Not yet implemented")
-      }
-
+object Factory{
+  def getTCheckerOracles(taFile: File,
+    alphabet: List[String]) : (TAMembershipOracle, EquivalenceOracle.DFAEquivalenceOracle[String]) = {        
+      val alph = Alphabets.fromList(alphabet)
+      val ta = TCheckerTA(taFile)
+      (TCheckerMembershipOracle(ta, alph), TCheckerInclusionOracle(ta, alph))
+    }
+  def getTCheckerInterpolationOracle(taFile: File, alphabet: List[String]) : TCheckerInterpolationOracle ={
+    TCheckerInterpolationOracle(taFile, alphabet)
   }
+  def getUppaalOracles(ta: UppaalTA,
+    alphabet: List[String]) : (MembershipOracle[String, java.lang.Boolean], EquivalenceOracle.DFAEquivalenceOracle[String]) = {
+      throw Exception("Not yet implemented")
+    }
+
 }

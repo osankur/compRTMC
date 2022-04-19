@@ -23,11 +23,23 @@ import de.learnlib.util.Experiment.DFAExperiment;
 import de.learnlib.util.statistics.SimpleProfiler;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.automata.fsa.NFA;
+import net.automatalib.automata.fsa.impl.compact.CompactNFA;
+
 import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.serialization.aut._
+import collection.convert.ImplicitConversions
+import net.automatalib.util.automata.fsa.NFAs
+import net.automatalib.util.automata.fsa.DFAs
+import net.automatalib.util.automata.minimizer.paigetarjan.PaigeTarjanMinimization 
+
+import net.automatalib.serialization.taf.parser.TAFParser
+import net.automatalib.automata.Automaton
+
+
 /*
 class BasicTests extends munit.FunSuite {
   test("example test that succeeds") {
@@ -134,6 +146,31 @@ class DFATest extends munit.FunSuite {
 
 class SMVTest extends munit.FunSuite {
   test("smv"){
-    val inp = SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
+    val inp = fsm.SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
+  }
+}
+class AutomataTest extends munit.FunSuite{
+  test("determinize"){
+  val alphabet: Alphabet[String] = Alphabets.fromList(List("a","b", "c").asJava)
+  val target: CompactNFA[String] =
+    AutomatonBuilders.newNFA(alphabet)
+      .withInitial("q0")
+      .from("q0")
+      .on("a")
+      .to("q0")
+      .on("a")
+      .to("q1")
+      .from("q1")
+      .on("b")
+      .to("q1")
+      .withAccepting("q1")
+      .create();
+
+  val aut = NFAs.determinize(target)
+  val minaut = PaigeTarjanMinimization.minimizeDFA(aut)
+  // val target_as : Automaton[Integer, String, Integer] = target
+  // val serializer = SAFSerializationNFA.getInstance()
+  // serializer.writeModel(java.lang.System.out, target, alphabet)
+  Visualization.visualize(minaut, alphabet)
   }
 }

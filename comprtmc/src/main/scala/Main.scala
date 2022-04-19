@@ -6,12 +6,15 @@ import org.slf4j.LoggerFactory
 import io.AnsiColor._
 import scopt.OParser
 import java.io._
-import ProgramConfiguration._
 import net.automatalib.words.Word
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
+
+import fr.irisa.comprtmc.ta.Factory
+import fr.irisa.comprtmc.algorithms
+import fr.irisa.comprtmc.configuration._
 
 import scala.collection.mutable._
 import collection.JavaConverters._
@@ -20,7 +23,7 @@ object Main {
   val logger = LoggerFactory.getLogger("CompRTMC")
 
   def main(args: Array[String]): Unit = {
-    val builder = OParser.builder[ProgramConfiguration]
+    val builder = OParser.builder[Configuration]
     val parser1 = {
       import builder._
       OParser.sequence(
@@ -72,7 +75,7 @@ object Main {
       )
     }
 
-    OParser.parse(parser1, args, ProgramConfiguration()) match {
+    OParser.parse(parser1, args, Configuration()) match {
       case Some(config) =>
         globalConfiguration = config
         if (!config.taFile.exists()){
@@ -92,16 +95,23 @@ object Main {
           throw Exception("TChecker model checker must be used with FSM files with extension .ta")
         }
         "./remove_temp.sh".!
-        val fsmIntersectOracle : FSMIntersectionOracle = config.fsmFormat match{
-          case FSM.SMV => FSMOracles.Factory.getSMVOracle(config.fsmFile)
-          case FSM.TCheckerTA => FSMOracles.Factory.getTCheckerOracle(config.fsmFile)
+        val fsmIntersectOracle : fsm.FSMIntersectionOracle = config.fsmFormat match{
+          case FSM.SMV => fsm.Factory.getSMVOracle(config.fsmFile)
+          case FSM.TCheckerTA => fsm.Factory.getTCheckerOracle(config.fsmFile)
           case _ => throw Exception("FSM Format not supported")
         }
         logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
         
-        val (taMemOracle, taIncOracle) = TAOracles.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
-        val alg = CompSafetyAlgorithm(fsmIntersectOracle, taMemOracle, taIncOracle)
-        alg.run()
+        config.algorithm match {
+          case HypothesisLearning =>
+            val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
+            val alg = algorithms.CompSafetyAlgorithm(fsmIntersectOracle, taMemOracle, taIncOracle)
+            alg.run()
+          case TraceAbstractionRefinement =>
+            val taInterpolantOracle = ta.Factory.getTCheckerInterpolationOracle(config.taFile, fsmIntersectOracle.alphabet) 
+            val alg = algorithms.TARAlgorithm(fsmIntersectOracle, taInterpolantOracle)
+            alg.run()
+        }
       case _ => 
     }
   }

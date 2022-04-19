@@ -1,9 +1,10 @@
-package fr.irisa.comprtmc
+package fr.irisa.comprtmc.configuration
 
 import java.io.File
 
 
 case class ParseError(msg : String) extends Exception(msg)
+
 
 object FSM {
     sealed trait FSMFormat
@@ -31,34 +32,19 @@ object FSM {
     case object DefaultAlgorithm extends ModelCheckingAlgorithm
 }
 
-object ProgramConfiguration {
-    case class ProgramConfiguration(
-        fsmFile : File = new File("."),
-        taFile: File = new File("."),
-        fsmFormat : FSM.FSMFormat = FSM.SMV,
-        fsmModelChecker : FSM.ModelChecker = FSM.NuXmv,
-        fsmAlgorithm : FSM.ModelCheckingAlgorithm = FSM.DefaultAlgorithm,
-        keepTmpFiles: Boolean = false,
-        verbose : Boolean = false,
-        tmpDirName : String = ".crtmc/"
-        )
-    var globalConfiguration = ProgramConfiguration()
-}
+sealed trait Algorithm
+case object TraceAbstractionRefinement extends Algorithm
+case object HypothesisLearning extends Algorithm
 
-var posQueries = Set[String]()
-var negQueries = Set[String]()
-var lastTrace : List[String] = null
-
-object Counters {
-    var counter = Map[String,Int]()
-
-    def incrementCounter(counterName : String) : Unit = {
-        counter += counterName -> (counter.getOrElse(counterName, 0) + 1)
-    }
-    def apply(counterName : String ) : Int = {
-        counter.getOrElse(counterName, 0)
-    }
-    override def toString : String = {
-        counter.toString
-    }
-}
+case class Configuration(
+    fsmFile : File = new File("."),
+    taFile: File = new File("."),
+    fsmFormat : FSM.FSMFormat = FSM.SMV,
+    fsmModelChecker : FSM.ModelChecker = FSM.NuXmv,
+    fsmAlgorithm : FSM.ModelCheckingAlgorithm = FSM.DefaultAlgorithm,
+    algorithm : Algorithm= HypothesisLearning,
+    keepTmpFiles: Boolean = false,
+    verbose : Boolean = false,
+    tmpDirName : String = ".crtmc/"
+    )
+var globalConfiguration = Configuration()

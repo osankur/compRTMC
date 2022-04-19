@@ -1,4 +1,5 @@
-package fr.irisa.comprtmc
+package fr.irisa.comprtmc.algorithms
+
 import io.AnsiColor._
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,11 +33,22 @@ import de.learnlib.algorithms.ttt.dfa.TTTLearnerDFABuilder
 import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFA
 import de.learnlib.algorithms.discriminationtree.dfa.DTLearnerDFABuilder
 
+import net.automatalib.util.automata.minimizer.paigetarjan.PaigeTarjanMinimization 
+import net.automatalib.serialization.aut.AUTSerializationProvider 
+import net.automatalib.automata.fsa.impl.compact.CompactNFA;
+
+import net.automatalib.util.automata.fsa.NFAs
+import net.automatalib.util.automata.fsa.DFAs
+
+import fr.irisa.comprtmc.fsm
+import fr.irisa.comprtmc.ta
+import fr.irisa.comprtmc.configuration
+import fr.irisa.comprtmc.statistics
 case class CounterExample(cexDescription : String) extends Exception
 
 class CompSafetyAlgorithm(
-    fsmIntersectionOracle : FSMIntersectionOracle,
-    taMembershipOracle : TAMembershipOracle, 
+    fsmIntersectionOracle : fsm.FSMIntersectionOracle,
+    taMembershipOracle : ta.TAMembershipOracle, 
     taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]
 ){
     private val logger = LoggerFactory.getLogger(classOf[CompSafetyAlgorithm])
@@ -50,15 +62,15 @@ class CompSafetyAlgorithm(
      *  If yes, then the counterexample is confirmed. Otherwise, a query is returned to rule out
      *  the trace of the counterexample. 
      */
-    class EqOracle(fsmIntersectionOracle : FSMIntersectionOracle, taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]) 
+    class EqOracle(fsmIntersectionOracle : fsm.FSMIntersectionOracle, taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String]) 
         extends EquivalenceOracle.DFAEquivalenceOracle[String]{
         override def findCounterExample(
             hypothesis: DFA[_, String],
             inputs: java.util.Collection[? <: String]
         ): DefaultQuery[String, java.lang.Boolean] = {
             assert(inputs.size == fsmIntersectionOracle.alphabet.length)
-            assert(posQueries.intersect(negQueries).isEmpty)
-            System.out.println(Counters.toString)
+            assert(statistics.posQueries.intersect(statistics.negQueries).isEmpty)
+            System.out.println(statistics.Counters.toString)
             taInclusionOracle.findCounterExample(hypothesis,inputs) match {                
                 case null =>
                     fsmIntersectionOracle.checkIntersection(hypothesis) match{
@@ -66,17 +78,17 @@ class CompSafetyAlgorithm(
                             // Verification succeeded
                             // Visualization.visualize(hypothesis, inputs)
                             null
-                        case Some(FSMOracles.CounterExample(cexDescription, trace)) =>
+                        case Some(fsm.CounterExample(cexDescription, trace)) =>
                             // FSM x hypothesis contains a counterexample trace
                             // Check feasability with TChecker
                             System.out.println(RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n")
                             System.out.println(YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n")
                             val word = Word.fromList(trace)
-                            if (trace == lastTrace){
+                            if (trace == statistics.lastTrace){
                                 Visualization.visualize(hypothesis, inputs)
                                 throw Exception("The following counterexample trace was seen twice: " + trace)
                             } else {
-                                lastTrace = trace;
+                                statistics.lastTrace = trace;
                             }
                             
 
@@ -88,7 +100,7 @@ class CompSafetyAlgorithm(
                                 case None => 
                                     System.out.println(GREEN + "Equiv. Query: Cex was spurious\n" + RESET)
                                     System.out.println(DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE))
-                                    negQueries = negQueries + word.mkString(" ")
+                                    statistics.negQueries = statistics.negQueries + word.mkString(" ")
                                     // Visualization.visualize(hypothesis, inputs)
                                     DefaultQuery[String, java.lang.Boolean](word, java.lang.Boolean.FALSE)
                             }                             
@@ -147,9 +159,68 @@ class CompSafetyAlgorithm(
                 System.out.println(YELLOW + smvTrace + RESET)
                 System.out.println("\nTA trace:")
                 System.out.println(YELLOW + taTrace + RESET)                
-            case ParseError(msg) =>
+            case configuration.ParseError(msg) =>
                 System.out.println(RED + msg + RESET)
             case e => throw e
         }
+    }
+}
+
+
+class TARAlgorithm(
+    fsmIntersectionOracle : fsm.FSMIntersectionOracle,
+    taInterpolationOracle : ta.TCheckerInterpolationOracle
+){
+    private val alphabet = fsmIntersectionOracle.alphabet
+    private val logger = LoggerFactory.getLogger(classOf[TARAlgorithm])
+    //private val learnedNFAs = List[CompactNFA[String]]()
+    private var learnedDFA = {
+        val dfa = CompactDFA[String](Alphabets.fromList(alphabet))
+        val q = dfa.addState()
+        alphabet.foreach(dfa.addTransition(q,_,q))
+        dfa
+    }
+
+    case class ProductCounterExample(smvTrace : String, trace : List[String], taTrace : String) extends Exception
+
+    def run() : Unit = {
+        var decisionReached = false
+
+        while(!decisionReached){
+            fsmIntersectionOracle.checkIntersection(learnedDFA) match {
+                case None => 
+                    System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
+                    decisionReached = true
+                case Some(fsm.CounterExample(cexDescription, trace)) =>
+                    System.out.println(RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n")
+                    System.out.println(YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n")
+                    taInterpolationOracle.checkWord(trace) match {
+                        case taInterpolationOracle.NonEmpty(taTrace) => 
+                            System.out.println(RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n")
+                            System.out.println("\t" + YELLOW + BOLD + trace + RESET)
+                            System.out.println("\nFSM trace:")
+                            System.out.println(YELLOW + cexDescription + RESET)
+                            System.out.println("\nTA trace:")
+                            System.out.println(YELLOW + taTrace + RESET)
+                        case taInterpolationOracle.Empty(nfa) =>
+                            System.out.println(GREEN + "Trace was spurious; adding NFA\n" + RESET)
+                            val alph = Alphabets.fromList(alphabet)
+                            val determinized = NFAs.determinize(nfa, alph)
+                            val complemented = DFAs.complement(determinized, alph)
+                            val minimized = DFAs.minimize(complemented, alph)
+                            val newHypothesis = DFAs.and(learnedDFA, minimized,alph)
+                            System.out.println(YELLOW + "New hypothesis has " + newHypothesis.size + " states\n" + RESET)
+                            val newHypothesisMinimized = DFAs.minimize(newHypothesis, alph)
+                            System.out.println(YELLOW + "and " + newHypothesisMinimized.size + " once minimized\n" + RESET)
+                            learnedDFA = newHypothesisMinimized
+                    }
+            }
+        }
+        // Use fsmIntersectionOracle to check the emptiness of fsm and /\ learnedNFAs
+        // If safe then stop and report safe
+        // Otherwise, extract cex trace.
+        // Use taInterpolationOracle to check the feasibility of the trace
+        // If feasible, stop and report confirmed cex
+        // Otherwise, extract interpolant automaton, and add it to learnedNFAs
     }
 }

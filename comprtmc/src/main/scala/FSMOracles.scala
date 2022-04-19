@@ -1,4 +1,4 @@
-package fr.irisa.comprtmc
+package fr.irisa.comprtmc.fsm
 
 import io.AnsiColor._
 import scala.sys.process._
@@ -23,6 +23,14 @@ import java.io.File
 import java.io.PrintWriter
 import java.nio.file._
 
+import fr.irisa.comprtmc.configuration.ParseError
+import fr.irisa.comprtmc.configuration
+import fr.irisa.comprtmc.statistics
+import fr.irisa.comprtmc.ta.TCheckerMonitorMaker
+import fr.irisa.comprtmc.ta.TCheckerTA
+
+case class CounterExample(cexDescription: String, cexTrace: List[String])
+    extends Exception
 
 abstract class FSMIntersectionOracle {
   /** Synchronization alphabet between FSM and TA
@@ -37,7 +45,7 @@ abstract class FSMIntersectionOracle {
    */
   def checkIntersection(
       dfa: DFA[_, String]
-  ): Option[FSMOracles.CounterExample]
+  ): Option[CounterExample]
 
 }
 
@@ -128,7 +136,7 @@ class SMVIntersectionOracle(
 
   private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
 
-  val tmpDirPath = FileSystems.getDefault().getPath(ProgramConfiguration.globalConfiguration.tmpDirName);
+  val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
   override def alphabet = smv.alphabet
@@ -199,8 +207,8 @@ class SMVIntersectionOracle(
 
   override def checkIntersection(
       timeModule: DFA[_, String]
-  ): Option[FSMOracles.CounterExample] = {
-    Counters.incrementCounter("SMVIntersectionOracle")
+  ): Option[CounterExample] = {
+    statistics.Counters.incrementCounter("SMVIntersectionOracle")
 
     val regInvariantTrue ="[\\s\\S]*-- invariant.*is true[\\s\\S]*".r
     val productFile =
@@ -209,17 +217,17 @@ class SMVIntersectionOracle(
     pw.write(makeIntersectionMonitor(timeModule))
     pw.close()    
     val cmd =
-      ProgramConfiguration.globalConfiguration.fsmAlgorithm match {
-        case FSM.BDDAlgorithm =>
-          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
+      configuration.globalConfiguration.fsmAlgorithm match {
+        case configuration.FSM.BDDAlgorithm =>
+          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
         case _ =>
-          "echo \"read_model -i %s; go_msat; check_invar_ic3; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(ProgramConfiguration.globalConfiguration.fsmModelChecker)
+          "echo \"read_model -i %s; go_msat; check_invar_ic3; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
       }
     System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
     System.out.println(output)
-    if (!ProgramConfiguration.globalConfiguration.keepTmpFiles){
+    if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("Trace Type: Counterexample")) {
@@ -277,7 +285,7 @@ class SMVIntersectionOracle(
       //     case _ =>
       //   }
       // }
-      Some(FSMOracles.CounterExample(cexStr, trace.toList.filter(_ != "")))
+      Some(CounterExample(cexStr, trace.toList.filter(_ != "")))
     } else if (regInvariantTrue.matches(output)){
       None
     } else {
@@ -297,37 +305,32 @@ class TCheckerIntersectionOracle(
     fsm.externEvents
   }
   override def checkIntersection(hypothesis: DFA[?, String]): 
-    Option[FSMOracles.CounterExample] = {
+    Option[CounterExample] = {
       val productTA = taMonitorMaker.makeDFAIntersecter(hypothesis, false)
       System.out.println("Checking intersection: ")
-      Counters.incrementCounter("TCheckerIntersectionOracle")
+      statistics.Counters.incrementCounter("TCheckerIntersectionOracle")
 
       taMonitorMaker.checkEmpty(productTA, taMonitorMaker.productAcceptLabel, true) match {
         case None => 
           None
         case Some(cexStr) => 
           val trace = fsm.getTraceFromCexDescription(cexStr.split("\n").toList).filter(alphabet.contains(_))
-          Some(FSMOracles.CounterExample(cexStr,trace))
+          Some(CounterExample(cexStr,trace))
       }
     }
 }
 
 
-object FSMOracles {
-  case class CounterExample(cexDescription: String, cexTrace: List[String])
-      extends Exception
-
-  object Factory {
-    def getSMVOracle(
-        smvFile: File,
-    ): FSMIntersectionOracle = {
-      SMVIntersectionOracle(SMV(smvFile))
-    }
-    def getTCheckerOracle(
-        taFile: File,
-    ): FSMIntersectionOracle = {
-      TCheckerIntersectionOracle(TCheckerTA(taFile))
-    }
-
+object Factory {
+  def getSMVOracle(
+      smvFile: File,
+  ): FSMIntersectionOracle = {
+    SMVIntersectionOracle(SMV(smvFile))
   }
+  def getTCheckerOracle(
+      taFile: File,
+  ): FSMIntersectionOracle = {
+    TCheckerIntersectionOracle(TCheckerTA(taFile))
+  }
+
 }
