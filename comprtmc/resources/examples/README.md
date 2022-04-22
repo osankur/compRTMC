@@ -37,6 +37,7 @@ At most a given number of crashes (`max_crash = 3`) are allowed. The specificati
 after the last crash, all nodes should agree that the least node is the leader.
 
 TODO also find unsafe instances
+TODO make a list of the results
 
 # FTSP
 ## Concrete

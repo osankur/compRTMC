@@ -176,8 +176,10 @@ class TARAlgorithm(
     //private val learnedNFAs = List[CompactNFA[String]]()
     private var learnedDFA = {
         val dfa = CompactDFA[String](Alphabets.fromList(alphabet))
-        val q = dfa.addState()
+        val q = dfa.addState(true)
         alphabet.foreach(dfa.addTransition(q,_,q))
+        dfa.setInitial(0,true)
+        // Visualization.visualize(dfa, Alphabets.fromList(alphabet))
         dfa
     }
 
@@ -185,14 +187,15 @@ class TARAlgorithm(
 
     def run() : Unit = {
         var decisionReached = false
-
         while(!decisionReached){
+            // Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
             fsmIntersectionOracle.checkIntersection(learnedDFA) match {
                 case None => 
                     System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
+                    Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
                     decisionReached = true
                 case Some(fsm.CounterExample(cexDescription, trace)) =>
-                    System.out.println(RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n")
+                    System.out.println(RED + "FSM Counterexample found: " + trace + RESET + "\n")
                     System.out.println(YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n")
                     taInterpolationOracle.checkWord(trace) match {
                         case taInterpolationOracle.NonEmpty(taTrace) => 
@@ -202,6 +205,7 @@ class TARAlgorithm(
                             System.out.println(YELLOW + cexDescription + RESET)
                             System.out.println("\nTA trace:")
                             System.out.println(YELLOW + taTrace + RESET)
+                            decisionReached = true
                         case taInterpolationOracle.Empty(nfa) =>
                             System.out.println(GREEN + "Trace was spurious; adding NFA\n" + RESET)
                             val alph = Alphabets.fromList(alphabet)
@@ -216,11 +220,5 @@ class TARAlgorithm(
                     }
             }
         }
-        // Use fsmIntersectionOracle to check the emptiness of fsm and /\ learnedNFAs
-        // If safe then stop and report safe
-        // Otherwise, extract cex trace.
-        // Use taInterpolationOracle to check the feasibility of the trace
-        // If feasible, stop and report confirmed cex
-        // Otherwise, extract interpolant automaton, and add it to learnedNFAs
     }
 }

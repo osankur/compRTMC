@@ -540,33 +540,27 @@ class TCheckerInterpolationOracle(
   case class Empty(nfa : CompactNFA[String]) extends Answer
   case class NonEmpty(cexDescription : String) extends Answer
 
-  private val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
-  tmpDirPath.toFile().mkdirs()
-
   /**
    * Use TChecker to check whether word is in the untimed language of the given ta.
    * @return None if the word is accepted, and an interpolant automaton as an NFA
    * otherwise, whose all words are rejected by the TA.
    */
   def checkWord(word : List[String]) : Answer = {
-    val certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
     val wordArg = "\"%s\"".format(word.mkString(" "))
     val alphabetArg = "\"%s\"".format(alphabet.mkString(" "))
 
-    val cmd = "tck-tar %s -i %s %s -C ".format(ta.toString, wordArg, alphabetArg, certFile.toString)
+    val cmd = "tck-tar %s -t %s -a %s".format(ta.toString, wordArg, alphabetArg)
     val output = cmd.!!
+    System.out.println(cmd)
+    System.out.println(output)
     if (output.contains("REACHABLE true")){
-      val timedCex = Source.fromFile(certFile).getLines.mkString("\n")
-      if (!configuration.globalConfiguration.keepTmpFiles){
-        certFile.delete()
-      }
-      NonEmpty(timedCex)
+      NonEmpty(output)
     } else {
       val parts = output.split("Interpolant Automaton:")
       if (parts.length != 2){
         throw Exception("Unexpected output from tck-tar:\n" + output)
       }
-      val regNbStates = "nb_states:([0-9]*)\\s*".r
+      val regNbStates = "nb_states:\\s*([0-9]*)\\s*".r
       var nbStates = 0
       parts(1).split("\n").foreach{
         case regNbStates(n) => nbStates = Integer.parseInt(n)
@@ -580,7 +574,7 @@ class TCheckerInterpolationOracle(
         nfa.addState()
       }
       val regTrans = "\\(([0-9]*),(.*),([0-9]*)\\)".r
-      val regInit = "init: (.*)".r
+      val regInit = "init:\\s*(.*)".r
       val regAccept = "accepting: (.*)".r
       parts(1).split("\n").foreach{
           case regTrans(p, sigma, q) =>
@@ -589,6 +583,7 @@ class TCheckerInterpolationOracle(
             nfa.setInitial(Integer.parseInt(p), true)
           case regAccept(p) =>
             nfa.setAccepting(Integer.parseInt(p), true)
+          case _ => ()
       }
       Empty(nfa)
     }

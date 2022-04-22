@@ -47,6 +47,15 @@ object Main {
               }
             )
           .text("fsm is the finite state model in smv or ta format"),
+        opt[String]("alg")
+          .action({(alg, c) => c
+                alg match{
+                case "learning" => c.copy(algorithm = HypothesisLearning)
+                case "tar" => c.copy(algorithm = TraceAbstractionRefinement)
+                case _ => throw Exception("Unknown algorithm")
+              }
+            }
+            ).valueName("(learning|tar)"),
         opt[Boolean]("verbose")
           .action((_, c) => c.copy(verbose = true))
           .valueName("(true|false)"),

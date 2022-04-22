@@ -146,6 +146,7 @@ class SMVIntersectionOracle(
     val strTransitions = StringBuilder()
     val acceptingStates = ListBuffer[String]()
     // There should be a unique init state since DFA
+    assert(hypothesis.getInitialStates().size == 1)
     val initialStates = hypothesis
       .getInitialStates()
       .asScala
@@ -192,10 +193,11 @@ class SMVIntersectionOracle(
         acceptingStates.append("q" + state.toString)
       }
     }
-
     timeModuleB.append(
       "DEFINE\n\t accepting := %s;\n\n".format(
-        acceptingStates.map("state = " + _).mkString(" | ")
+        if (acceptingStates.length > 0){
+          acceptingStates.map("state = " + _).mkString(" | ")
+        } else { "FALSE" }
       )
     )
     val newSMV = StringBuilder()
@@ -226,7 +228,7 @@ class SMVIntersectionOracle(
     System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
-    System.out.println(output)
+    // System.out.println(output)
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
