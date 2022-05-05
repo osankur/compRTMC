@@ -275,18 +275,6 @@ class SMVIntersectionOracle(
           case _ =>()
           }
       }
-      // cexLines foreach { line =>
-      //   line match {
-      //     case regAssignmentTRUE(v) =>
-      //       val vStripped = v.strip()
-      //       if (!errorHasBeenSeen && alphabet.contains(vStripped)) {
-      //         trace.append(vStripped)
-      //       }
-      //     case regError() =>
-      //       //errorHasBeenSeen = true
-      //     case _ =>
-      //   }
-      // }
       Some(CounterExample(cexStr, trace.toList.filter(_ != "")))
     } else if (regInvariantTrue.matches(output)){
       None
@@ -312,10 +300,10 @@ class TCheckerIntersectionOracle(
       System.out.println("Checking intersection: ")
       statistics.Counters.incrementCounter("TCheckerIntersectionOracle")
 
-      taMonitorMaker.checkEmpty(productTA, taMonitorMaker.productAcceptLabel, true) match {
-        case None => 
+      taMonitorMaker.checkEmpty(productTA, true) match {
+        case taMonitorMaker.Empty => 
           None
-        case Some(cexStr) => 
+        case taMonitorMaker.NonEmpty(cexStr) => 
           val trace = fsm.getTraceFromCexDescription(cexStr.split("\n").toList).filter(alphabet.contains(_))
           Some(CounterExample(cexStr,trace))
       }

@@ -44,7 +44,7 @@ import net.automatalib.automata.fsa.NFA
 case class BadTimedAutomaton(msg: String) extends Exception(msg)
 case class FailedTAModelChecking(msg: String) extends Exception(msg)
 
-/** Read TChecker TA from given file, and store the tuple (events,
+/** A light parser that reads TChecker TA from given file, and stores the tuple (events,
   * eventsOfProcesses, core, syncs) where 
   * - events is the list of all events,
   * - eventsOfProcesses maps process names to events that they include, 
@@ -140,12 +140,11 @@ class TCheckerTA(inputFile: java.io.File) {
   }
 }
 
-/**
- * Class that providing functions to generate products of the given timed automaton `ta` with traces or DFAs
- * on the common `alphabet`. The monitors are obtained by adding a monitor process in the given TA description,
- * and adding synchronizations on all events in the alphabet.
- * If acceptingLabel is None, then it is assumed that all locations of the TA are accepting. Otherwise, only those
- * locations with the said label are accepting.
+/** Class providing functions to generate products of the given timed automaton `ta` with traces or DFAs
+ *  on the common `alphabet`. The monitors are obtained by adding a monitor process in the given TA description,
+ *  and adding synchronizations on all events in the alphabet.
+ *  If acceptingLabel is None, then it is assumed that all locations of the TA are accepting. Otherwise, only those
+ *  locations with the said label are accepting.
  */
 class TCheckerMonitorMaker (
     ta: TCheckerTA,
@@ -162,7 +161,6 @@ class TCheckerMonitorMaker (
     ta.core.split("\n").foreach( _ match
       case regLoc(proc,loc,attr) =>
         if (attr.contains("labels:error")){
-          // System.out.println((proc,loc))
           accLocs.append((proc,loc))
         }
       case _ => ()
@@ -212,15 +210,21 @@ class TCheckerMonitorMaker (
     )
     strB.result()
   }
+  /** Accepting label for the monitor when all states of the TA are accepting (when acceptingLabel == None)*/
   def monitorAcceptLabel = "_crtmc_monitor_accept"
+
+  /** Accepting label for the monitor when acceptingLabel != None. The monitor still contains locations
+    labelled with monitorAcceptLabel, but the intersection is marked by productAcceptLabel. */
   def productAcceptLabel = "_crtmc_err"
 
-  /** Returns textual description of TA made of the product of the TA, and a
-    * monitor that reads a given word. The acceptLabel is reachable if the
+  /** Returns textual description of a TA made of the product of the TA, and a
+    * monitor that reads a given word. The monitorAcceptLabel is reachable iff the
     * intersection is non-empty.
+    * 
     * @pre all states of the TA are accepting
     */
   def makeWordIntersecter(word: Buffer[String]): String = {
+    assert(acceptingLabel == None)
     // Build product automaton
     val strB = StringBuilder()
     strB.append(ta.core)
@@ -247,13 +251,17 @@ class TCheckerMonitorMaker (
   }
 
   /** Returns textual description of TA made of the product of given TA, and the
-    * the given DFA. The acceptLabel is reachable if the intersection is non-empty.
-    * When complement is set to true, we compute TA /\ comp(DFA), so the emptiness
+    * the given DFA. The monitorAcceptLabel is reachable if the intersection is non-empty.
+    * When complement is set to true, the returned automaton represents TA /\ comp(DFA), so the emptiness
     * of this intersection is equivalent to inclusion of TA in DFA.
+    * 
+    * The accepting label is to be checked is monitorAcceptLabel if all locations of the TA are accepting (acceptingLabel == None),
+    * and productAcceptLabel otherwise. These cases are handled by the checkEmpty function.
+    * FIXME there should be a unique accepting label in both cases.
     * 
     * @param complement whether given DFA should be complemented.
     */
-  def makeDFAIntersecter(hypothesis: DFA[_, String], complement : Boolean): String = {
+  def makeDFAIntersecter(hypothesis: DFA[_, String], complement : Boolean = false): String = {
     val strStates = StringBuilder()
     val strTransitions = StringBuilder()
     // val alphabetSet = alphabet.asScala.toSet
@@ -323,12 +331,18 @@ class TCheckerMonitorMaker (
       }
     }
 
+
+  abstract class Answer
+  case object Empty extends Answer
+  case class NonEmpty(cexDescription : String) extends Answer
+
   /** Given a string description of a product automaton, check emptiness.
    * @param generateWitness returns the actual counterexample if set to true, and an empty string otherwise.
-   * @return None if the automaton is empty, and the output of the automaton
+   * @return None if the automaton is empty, and the output of tchecker
    * describing the execution otherwise.
    */
-  def checkEmpty(monitorDescription : String, acceptingLabel : String, generateWitness : Boolean) : Option[String] = {
+  def checkEmpty(monitorDescription : String, generateWitness : Boolean) : Answer = {
+    val label = if acceptingLabel == None then monitorAcceptLabel else productAcceptLabel
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".ta").toFile()
     val pw = PrintWriter(productFile)
@@ -342,10 +356,10 @@ class TCheckerMonitorMaker (
         if (generateWitness){
           certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
           "tck-reach -a reach %s -l %s -C %s"
-            .format(productFile.toString, acceptingLabel,certFile.toString)
+            .format(productFile.toString, label,certFile.toString)
         } else {
           "tck-reach -a covreach %s -l %s"
-            .format(productFile.toString, acceptingLabel)
+            .format(productFile.toString, label)
         }
     System.out.println(cmd)
     // var beginTime = System.nanoTime()
@@ -360,7 +374,7 @@ class TCheckerMonitorMaker (
       if (generateWitness && !configuration.globalConfiguration.keepTmpFiles){
         certFile.delete()
       }
-      None
+      Empty
     } else if (output.contains("REACHABLE true")) then {
       if (generateWitness){
         // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
@@ -370,9 +384,9 @@ class TCheckerMonitorMaker (
           certFile.delete()
         }
         // System.out.println(timedCex)
-        Some(timedCex)
+        NonEmpty(timedCex)
       } else {
-        Some("")
+        NonEmpty("")
       }
     } else {
       if (generateWitness && !configuration.globalConfiguration.keepTmpFiles){
@@ -448,23 +462,22 @@ class TCheckerMembershipOracle(
     val trace = prefix.asList().asScala ++ suffix.asList().asScala
     this._nbQueries += 1
     val monitorDescription = taMonitorMaker.makeWordIntersecter(trace)
-    val verdict = taMonitorMaker.checkEmpty(monitorDescription, taMonitorMaker.monitorAcceptLabel, generateWitness)
+    val verdict = taMonitorMaker.checkEmpty(monitorDescription, generateWitness)
     System.out.print(BLUE + "Membership query: " + trace + RESET)
     verdict match {
-      case None =>
+      case taMonitorMaker.Empty =>
         System.out.println(RED + " (false)" + RESET)
         statistics.negQueries = statistics.negQueries + trace.mkString(" ")
-      case cex =>
+        None
+      case taMonitorMaker.NonEmpty(cex) =>
         statistics.posQueries = statistics.posQueries + trace.mkString(" ")
         System.out.println(GREEN + " (true)" + RESET)
-        cex
+        Some(cex)
     }
-    verdict
   }
 }
 
-/*
- * Oracle to check whether hypothesis is included in TA,
+/** Oracle to check whether hypothesis is included in TA,
  * assuming that all locations of the TA are accepting.
  */
 class TCheckerInclusionOracle(
@@ -542,8 +555,8 @@ class TCheckerInterpolationOracle(
 
   /**
    * Use TChecker to check whether word is in the untimed language of the given ta.
-   * @return None if the word is accepted, and an interpolant automaton as an NFA
-   * otherwise, whose all words are rejected by the TA.
+   * @return NonEmpty if the word is accepted (and a witness execution a string);
+   *   Empty(nfa) where nfa is an interpolant automaton otherwise.
    */
   def checkWord(word : List[String]) : Answer = {
     val wordArg = "\"%s\"".format(word.mkString(" "))
@@ -592,7 +605,6 @@ class TCheckerInterpolationOracle(
 
 
 class UppaalTA
-
 
 object Factory{
   def getTCheckerOracles(taFile: File,

@@ -7,6 +7,8 @@ configuration is reachable within a time bound.
 - broadcast_2_2_a-*.{smv,ta}: 22s (nuXmv 1s)
 - broadcast_2_2_b-*.{smv,ta}: 9s (nuXmv 22m)
 - broadcast_2_2_c-*.{smv,ta}: 12s (nuXmv 14m)
+- broadcast_2_2_d-*.{smv,ta}: 10s (nuXmv 1m)
+- broadcast_3_3_d-*.{smv,ta}: 1m (nuXmv 528s)
 - TODO find a few other timings
 - TODO show that nuXmv is faster when the error state is reachable.
 

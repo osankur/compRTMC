@@ -14,14 +14,17 @@ import sys
 dataset_active = [
         [(0,0), (0,0), (0,0), (0,0)],
         [(1,1), (1,1), (1,1), (2,2)],
-        [(2,2), (3,3), (1,1), (0,0)]
+        [(2,2), (3,3), (1,1), (0,0)],
+        [(2,3), (2,3), (0,1), (0,0)]
     ]
 dataset_period = [
        [(10,10), (15,15), (10,10), (20,20)],
        [(9,9), (14,14), (19,19), (23,23)],
-       [(10,10), (15,15), (20,20), (10,10)]
+       [(10,10), (15,15), (20,20), (10,10)],
+       [(10,10), (14,14), (13,13), (10,10)]
     ]
-dataset_total_time = [50, 100, 100]
+dataset_total_time = [50, 100, 100, 50]
+
 def dump(n, m, active_duration, period,timed, total_time):
     """ n: number of processes
         m: number of active processes required to activate broadcast

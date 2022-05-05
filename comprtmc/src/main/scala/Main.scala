@@ -40,7 +40,9 @@ object Main {
           .action((x, c) => 
               if (x.toString.contains(".smv")){
                 c.copy(fsmFile = x, fsmFormat = FSM.SMV)
-              }else if (x.toString.contains(".ta")){
+              } else if (x.toString.contains(".aag")){
+                c.copy(fsmFile = x, fsmFormat = FSM.AIG)
+              } else if (x.toString.contains(".ta")){
                 c.copy(fsmFile = x, fsmFormat = FSM.TCheckerTA, fsmModelChecker=FSM.TCheckerModelChecker)
               } else {
                 throw Exception("Unknown fsm format")
@@ -52,6 +54,7 @@ object Main {
                 alg match{
                 case "learning" => c.copy(algorithm = HypothesisLearning)
                 case "tar" => c.copy(algorithm = TraceAbstractionRefinement)
+                case "synth" => c.copy(algorithm = Synthesis)
                 case _ => throw Exception("Unknown algorithm")
               }
             }
@@ -120,6 +123,8 @@ object Main {
             val taInterpolantOracle = ta.Factory.getTCheckerInterpolationOracle(config.taFile, fsmIntersectOracle.alphabet) 
             val alg = algorithms.TARAlgorithm(fsmIntersectOracle, taInterpolantOracle)
             alg.run()
+          case Synthesis =>
+            val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
         }
       case _ => 
     }

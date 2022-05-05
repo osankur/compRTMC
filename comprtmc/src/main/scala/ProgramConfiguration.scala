@@ -9,6 +9,7 @@ case class ParseError(msg : String) extends Exception(msg)
 object FSM {
     sealed trait FSMFormat
     case object SMV extends FSMFormat
+    case object AIG extends FSMFormat
     case object Murphi extends FSMFormat
     case object TCheckerTA extends FSMFormat
 
@@ -26,6 +27,11 @@ object FSM {
     case object PReach extends ModelChecker {
     override def toString: String = "preach"
     }
+    case object Abssynthe extends ModelChecker {
+    override def toString: String = "abssynthe"
+    }
+
+
     sealed trait ModelCheckingAlgorithm
     case object BDDAlgorithm extends ModelCheckingAlgorithm
     case object IC3Algorithm extends ModelCheckingAlgorithm
@@ -35,6 +41,7 @@ object FSM {
 sealed trait Algorithm
 case object TraceAbstractionRefinement extends Algorithm
 case object HypothesisLearning extends Algorithm
+case object Synthesis extends Algorithm
 
 case class Configuration(
     fsmFile : File = new File("."),

@@ -188,6 +188,8 @@ class TARAlgorithm(
     def run() : Unit = {
         var decisionReached = false
         while(!decisionReached){
+            statistics.Counters.incrementCounter("tar-iteration")
+            System.out.println(statistics.Counters.toString)
             // Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
             fsmIntersectionOracle.checkIntersection(learnedDFA) match {
                 case None => 
