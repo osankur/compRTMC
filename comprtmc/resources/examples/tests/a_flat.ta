@@ -24,15 +24,18 @@ location:P:idle_idle_busy_i1_w2_idle
 location:P:idle_idle_idle_i1_i3_idle{committed:}
 location:P:idle_idle_idle_i1_done_idle
 location:P:idle_idle_idle_i1_done_done{labels:scheduled}
+
 edge:P:idle_idle_idle_i1_i1_idle:idle_busy_idle_i1_w1_idle:M2_get2_J2_get2{do:x2=0}
-edge:P:idle_idle_idle_i1_i1_idle:idle_idle_idle_w1_i1_idle:J1_get1{do:x1=0}
-edge:P:idle_idle_idle_w1_i1_idle:idle_busy_idle_w1_w1_idle:M2_get2_J2_get2{do:x2=0}
+edge:P:idle_busy_idle_i1_w1_idle:idle_idle_idle_i1_i2_idle:M2_rel2_J2_rel2{provided:x2>=2}
+
 edge:P:idle_busy_idle_w1_w1_idle:idle_idle_idle_w1_i2_idle:M2_rel2_J2_rel2{provided:x2>=2}
+edge:P:idle_idle_idle_w1_i1_idle:idle_busy_idle_w1_w1_idle:M2_get2_J2_get2{do:x2=0}
+
+edge:P:idle_idle_idle_i1_i1_idle:idle_idle_idle_w1_i1_idle:J1_get1{do:x1=0}
 edge:P:idle_idle_idle_w1_i2_idle:idle_idle_busy_w1_w2_idle:M3_get3_J2_get3{do:x2=0}
 edge:P:idle_idle_busy_w1_w2_idle:idle_idle_idle_w1_i3_idle:M3_rel3_J2_rel3{provided:x2>=1}
 edge:P:idle_idle_idle_w1_i3_idle:idle_idle_idle_w1_done_idle:J2_done2_C_count{do:n=n+1}
 edge:P:idle_idle_idle_w1_i3_idle:idle_idle_idle_w1_done_done:J2_done2_C_count{do:n=n+1 : provided:n==1 && (z <= 30)}
-edge:P:idle_busy_idle_i1_w1_idle:idle_idle_idle_i1_i2_idle:M2_rel2_J2_rel2{provided:x2>=2}
 edge:P:idle_busy_idle_i1_w1_idle:idle_busy_idle_w1_w1_idle:J1_get1{do:x1=0}
 edge:P:idle_idle_idle_i1_i2_idle:idle_idle_busy_i1_w2_idle:M3_get3_J2_get3{do:x2=0}
 edge:P:idle_idle_idle_i1_i2_idle:idle_idle_idle_w1_i2_idle:J1_get1{do:x1=0}

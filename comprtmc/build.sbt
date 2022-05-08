@@ -26,4 +26,4 @@ lazy val root = project
         "org.slf4j" % "slf4j-simple" % "1.7.9"
   		)
   	)
-
+cancelable in Global := true

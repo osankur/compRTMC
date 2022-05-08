@@ -119,6 +119,9 @@ class TCheckerTA(inputFile: java.io.File) {
   def core: String = taComponents.core
   def externEvents = taComponents.externEvents
 
+  /** Given the counterexampel description output by TChecker, given as a list of lines,
+   *  return the trace, that is, the sequence of events in the alphabet encoded by the said counterexample.
+   */
   def getTraceFromCexDescription(cexDescription : List[String]) : List[String] = {
       val alphabetSet = events.toSet
       val word = ListBuffer[String]()
@@ -160,8 +163,12 @@ class TCheckerMonitorMaker (
     val regLoc = "\\s*location:(.*):(.*)\\{(.*)\\}\\s*".r
     ta.core.split("\n").foreach( _ match
       case regLoc(proc,loc,attr) =>
-        if (attr.contains("labels:error")){
-          accLocs.append((proc,loc))
+        acceptingLabel match {
+          case None => accLocs.append((proc,loc))
+          case Some(lab) => 
+            if (attr.contains(s"labels:$lab")){
+              accLocs.append((proc,loc))
+            }
         }
       case _ => ()
     )
@@ -215,16 +222,14 @@ class TCheckerMonitorMaker (
 
   /** Accepting label for the monitor when acceptingLabel != None. The monitor still contains locations
     labelled with monitorAcceptLabel, but the intersection is marked by productAcceptLabel. */
-  def productAcceptLabel = "_crtmc_err"
+  def productAcceptLabel = "_crtmc_joint_accept"
 
   /** Returns textual description of a TA made of the product of the TA, and a
     * monitor that reads a given word. The monitorAcceptLabel is reachable iff the
     * intersection is non-empty.
     * 
-    * @pre all states of the TA are accepting
     */
   def makeWordIntersecter(word: Buffer[String]): String = {
-    assert(acceptingLabel == None)
     // Build product automaton
     val strB = StringBuilder()
     strB.append(ta.core)
@@ -247,7 +252,27 @@ class TCheckerMonitorMaker (
     }
     strB.append("\n")
     strB.append(productTASyncs.mkString)
-    return strB.toString
+
+    acceptingLabel match {
+      case None => 
+        // All locations of the TA are accepting; so we will check for monitorAcceptLabel
+        strB.toString
+      case Some(errlabel) =>
+        // TA has designated accepting locations, we will add a new accepting location labeled productAcceptLabel
+        strB.append("\nevent:%s\n".format(productAcceptLabel))
+        // For each process with an accepting location, add a new joint accepting state
+        acceptingLocations.map(_._1).toSet.foreach{
+          proc => strB.append("location:%s:%s{labels:%s}\n".format(proc, productAcceptLabel, productAcceptLabel))
+          strB.append("sync:%s@%s:%s@%s\n".format(proc, productAcceptLabel, monitorProcessName, productAcceptLabel))
+        }
+        // Add edges from accepting locations to this new error states
+        acceptingLocations.foreach{
+          (proc,loc) =>
+            strB.append("edge:%s:%s:%s:%s\n".format(proc,loc, productAcceptLabel, productAcceptLabel))
+        }
+        strB.append("edge:%s:q%s:q%s:%s\n".format(monitorProcessName, word.length, word.length, productAcceptLabel))
+        strB.toString
+    }
   }
 
   /** Returns textual description of TA made of the product of given TA, and the
@@ -309,10 +334,13 @@ class TCheckerMonitorMaker (
       taB.append(productTASyncs)
       taB.append("\n")
       acceptingLabel match {
-        case None => taB.toString
+        case None => 
+          // All locations of the TA are accepting; so we will check for monitorAcceptLabel
+          taB.toString
         case Some(errlabel) =>
+          // TA has designated accepting locations, we will add a new accepting location labeled productAcceptLabel
           taB.append("\nevent:%s\n".format(productAcceptLabel))
-          // For each process with an accepting location, add a new error state
+          // For each process with an accepting location, add a new joint accepting state
           acceptingLocations.map(_._1).toSet.foreach{
             proc => taB.append("location:%s:%s{labels:%s}\n".format(proc, productAcceptLabel, productAcceptLabel))
             taB.append("sync:%s@%s:%s@%s\n".format(proc, productAcceptLabel, monitorProcessName, productAcceptLabel))
@@ -338,8 +366,7 @@ class TCheckerMonitorMaker (
 
   /** Given a string description of a product automaton, check emptiness.
    * @param generateWitness returns the actual counterexample if set to true, and an empty string otherwise.
-   * @return None if the automaton is empty, and the output of tchecker
-   * describing the execution otherwise.
+   * @return Empty if the given automaton is empty, and NonEmpty with a trace otherwise.
    */
   def checkEmpty(monitorDescription : String, generateWitness : Boolean) : Answer = {
     val label = if acceptingLabel == None then monitorAcceptLabel else productAcceptLabel
@@ -414,10 +441,11 @@ abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boo
 
 class TCheckerMembershipOracle(
     ta : TCheckerTA,
-    alphabet: Alphabet[String]
+    alphabet: Alphabet[String],
+    acceptingLabel : Option[String] = None
 ) extends TAMembershipOracle {
   private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
-  private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet, None)
+  private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet, acceptingLabel)
 
   private var _elapsed : Long = 0
   private var _nbQueries : Long = 0
@@ -477,8 +505,9 @@ class TCheckerMembershipOracle(
   }
 }
 
-/** Oracle to check whether hypothesis is included in TA,
- * assuming that all locations of the TA are accepting.
+/** Oracle to check whether the language of the TA is included in that of the hypothesis H, i.e.
+ *                              T <= H ? 
+ *  assuming that all locations of the TA are accepting.
  */
 class TCheckerInclusionOracle(
     ta: TCheckerTA,
@@ -604,6 +633,54 @@ class TCheckerInterpolationOracle(
 }
 
 
+/** Oracle to check whether the language of the hypothesis H is included in that of the TA:
+ *                              H <= T ? 
+ *  Here, all locations of the TA is assumed to be accepting.
+ */
+class TCheckerContainmentOracle(
+    taFile: File,
+    alphabet: Alphabet[String]
+) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
+
+  private val logger = LoggerFactory.getLogger(classOf[TCheckerContainmentOracle])
+
+  private val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
+  tmpDirPath.toFile().mkdirs()
+
+  /** TCheckerTA which represents the complement of the given TA,
+   *  with accepting label _complement_accept. */
+  private val complementTA = {
+    val f = Files.createTempFile(tmpDirPath, "complement", ".ta").toFile()
+    val cmd = s"tck-convert -c ${taFile.toString} -o ${f.toString}"
+    System.out.println(cmd)
+    if (cmd.! != 0) then{
+      logger.error("tck-convert returned an error")
+      throw FailedTAModelChecking("Could not compute complement")
+    }
+    TCheckerTA(f)
+  }
+  val taMonitorMaker = TCheckerMonitorMaker(complementTA, alphabet, Some("_complement_accept"))
+  
+  override def findCounterExample(
+      hypothesis: DFA[_, String],
+      inputs: java.util.Collection[? <: String]
+    ): DefaultQuery[String, java.lang.Boolean] = {
+    statistics.Counters.incrementCounter("taContainmentOracle")
+
+    val productTA = taMonitorMaker.makeDFAIntersecter(hypothesis, false)
+    taMonitorMaker.checkEmpty(productTA, generateWitness=true) match {
+      case taMonitorMaker.Empty => null // Containment holds
+      case taMonitorMaker.NonEmpty(cexDescription) => // Containment fails
+      val word = complementTA.getTraceFromCexDescription(cexDescription.split("\n").toList).filter(alphabet.contains(_))
+      val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.FALSE)
+      System.out.println(RED + "Counterexample to containment (accepted by hypothesis but not by timed automaton): " + query + RESET)
+      statistics.negQueries = statistics.negQueries + word.mkString(" ")
+      query
+    }      
+  }
+}
+
+
 class UppaalTA
 
 object Factory{
@@ -613,6 +690,10 @@ object Factory{
       val ta = TCheckerTA(taFile)
       (TCheckerMembershipOracle(ta, alph), TCheckerInclusionOracle(ta, alph))
     }
+  def getTCheckerContainmentOracle(taFile : File, alphabet : List[String]) : EquivalenceOracle.DFAEquivalenceOracle[String] ={
+      val alph = Alphabets.fromList(alphabet)
+      TCheckerContainmentOracle(taFile, alph)
+  }
   def getTCheckerInterpolationOracle(taFile: File, alphabet: List[String]) : TCheckerInterpolationOracle ={
     TCheckerInterpolationOracle(taFile, alphabet)
   }

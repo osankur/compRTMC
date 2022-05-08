@@ -75,15 +75,20 @@ class BasicTests extends munit.FunSuite {
     }
   }
 }
-
+*/
 class FullZG extends munit.FunSuite {
-  def learnForInclusion(input: String): Unit = {
-    val ta = TCheckerTA(File(input))
-    val alphabet: Alphabet[String] = Alphabets.fromList(ta.events.asJava)
+  def learnForInclusion(input: String, containment : Boolean): Unit = {
+    val tckTA = ta.TCheckerTA(File(input))
+    val alphabet: Alphabet[String] = Alphabets.fromList(tckTA.events.asJava)
     val mOracle
         : de.learnlib.api.oracle.MembershipOracle[String, java.lang.Boolean] =
-      TCheckerMembershipOracle(ta,alphabet)
-    val inclOracle = TCheckerInclusionOracle(ta,alphabet)
+      ta.TCheckerMembershipOracle(tckTA,alphabet)
+    val inclOracle = 
+      if !containment then {
+        ta.TCheckerInclusionOracle(tckTA,alphabet)
+      } else {
+        ta.TCheckerContainmentOracle(File(input),alphabet)
+      }
     val lstar = ClassicLStarDFABuilder[String]()
       .withAlphabet(alphabet)
       .withOracle(mOracle)
@@ -119,7 +124,7 @@ class FullZG extends munit.FunSuite {
     System.out.println("Sigma: " + alphabet.size());
 
     // show model
-    // Visualization.visualize(result, alphabet);
+    Visualization.visualize(result, alphabet);
 
     System.out.println(
       "-------------------------------------------------------"
@@ -127,14 +132,35 @@ class FullZG extends munit.FunSuite {
   }
   test("a_flat.ta") {
     // learnForInclusion("resources/examples/a_flat.ta")
-    learnForInclusion("resources/examples/a_flat.ta")
+    // learnForInclusion("resources/examples/tests/a_flat.ta", false)
   }
   test("untimed") {
     // learnForInclusion("resources/examples/a_flat.ta")
-    learnForInclusion("resources/examples/untimed.ta")
+    // learnForInclusion("resources/examples/tests/untimed.ta", false)
+  }
+  test("untimed-containment"){
+    // learnForInclusion("resources/examples/tests/untimed.ta", true)
+  }
+  test("a"){
+    // learnForInclusion("resources/examples/tests/d.ta", true)
+  }
+}
+class SynthTest extends munit.FunSuite {
+  test("abssynthe-unr"){
+    synthesis.AbssyntheOracle(File("/home/osankur/ulb/AbsSynthe/examples/example2.smv")).synthesize() match{
+      case synthesis.Uncontrollable(_) => ()
+      case _ => assert(false)
+    }
+  }
+  test("abssynthe-rea"){
+    synthesis.AbssyntheOracle(File("/home/osankur/ulb/AbsSynthe/examples/example1.smv")).synthesize() match{
+      case synthesis.Controllable(_) => ()
+      case _ => assert(false)
+    }
   }
 }
 
+/*
 class DFATest extends munit.FunSuite {
   test("dfa2"){
     Example.example2()
@@ -143,7 +169,6 @@ class DFATest extends munit.FunSuite {
   }
 }
 */
-
 class SMVTest extends munit.FunSuite {
   test("smv"){
     val inp = fsm.SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
@@ -171,6 +196,12 @@ class AutomataTest extends munit.FunSuite{
   // val target_as : Automaton[Integer, String, Integer] = target
   // val serializer = SAFSerializationNFA.getInstance()
   // serializer.writeModel(java.lang.System.out, target, alphabet)
-  Visualization.visualize(minaut, alphabet)
+  // Visualization.visualize(minaut, alphabet)
+  }
+}
+
+class ThreadTest extends munit.FunSuite {
+  test("thread-basic"){
+    Example.threadExample()
   }
 }

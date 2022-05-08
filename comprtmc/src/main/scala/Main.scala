@@ -50,15 +50,15 @@ object Main {
             )
           .text("fsm is the finite state model in smv or ta format"),
         opt[String]("alg")
-          .action({(alg, c) => c
+          .action({(alg, c) =>
                 alg match{
                 case "learning" => c.copy(algorithm = HypothesisLearning)
                 case "tar" => c.copy(algorithm = TraceAbstractionRefinement)
-                case "synth" => c.copy(algorithm = Synthesis)
+                case "synthesis" => c.copy(algorithm = Synthesis)
                 case _ => throw Exception("Unknown algorithm")
               }
             }
-            ).valueName("(learning|tar)"),
+            ).valueName("(learning|tar|synthesis)"),
         opt[Boolean]("verbose")
           .action((_, c) => c.copy(verbose = true))
           .valueName("(true|false)"),
@@ -125,6 +125,11 @@ object Main {
             alg.run()
           case Synthesis =>
             val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
+            val taContainmentOracle = ta.Factory.getTCheckerContainmentOracle(config.taFile, fsmIntersectOracle.alphabet)
+            val smv = fsm.SMV(config.fsmFile)
+            val synthesisOracle = synthesis.AbssyntheOracle(config.fsmFile)
+            val alg = algorithms.CompSynthesisAlgorithm(smv,synthesisOracle,taMemOracle, taIncOracle, taContainmentOracle)
+            alg.run()
         }
       case _ => 
     }

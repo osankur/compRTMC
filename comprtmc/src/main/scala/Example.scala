@@ -28,125 +28,155 @@ import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
 
 import net.automatalib.serialization.aut._
+import java.util.concurrent.locks._
 
-class SampleMembershipOracle extends MembershipOracle[Character,java.lang.Boolean] {
-    override def processQueries(queries : java.util.Collection[? <: de.learnlib.api.query.Query[Character, java.lang.Boolean]]): Unit =
-        {
-                  MQUtil.answerQueries(this, queries);
-        }
-    override def answerQuery(prefix : Word[Character], suffix : Word[Character]) : java.lang.Boolean = {
-        val pre = prefix.asList().asScala
-        val suf = suffix.asList().asScala
-        val wholeTrace = (pre++suf).mkString("")
-        System.out.println(wholeTrace)
-        // Dump the intersection of TA for the word prefix.suffix, with input TA T, and call TChecker.
-        "a*b*".r.matches(wholeTrace)
-    }
+class SampleMembershipOracle
+    extends MembershipOracle[Character, java.lang.Boolean] {
+  override def processQueries(
+      queries: java.util.Collection[
+        ? <: de.learnlib.api.query.Query[Character, java.lang.Boolean]
+      ]
+  ): Unit = {
+    MQUtil.answerQueries(this, queries);
+  }
+  override def answerQuery(
+      prefix: Word[Character],
+      suffix: Word[Character]
+  ): java.lang.Boolean = {
+    val pre = prefix.asList().asScala
+    val suf = suffix.asList().asScala
+    val wholeTrace = (pre ++ suf).mkString("")
+    System.out.println(wholeTrace)
+    // Dump the intersection of TA for the word prefix.suffix, with input TA T, and call TChecker.
+    "a*b*".r.matches(wholeTrace)
+  }
 }
 
-class SampleEquivalenceOracle extends EquivalenceOracle.DFAEquivalenceOracle[Character] {
-    val inputs : Alphabet[Character] = Alphabets.characters('a', 'b')
-    val target : CompactDFA[Character] =
-        AutomatonBuilders.newDFA(inputs)
-                .withInitial("q0")
-                .from("q0")
-                    .on('a').to("q0")
-                .from("q0")
-                    .on('b').to("q1")
-                .from("q1")
-                    .on('b').to("q1")
-                .from("q1")
-                    .on('a').to("q2")
-                .withAccepting("q0")
-                .withAccepting("q1")
-                .create();
-        // AutomatonBuilders.newDFA(inputs)
-        //         .withInitial("q0")
-        //         .from("q0")
-        //             .on('a').to("q1")
-        //         .from("q1")
-        //             .on('a').to("q1")
-        //         .from("q1")
-        //             .on('b').to("q2")
-        //         .from("q2")
-        //             .on('c').to("q3")
-        //         .from("q3")
-        //             .on('a').to("q2")
-        //         .from("q3")
-        //             .on('d').to("q4")
-        //         .withAccepting("q0")
-        //         .withAccepting("q1")
-        //         .withAccepting("q2")
-        //         .withAccepting("q3")
-        //         .withAccepting("q4")
-        //         .create();
-        
-      override def findCounterExample(hypothesis : DFA[_,Character], inputs : java.util.Collection[? <: Character]) : DefaultQuery[Character, java.lang.Boolean] = {
-        // Try traces in a*b* but not in hypothesis
-        val rand = Random(0)
-        for (x <- 0 to 100) {
-          val i = rand.nextInt() % 10
-          val j = rand.nextInt() % 10
-          val words = ArrayBuffer[Character]()
-          for (_ <- 1 to i){
-            words.addOne('a')
-          }
-          for (_ <- 1 to j){
-            words.addOne('b')
-          }
-          if (!hypothesis.accepts(words.asJava)){
-            return DefaultQuery[Character, java.lang.Boolean](Word.fromArray[Character](words.toArray,0,words.length), java.lang.Boolean.TRUE)
-          }
-        }
+class SampleEquivalenceOracle
+    extends EquivalenceOracle.DFAEquivalenceOracle[Character] {
+  val inputs: Alphabet[Character] = Alphabets.characters('a', 'b')
+  val target: CompactDFA[Character] =
+    AutomatonBuilders
+      .newDFA(inputs)
+      .withInitial("q0")
+      .from("q0")
+      .on('a')
+      .to("q0")
+      .from("q0")
+      .on('b')
+      .to("q1")
+      .from("q1")
+      .on('b')
+      .to("q1")
+      .from("q1")
+      .on('a')
+      .to("q2")
+      .withAccepting("q0")
+      .withAccepting("q1")
+      .create();
+    // AutomatonBuilders.newDFA(inputs)
+    //         .withInitial("q0")
+    //         .from("q0")
+    //             .on('a').to("q1")
+    //         .from("q1")
+    //             .on('a').to("q1")
+    //         .from("q1")
+    //             .on('b').to("q2")
+    //         .from("q2")
+    //             .on('c').to("q3")
+    //         .from("q3")
+    //             .on('a').to("q2")
+    //         .from("q3")
+    //             .on('d').to("q4")
+    //         .withAccepting("q0")
+    //         .withAccepting("q1")
+    //         .withAccepting("q2")
+    //         .withAccepting("q3")
+    //         .withAccepting("q4")
+    //         .create();
 
-        // Try traces in hypothesis and check if they are in a*b*
-        for (_  <- 0 to 1000){
-          val expLength = rand.nextInt() % 10
-          var s = hypothesis.getInitialState()
-          val word = ArrayBuffer[Character]()
-          for (_ <- 1 to expLength){
-            val nextLetter : Character = 
-              if (rand.nextInt() % 2 == 0) then {
-                'a'
-              } else {
-                'b'
-              }
-            word.addOne(nextLetter)
-            s = hypothesis.getSuccessor(s, nextLetter)
-          }
-          if (hypothesis.isAccepting(s)){
-            if (!"a*b*".r.matches(word.mkString(""))) then{
-              return DefaultQuery[Character, java.lang.Boolean](Word.fromArray[Character](word.toArray,0,word.length), java.lang.Boolean.FALSE)
-            }
-          }
-        }
-        null
+  override def findCounterExample(
+      hypothesis: DFA[_, Character],
+      inputs: java.util.Collection[? <: Character]
+  ): DefaultQuery[Character, java.lang.Boolean] = {
+    // Try traces in a*b* but not in hypothesis
+    val rand = Random(0)
+    for (x <- 0 to 100) {
+      val i = rand.nextInt() % 10
+      val j = rand.nextInt() % 10
+      val words = ArrayBuffer[Character]()
+      for (_ <- 1 to i) {
+        words.addOne('a')
       }
+      for (_ <- 1 to j) {
+        words.addOne('b')
+      }
+      if (!hypothesis.accepts(words.asJava)) {
+        return DefaultQuery[Character, java.lang.Boolean](
+          Word.fromArray[Character](words.toArray, 0, words.length),
+          java.lang.Boolean.TRUE
+        )
+      }
+    }
+
+    // Try traces in hypothesis and check if they are in a*b*
+    for (_ <- 0 to 1000) {
+      val expLength = rand.nextInt() % 10
+      var s = hypothesis.getInitialState()
+      val word = ArrayBuffer[Character]()
+      for (_ <- 1 to expLength) {
+        val nextLetter: Character =
+          if (rand.nextInt() % 2 == 0) then {
+            'a'
+          } else {
+            'b'
+          }
+        word.addOne(nextLetter)
+        s = hypothesis.getSuccessor(s, nextLetter)
+      }
+      if (hypothesis.isAccepting(s)) {
+        if (!"a*b*".r.matches(word.mkString(""))) then {
+          return DefaultQuery[Character, java.lang.Boolean](
+            Word.fromArray[Character](word.toArray, 0, word.length),
+            java.lang.Boolean.FALSE
+          )
+        }
+      }
+    }
+    null
+  }
 }
 
 object Example {
 
-  def example2() : Unit = {
-    val inputs : Alphabet[Character] = Alphabets.characters('a', 'b')
-    val mqOracle : MembershipOracle[Character,java.lang.Boolean]= SampleMembershipOracle()
-    val lstar = ClassicLStarDFABuilder[Character]().withAlphabet(inputs).withOracle(mqOracle).create()
+  def example2(): Unit = {
+    val inputs: Alphabet[Character] = Alphabets.characters('a', 'b')
+    val mqOracle: MembershipOracle[Character, java.lang.Boolean] =
+      SampleMembershipOracle()
+    val lstar = ClassicLStarDFABuilder[Character]()
+      .withAlphabet(inputs)
+      .withOracle(mqOracle)
+      .create()
     val wMethod = SampleEquivalenceOracle()
-    val experiment : DFAExperiment[Character] = DFAExperiment(lstar, wMethod, inputs);
+    val experiment: DFAExperiment[Character] =
+      DFAExperiment(lstar, wMethod, inputs);
 
-      // turn on time profiling
+    // turn on time profiling
     experiment.setProfile(true);
 
-      // enable logging of models
+    // enable logging of models
     experiment.setLogModels(true);
 
-      // run experiment
+    // run experiment
     experiment.run();
 
     // get learned model
     val result = experiment.getFinalHypothesis();
 
     // report results
-    System.out.println("-------------------------------------------------------");
+    System.out.println(
+      "-------------------------------------------------------"
+    );
 
     // profiling
     System.out.println(SimpleProfiler.getResults());
@@ -160,68 +190,87 @@ object Example {
 
     // show model
     // Visualization.visualize(result, inputs);
-    val f  =   new java.util.function.Function[Character, String] {
-      override def apply(input: Character): String = input+""
+    val f = new java.util.function.Function[Character, String] {
+      override def apply(input: Character): String = input + ""
     }
-    System.out.println(AUTWriter.writeAutomaton(result,inputs,f,System.out))
+    System.out.println(AUTWriter.writeAutomaton(result, inputs, f, System.out))
 
-    System.out.println("-------------------------------------------------------");
+    System.out.println(
+      "-------------------------------------------------------"
+    );
 
   }
 
-  def example1() : Unit = {
+  def example1(): Unit = {
     val EXPLORATION_DEPTH = 4
-    def constructSUL() : CompactDFA[Character]  = {
-        // input alphabet contains characters 'a'..'b'
-        val sigma : Alphabet[Character] = Alphabets.characters('a', 'b')
-        // create automaton
-        return AutomatonBuilders.newDFA(sigma)
-                .withInitial("q0")
-                .from("q0")
-                    .on('a').to("q1")
-                    .on('b').to("q2")
-                .from("q1")
-                    .on('a').to("q0")
-                    .on('b').to("q3")
-                .from("q2")
-                    .on('a').to("q3")
-                    .on('b').to("q0")
-                .from("q3")
-                    .on('a').to("q2")
-                    .on('b').to("q1")
-                .withAccepting("q0")
-                .create();
+    def constructSUL(): CompactDFA[Character] = {
+      // input alphabet contains characters 'a'..'b'
+      val sigma: Alphabet[Character] = Alphabets.characters('a', 'b')
+      // create automaton
+      return AutomatonBuilders
+        .newDFA(sigma)
+        .withInitial("q0")
+        .from("q0")
+        .on('a')
+        .to("q1")
+        .on('b')
+        .to("q2")
+        .from("q1")
+        .on('a')
+        .to("q0")
+        .on('b')
+        .to("q3")
+        .from("q2")
+        .on('a')
+        .to("q3")
+        .on('b')
+        .to("q0")
+        .from("q3")
+        .on('a')
+        .to("q2")
+        .on('b')
+        .to("q1")
+        .withAccepting("q0")
+        .create();
     }
-    val target : CompactDFA[Character] = constructSUL()
+    val target: CompactDFA[Character] = constructSUL()
     val inputs = target.getInputAlphabet()
-    val sul : DFAMembershipOracle[Character] = DFASimulatorOracle(target)
+    val sul: DFAMembershipOracle[Character] = DFASimulatorOracle(target)
 
     // oracle for counting queries wraps SUL
-    val mqOracle : DFACounterOracle[Character] = DFACounterOracle(sul, "membership queries");
+    val mqOracle: DFACounterOracle[Character] =
+      DFACounterOracle(sul, "membership queries");
 
-    val lstar = ClassicLStarDFABuilder[Character]().withAlphabet(inputs).withOracle(mqOracle).create()
-    val wMethod : DFAWMethodEQOracle[Character] = DFAWMethodEQOracle(mqOracle, EXPLORATION_DEPTH);
+    val lstar = ClassicLStarDFABuilder[Character]()
+      .withAlphabet(inputs)
+      .withOracle(mqOracle)
+      .create()
+    val wMethod: DFAWMethodEQOracle[Character] =
+      DFAWMethodEQOracle(mqOracle, EXPLORATION_DEPTH);
 
-      // construct a learning experiment from
-      // the learning algorithm and the conformance test.
-      // The experiment will execute the main loop of
-      // active learning
-    val experiment : DFAExperiment[Character] = DFAExperiment(lstar, wMethod, inputs);
+    // construct a learning experiment from
+    // the learning algorithm and the conformance test.
+    // The experiment will execute the main loop of
+    // active learning
+    val experiment: DFAExperiment[Character] =
+      DFAExperiment(lstar, wMethod, inputs);
 
-      // turn on time profiling
+    // turn on time profiling
     experiment.setProfile(true);
 
-      // enable logging of models
+    // enable logging of models
     experiment.setLogModels(true);
 
-      // run experiment
+    // run experiment
     experiment.run();
 
     // get learned model
     val result = experiment.getFinalHypothesis();
 
     // report results
-    System.out.println("-------------------------------------------------------");
+    System.out.println(
+      "-------------------------------------------------------"
+    );
 
     // profiling
     System.out.println(SimpleProfiler.getResults());
@@ -237,9 +286,111 @@ object Example {
     // show model
     Visualization.visualize(result, inputs);
 
-    System.out.println("-------------------------------------------------------");
+    System.out.println(
+      "-------------------------------------------------------"
+    );
 
     // System.out.println("Final observation table:");
     // ObservationTableASCIIWriter().write[de.learnlib.datastructure.observationtable.ObservationTable[Character,Boolean],java.io.PrintStream](lstar.getObservationTable(), System.out);
   }
+
+  sealed abstract class Phase
+  case object UnderApprPhase extends Phase
+  case object  OverApprPhase extends Phase
+
+  class SynthesisLearningLock {
+
+    var phase : Phase = OverApprPhase
+    var strategy = ""
+    def switchPhase() : Unit = {
+      phase = phase match {
+        case OverApprPhase => UnderApprPhase
+        case UnderApprPhase => OverApprPhase
+      }
+    }
+  }
+  class Task(name: String, phase : Phase, d: Int, o: SynthesisLearningLock)
+      extends Runnable {
+    def run(): Unit = {
+      System.out.println("o.phase = " + o.phase)
+      o.synchronized {
+        if (phase == UnderApprPhase) {
+          while (o.phase != UnderApprPhase) {
+              try {
+                  o.wait();
+              } catch {
+                case e : InterruptedException =>
+                  Thread.currentThread().interrupt(); 
+                  System.out.println("Thread Interrupted");
+              }
+              System.out.print(".")
+          }
+        }
+      }
+      System.out.println("Starting loop. o.phase = " + o.phase)
+      while (true) {
+        Thread.sleep(2000)
+        for (counter <- 1 to 5) {
+          o.synchronized{
+            Thread.sleep(d)
+            System.out.println(name)
+          }
+        }
+        o.synchronized{
+          o.switchPhase()
+          o.notify()
+          while (o.phase != phase) {
+              try {
+                  o.wait();
+              } catch {
+                case e : InterruptedException =>
+                  Thread.currentThread().interrupt(); 
+                  System.out.println("Thread Interrupted");
+              }
+          }
+        }
+      }
+    }
+  }
+
+  def threadExample(): Unit = {
+    val lock = SynthesisLearningLock()
+    val thPrim = Thread(Task("primary", OverApprPhase, 500, lock))
+    val thSeco = Thread(Task("secondary", UnderApprPhase, 500, lock))
+    thSeco.start()
+    thPrim.start()
+    thSeco.join()
+    thPrim.join()
+  }
+
+  class CondTask(name: String, primary: Boolean, d: Int, lock : ReentrantLock, condSelf : Condition, condOther : Condition)
+      extends Runnable {
+    def run(): Unit = {
+      while (true) {
+          lock.lock()
+          if (!primary){
+            condSelf.await()
+          }
+          for (counter <- 1 to 2) {
+            Thread.sleep(d)
+            System.out.println(name)
+          }
+          condOther.signal()
+          lock.unlock()
+      }
+    }
+  }
+  def threadExample2(): Unit = {
+    val lock = ReentrantLock()
+    val condPrim = lock.newCondition()
+    val condSeco = lock.newCondition()
+    val thPrim = Thread(CondTask("primary", true, 500, lock, condPrim, condSeco))
+    val thSeco = Thread(CondTask("secondary", false, 500, lock, condSeco, condPrim))
+    thSeco.start()
+    thPrim.start()
+    thSeco.join()
+    thPrim.join()
+  }
+
+
 }

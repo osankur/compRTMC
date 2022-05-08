@@ -49,6 +49,8 @@ abstract class FSMIntersectionOracle {
 
 }
 
+/** Light parser of SMV files.
+ */
 class SMV(inputFile: java.io.File) {
   class SMVStructure(
       // the body of the main module renamed _rtmc_main
@@ -114,14 +116,18 @@ class SMV(inputFile: java.io.File) {
       "\ttime : _rtmc_time(%s);\n".format(alphabetAsArgs)
     )
     strB.append("\nDEFINE\t _rt_nonexcl := ")
-    val uniquePairs = for {
-      x <- alphabet
-      y <- alphabet
-      if x < y
-    } yield (x, y)
-    // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & !fsm._rt_%s | !fsm._rt_%s & fsm._rt_%s".format(x,y,x,y)).mkString(" | "))
-    strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
-    strB.append(";\n")
+    if (alphabet.size > 1){
+      val uniquePairs = for {
+        x <- alphabet
+        y <- alphabet
+        if x < y
+      } yield (x, y)
+      // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & !fsm._rt_%s | !fsm._rt_%s & fsm._rt_%s".format(x,y,x,y)).mkString(" | "))
+      strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
+      strB.append(";\n")
+    } else {
+      strB.append("FALSE;\n")
+    }
     strB.append("INVARSPEC\n\t !_rt_nonexcl & (time.accepting -> !fsm.err)\n")
     SMVStructure(fsm, strB.toString, alphabet.toList)
   }
@@ -130,17 +136,7 @@ class SMV(inputFile: java.io.File) {
   def alphabet = _structure.alphabet
 }
 
-class SMVIntersectionOracle(
-    smv: SMV
-) extends FSMIntersectionOracle {
-
-  private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
-
-  val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
-  tmpDirPath.toFile().mkdirs()
-
-  override def alphabet = smv.alphabet
-
+class SMVMonitorMaker(smv : SMV){
   def makeIntersectionMonitor(hypothesis: DFA[_, String]): String = {
     val timeModuleB = StringBuilder()
     val strTransitions = StringBuilder()
@@ -171,7 +167,7 @@ class SMVIntersectionOracle(
       timeModuleB.append("\t next(state) := case\n")
       states foreach { state =>
         {
-          for (sigma <- alphabet) {
+          for (sigma <- smv.alphabet) {
             val succs = hypothesis.getSuccessors(state, sigma);
             for (succ <- succs) {
               timeModuleB.append(
@@ -207,6 +203,20 @@ class SMVIntersectionOracle(
     newSMV.toString
   }
 
+}
+
+class SMVIntersectionOracle(
+    smv: SMV
+) extends FSMIntersectionOracle {
+
+  private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
+
+  val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
+  tmpDirPath.toFile().mkdirs()
+
+  override def alphabet = smv.alphabet
+  val smvMonitorMaker = SMVMonitorMaker(smv)
+
   override def checkIntersection(
       timeModule: DFA[_, String]
   ): Option[CounterExample] = {
@@ -216,8 +226,8 @@ class SMVIntersectionOracle(
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".smv").toFile()
     val pw = PrintWriter(productFile)
-    pw.write(makeIntersectionMonitor(timeModule))
-    pw.close()    
+    pw.write(smvMonitorMaker.makeIntersectionMonitor(timeModule))
+    pw.close()
     val cmd =
       configuration.globalConfiguration.fsmAlgorithm match {
         case configuration.FSM.BDDAlgorithm =>

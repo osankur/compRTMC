@@ -1,6 +1,14 @@
 # CompRTMC
 Compositional model checking algorithms for timed automata
 
+## Dependencies
+The tool depends on several command line programs, most of which are shipped together:
+- `NuSMV` as an FSM model checker
+- `nuXmv` as an FSM model checker (not included in the archive due to its licence)
+- The TChecker timed automaton model checker executables: `tck-reach`, `tck-tar`, `tck-convert` (branch `tar`)
+- `abssynthe` circuit synthesis tool from AIG specifications (branch `env_win_region`)
+- `aigtosmv` for translating aig models to SMV
+- 
 ## Usage
 Currently two safety verification algorithms are implemented.
 
@@ -14,7 +22,7 @@ is used to compute unions of DFAs and their minimizations.
 
 - `synth`: synthesize.
 All events in the TA must be synchronizing events. Otherwise complementing is complicated.
-The _rt_events must all be variables. In fact, DEFINES are lost when translating to/from AIG.
+The _rt_events must all be variables. In fact, DEFINES are lost when translating to/from AIG.`
 
 ## Modeling
 - Explain the use of `_rt_events`. Typically one uses DEFINEs as predicates. 
