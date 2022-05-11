@@ -45,6 +45,8 @@ import fr.irisa.comprtmc.ta
 import fr.irisa.comprtmc.configuration
 import fr.irisa.comprtmc.statistics
 import fr.irisa.comprtmc.synthesis
+import fr.irisa.comprtmc.configuration.Synthesis
+import scala.util.hashing.Hashing.Default
 case class CounterExample(cexDescription: String) extends Exception
 
 class CompSafetyAlgorithm(
@@ -208,9 +210,6 @@ class CompSynthesisAlgorithm(
   private val logger = LoggerFactory.getLogger(classOf[CompSynthesisAlgorithm])
   val tmpDirPath = configuration.globalConfiguration.tmpDirPath()
 
-  private val fsmMonitorMaker = fsm.SMVMonitorMaker(smv)
-  private val fsmIntersectionOracle = fsm.SMVIntersectionOracle(smv)
-
   private sealed abstract class Phase
   private case object UnderApprPhase extends Phase
   private case object OverApprPhase extends Phase
@@ -218,32 +217,43 @@ class CompSynthesisAlgorithm(
   private object SynthesisLearningLock {
     var phase: Phase = OverApprPhase
     var strategy = File("")
-    var verdictReached = false
-
+    // None : not yet known, true : controllable, false : uncontrollable
+    var verdict : Option[Boolean] = None
+    // Query returned by the underApprPhase
+    var query = DefaultQuery[String, java.lang.Boolean](
+      Word.fromList(List("")),
+      java.lang.Boolean.FALSE
+    )
     def switchPhase(): Unit = {
       phase = phase match {
         case OverApprPhase  => UnderApprPhase
         case UnderApprPhase => OverApprPhase
       }
-      this.synchronized{
-          this.notifyAll()
+      this.synchronized {
+        this.notifyAll()
       }
     }
     def waitForPhase(targetPhase: Phase): Unit = {
       this.synchronized {
-          while (phase != targetPhase) {
-            try {
-              this.wait();
-            } catch {
-              case e: InterruptedException =>
-                Thread.currentThread().interrupt();
-                System.out.println("Thread Interrupted");
-            }
+        while (phase != targetPhase) {
+          try {
+            this.wait();
+          } catch {
+            case e: InterruptedException =>
+              Thread.currentThread().interrupt();
+              System.out.println("Thread Interrupted");
           }
         }
       }
     }
-  
+    def setVerdict(v : Boolean) : Unit = {
+        this.synchronized{
+            verdict = Some(v)
+            notifyAll()
+        }
+    }
+  }
+
   def strategy = SynthesisLearningLock.strategy
 
   case class ProductCounterExample(
@@ -255,10 +265,15 @@ class CompSynthesisAlgorithm(
   /** Oracle for compositional synthesis. Given hypothesis DFA which includes
     * TA, the oracle checks if FSM x hypothesis is controllable using a reactive
     * synthesis solver. If yes, then the system is controllable. If not, the
-    * closed system controlled by a counterstrategy is synthesized.
+    * closed system controlled by a counterstrategy is synthesized, and the
+    * underapproximation learner is invoked, which can either validate the
+    * counterstrategy or return a query for the upper bound oracle.
     */
   class UpperBoundOracle // (fsmIntersectionOracle : fsm.FSMIntersectionOracle, taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String])
       extends EquivalenceOracle.DFAEquivalenceOracle[String] {
+    private val fsmMonitorMaker = fsm.SMVMonitorMaker(smv)
+    private val fsmIntersectionOracle = fsm.SMVIntersectionOracle(smv)
+
     override def findCounterExample(
         hypothesis: DFA[_, String],
         inputs: java.util.Collection[? <: String]
@@ -270,17 +285,86 @@ class CompSynthesisAlgorithm(
             case synthesis.Controllable(strat) =>
               // Synthesis succeeded
               // Visualization.visualize(hypothesis, inputs)
+              SynthesisLearningLock.strategy = strat
+              SynthesisLearningLock.setVerdict(true)
+              System.out.println(GREEN + BOLD + "\nControllable\n" + RESET)
+              Visualization.visualize(hypothesis,inputs)
               null
             case synthesis.Uncontrollable(strat) =>
-              // FSM x hypothesis contains a counterexample trace
-              // Check feasability with TChecker
               System.out.println(
                 RED + "OverAppr Query: Uncontrollable" + RESET + "\n"
               )
               System.out.println(
                 YELLOW + "Checking the feasibility of the counterstrategy w.r.t. TA" + RESET + "\n"
               )
+              SynthesisLearningLock.strategy = strat
+              SynthesisLearningLock.waitForPhase(OverApprPhase)
+              if (SynthesisLearningLock.verdict != None) {
+                null
+              } else {
+                SynthesisLearningLock.query
+              }
+            case _ => throw Exception("Unknown synthesis result")
+          }
+        case query => query
+      }
+    }
+  }
+
+  class LowerBoundOracle
+      extends EquivalenceOracle.DFAEquivalenceOracle[String] {
+    override def findCounterExample(
+        hypothesis: DFA[_, String],
+        inputs: java.util.Collection[? <: String]
+    ): DefaultQuery[String, java.lang.Boolean] = {
+      System.out.println(statistics.Counters.toString)
+      taContainmentOracle.findCounterExample(hypothesis, inputs) match {
+        case null => // underH <= T
+          // Check whether FSM^sigma <= barH i.e. check FSM^sigma x comp(underH) = 0.
+          val smvStrategy = fsm.SMV(SynthesisLearningLock.strategy)
+          val fsmIntersectionOracle = fsm.SMVIntersectionOracle(smvStrategy)
+          val compHypothesis = DFAs.complement(hypothesis, Alphabets.fromCollection(inputs))
+          fsmIntersectionOracle.checkIntersection(compHypothesis) match {
+            case None =>
+              // We have FSM^sigma <= underH. Counterstrategy validated
+              SynthesisLearningLock.setVerdict(false)
+              System.out.println(RED + BOLD + "\nUncontrollable\n" + RESET)
+              Visualization.visualize(hypothesis,inputs)
               null
+            case Some(fsm.CounterExample(cexDescription: String, cexTrace: List[String])) =>
+              // We have FSM^sigma <=/= underH because cexTrace in FSM^sigma but not in barH.
+              val word = Word.fromList(cexTrace)
+              System.out.println(
+                RED + "OverAppr: Counter strategy has a trace that is not in underH: " + cexTrace + RESET + "\n"
+              )
+              System.out.println(
+                YELLOW + "Checking the feasibility of this trace w.r.t. TA" + RESET + "\n"
+              )
+              if (taMembershipOracle.answerQuery(word)){
+                // cexTrace is accepted by TA. Make query so that barH accepts it as well
+                val query = DefaultQuery[String, java.lang.Boolean](
+                      word,
+                      java.lang.Boolean.TRUE
+                    )
+                System.out.println(query)
+                query
+              } else {
+                // cexTrace is rejected by TA. Pause learning and go back to OverAppr learning with new query
+                // barH should reject cexTrace as well
+                val query = DefaultQuery[String, java.lang.Boolean](
+                      word,
+                      java.lang.Boolean.FALSE
+                    )
+                SynthesisLearningLock.query = query
+                SynthesisLearningLock.waitForPhase(OverApprPhase)
+                if (SynthesisLearningLock.verdict != None) {
+                    null
+                } else {
+                    // Here, the OverAppr phase has generated a new counterstrategy
+                    // UnderAppr learning phase still has the same DFA hypothesis, so check it for equivalence
+                    findCounterExample(hypothesis, inputs)
+                }
+              }
           }
         case query => query
       }
@@ -288,7 +372,7 @@ class CompSynthesisAlgorithm(
   }
 
   def run(): Unit = {
-    val alph = Alphabets.fromList(fsmIntersectionOracle.alphabet)
+    val alph = Alphabets.fromList(smv.alphabet)
     val lstar = ClassicLStarDFABuilder[String]()
       .withAlphabet(alph)
       .withOracle(taMembershipOracle)
@@ -306,47 +390,27 @@ class CompSynthesisAlgorithm(
       .withOracle(taMembershipOracle)
       .create()
 
-    val eqOracle = UpperBoundOracle()
+    val upperEqOracle = UpperBoundOracle()
+    val lowerEqOracle = LowerBoundOracle()
     // val experiment: DFAExperiment[String] = DFAExperiment(lstar, eqOracle, alph);
-    val experiment: DFAExperiment[String] = DFAExperiment(ttt, eqOracle, alph);
+    val upperExperiment: DFAExperiment[String] = DFAExperiment(ttt, upperEqOracle, alph);
+    val lowerExperiment: DFAExperiment[String] = DFAExperiment(ttt, lowerEqOracle, alph);
 
     // turn on time profiling
-    experiment.setProfile(true);
+    upperExperiment.setProfile(true);
+    lowerExperiment.setProfile(true);
 
     // enable logging of models
-    experiment.setLogModels(true);
-    try {
-      experiment.run();
-      System.out.println(GREEN + BOLD + "\nRealizable\n" + RESET)
-      val result = experiment.getFinalHypothesis();
-      Visualization.visualize(result, alph)
-      System.out.println(SimpleProfiler.getResults());
-      System.out.println(experiment.getRounds().getSummary());
-      System.out.println("States: " + result.size());
-      System.out.println("Sigma: " + alph.size());
-      System.out.println(
-        "Total system calls: " + taMembershipOracle.systemElapsedTime / 1000000L + "ms"
-      );
-      System.out.println(
-        "Nb of membership queries: " + taMembershipOracle.nbQueries
-      );
-      System.out.println(
-        "Time per query: " + taMembershipOracle.systemElapsedTime / 1000000L / taMembershipOracle.nbQueries + "ms"
-      );
-    } catch {
-      case ProductCounterExample(smvTrace, trace, taTrace) =>
-        System.out.println(
-          RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n"
-        )
-        System.out.println("\t" + YELLOW + BOLD + trace + RESET)
-        System.out.println("\nSMV trace:")
-        System.out.println(YELLOW + smvTrace + RESET)
-        System.out.println("\nTA trace:")
-        System.out.println(YELLOW + taTrace + RESET)
-      case configuration.ParseError(msg) =>
-        System.out.println(RED + msg + RESET)
-      case e => throw e
+    upperExperiment.setLogModels(true);
+    lowerExperiment.setLogModels(true);
+    val lowerThread = new Thread{
+        override def run() : Unit = {
+            SynthesisLearningLock.waitForPhase(UnderApprPhase)
+            lowerExperiment.run()
+        }
     }
+    lowerThread.start()
+    upperExperiment.run()
   }
 }
 

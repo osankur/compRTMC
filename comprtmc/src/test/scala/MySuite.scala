@@ -174,6 +174,31 @@ class SMVTest extends munit.FunSuite {
     val inp = fsm.SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
   }
 }
+class VerilogTest extends munit.FunSuite {
+  test("verilog1"){
+    val alphabetList = List("_rt_check", "_rt_event").asJava
+    val alphabet: Alphabet[String] = Alphabets.fromList(alphabetList)
+    val target: CompactDFA[String] =
+      AutomatonBuilders
+        .newDFA(alphabet)
+        .withInitial("q0")
+        .from("q0")
+        .on("_rt_check")
+        .to("q1")
+        .from("q1")
+        .on("_rt_event")
+        .to("q0")
+        .withAccepting("q0")
+        .create();
+
+    val inp = synthesis.Verilog(File("resources/examples/synthesis/cnt.v"))
+    System.out.println("Alphabet: " + inp.alphabet)
+    System.out.println("InterAlphabet: " + inp.inputs)
+    System.out.println("Output: " + inp.outputs)
+    System.out.println(inp.intersect(target))
+  }
+}
+
 class AutomataTest extends munit.FunSuite{
   test("determinize"){
   val alphabet: Alphabet[String] = Alphabets.fromList(List("a","b", "c").asJava)

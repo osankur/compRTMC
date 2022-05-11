@@ -80,7 +80,7 @@ class SMV(inputFile: java.io.File) {
         case regModuleMain(name) =>
           if (name == "main") then {
             inMain = true
-            newLines.append("MODULE _rtmc_main\n")
+            newLines.append("MODULE main\n")
           } else {
             inMain = false
             newLines.append(line)
@@ -106,12 +106,13 @@ class SMV(inputFile: java.io.File) {
         "The main module must contain the precise specification \"INVARSPEC !err\" where err is a define."
       )
     }
-    val alphabetAsArgs = alphabet.map("fsm._rt_"+_).mkString(", ")
+    // val alphabetAsArgs = alphabet.map("fsm._rt_"+_).mkString(", ")
+    val alphabetAsArgs = alphabet.map("_rt_"+_).mkString(", ")
     val fsm = newLines.mkString("\n")
     val strB = StringBuilder()
-    strB.append("MODULE main\n")
+    // strB.append("MODULE main\n")
     strB.append("VAR\n")
-    strB.append("\tfsm : _rtmc_main;\n")
+    // strB.append("\tfsm : _rtmc_main;\n")
     strB.append(
       "\ttime : _rtmc_time(%s);\n".format(alphabetAsArgs)
     )
@@ -122,13 +123,13 @@ class SMV(inputFile: java.io.File) {
         y <- alphabet
         if x < y
       } yield (x, y)
-      // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & !fsm._rt_%s | !fsm._rt_%s & fsm._rt_%s".format(x,y,x,y)).mkString(" | "))
-      strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
+      // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
+      strB.append(uniquePairs.map((x,y) => "_rt_%s & _rt_%s".format(x,y)).mkString(" | "))
       strB.append(";\n")
     } else {
       strB.append("FALSE;\n")
     }
-    strB.append("INVARSPEC\n\t !_rt_nonexcl & (time.accepting -> !fsm.err)\n")
+    strB.append("INVARSPEC\n\t !_rt_nonexcl & (time.accepting -> !err)\n")
     SMVStructure(fsm, strB.toString, alphabet.toList)
   }
   def fsm = _structure.fsm
@@ -197,12 +198,11 @@ class SMVMonitorMaker(smv : SMV){
       )
     )
     val newSMV = StringBuilder()
-    newSMV.append(smv.fsm)
     newSMV.append(timeModuleB.toString)
+    newSMV.append(smv.fsm)
     newSMV.append(smv.main)
     newSMV.toString
   }
-
 }
 
 class SMVIntersectionOracle(
@@ -256,8 +256,8 @@ class SMVIntersectionOracle(
         }
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
-      val regAssignmentTRUE = "\\s*fsm._rt_(.+)\\s*=\\s*TRUE\\s*".r
-      val regError = "fsm.err = TRUE"
+      val regAssignmentTRUE = "\\s*_rt_(.+)\\s*=\\s*TRUE\\s*".r
+      val regError = "err = TRUE"
       val trace = ListBuffer[String]()
       var readingInput = false
       val cexLines = regState.split(cexVerboseStr) // List of all states in the cex
