@@ -28,14 +28,14 @@ sealed class SynthesisResult
 sealed case class Controllable(combinedSystem : File) extends SynthesisResult
 sealed case class Uncontrollable(combinedSystem : File) extends SynthesisResult
 
-class Verilog(inputFile : File){
+class Verilog(val inputFile : File){
     // alphabet is the outputs minus the error output
     var alphabet : List[String] = List()
     var inputs : List[String] = List()
     var outputs : List[String] = List()
 
     // The unique output 
-    private var errorName = "error"
+    var errorName = "error"
     private var moduleName = ""
     private var content = ""
 
@@ -81,7 +81,7 @@ class Verilog(inputFile : File){
      *  and the inputFile module has set its error output to 1. This encodes the intersection of the input verilog program
      *  with the DFA, and is in the right format for realizability.
      */
-    def intersect(hypothesis: DFA[_, String]) : String = {
+    def intersectedWith(hypothesis: DFA[_, String]) : String = {
         val sb = StringBuilder()
         val inputsAsArgList = inputs.map("input " + _).mkString(", ")
         val alphabetAsArgList = alphabet.map("output " + _).mkString(", ")
@@ -153,50 +153,50 @@ abstract class SynthesisOracle{
  *  If realizable, return the closed system controlled by the controller (ensuring safety)
  *  If not realizable, return the closed system controlled by the adversary strategy (ensuring reachability of the error state)
  */
-class AbssyntheOracle(smvFile : File) extends SynthesisOracle{
+class AbssyntheOracle(verilog : Verilog) extends SynthesisOracle{
     val tmpDirPath = configuration.globalConfiguration.tmpDirPath()
-    private val fsmMonitorMaker = fsm.SMVMonitorMaker(fsm.SMV(smvFile))
     private val logger = LoggerFactory.getLogger(classOf[AbssyntheOracle])
 
     override def synthesizeIntersection(hypothesis: DFA[_, String]) : SynthesisResult = {
-        val productFSM = fsmMonitorMaker.makeIntersectionMonitor(hypothesis)
-        val productFSMFile = Files.createTempFile(tmpDirPath, "product", ".smv").toFile()
+        val productFSM = verilog.intersectedWith(hypothesis)
+        val productFSMFile = Files.createTempFile(tmpDirPath, "product", ".v").toFile()
         val pw = PrintWriter(productFSMFile)
         pw.write(productFSM)
         pw.close()
         synthesize(productFSMFile)
     }
     override def synthesize() : SynthesisResult = {
-        synthesize(smvFile)
+        synthesize(verilog.inputFile)
     }
-    private def synthesize(smvFile : File) : SynthesisResult = {        
-        logger.info("Calling synthesis for file " + smvFile.toString)
+    private def synthesize(verilogFile : File) : SynthesisResult = {        
+        logger.info("Calling synthesis for file " + verilogFile.toString)
         val tmpDirPath = configuration.globalConfiguration.tmpDirPath()
-        val cmd = s"echo \"read_model -i ${smvFile.toString}; flatten_hierarchy; encode_variables; build_boolean_model; write_aiger_model -p ${File(tmpDirPath.toFile,smvFile.getName).toString}; quit;\"" #| "nuXmv -int"
+        // val cmd = s"echo \"read_model -i ${verilogFile.toString}; flatten_hierarchy; encode_variables; build_boolean_model; write_aiger_model -p ${File(tmpDirPath.toFile,smvFile.getName).toString}; quit;\"" #| "nuXmv -int"
+        val aigFile = File(tmpDirPath.toFile,verilogFile.getName).toString
+        val cmd = s"echo \"read_verilog ${verilogFile.toString}; synth -flatten; aigmap; write_aiger -ascii -symbols ${aigFile.toString}; exit\"" #| "yosys"
         System.out.println(cmd)
         val ret = cmd.!
         assert(ret == 0)
-        var aigFileName = File(tmpDirPath.toFile,smvFile.getName).toString + "_invar_0.aag"
-        val aigLines = Source.fromFile(File(aigFileName)).getLines().toList
-        val aagHeaderReg = "aag ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*)".r
-        val newaigLines = aigLines.head match{
-            case aagHeaderReg(ind, latches, inputs, outputs, gates, specs) =>
-                (s"aag $ind $latches $inputs 1 $gates") :: aigLines.tail
-            case _ =>
-                throw Exception(s"Unable to parse header from file $aigFileName")
-        }
-        val pw = PrintWriter(File(aigFileName))
-        pw.write(newaigLines.mkString("\n"))
-        pw.write("\n")
-        pw.close()
+        // var aigFileName = File(tmpDirPath.toFile,verilogFile.getName).toString + "_invar_0.aag"
+        // val aigLines = Source.fromFile(File(aigFileName)).getLines().toList
+        // val aagHeaderReg = "aag ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*)".r
+        // val newaigLines = aigLines.head match{
+        //     case aagHeaderReg(ind, latches, inputs, outputs, gates, specs) =>
+        //         (s"aag $ind $latches $inputs 1 $gates") :: aigLines.tail
+        //     case _ =>
+        //         throw Exception(s"Unable to parse header from file $aigFileName")
+        // }
+        // val pw = PrintWriter(File(aigFileName))
+        // pw.write(newaigLines.mkString("\n"))
+        // pw.write("\n")
+        // pw.close()
         val witnessStrategyFile = Files.createTempFile(tmpDirPath, "strategy", ".aag").toFile()
-
-        val cmd_synth = s"abssynthe -v LD ${aigFileName} -o ${witnessStrategyFile.toString}"
+        val cmd_synth = s"abssynthe -v LD ${aigFile.toString} -o ${witnessStrategyFile.toString}"
         System.out.println(cmd_synth)
         val output_synth = cmd_synth.!
         val smvWitnessStrategyFile = File(witnessStrategyFile.toString + ".smv")
         val cmd_convert = s"aigtosmv ${witnessStrategyFile.toString}" #> smvWitnessStrategyFile
-        val cmd_append = "echo \"DEFINE err := oo0;\nINVARSPEC !err\n\"" #>> smvWitnessStrategyFile
+        val cmd_append = s"echo \"DEFINE err := oo0;\nINVARSPEC !${verilog.errorName}\n\"" #>> smvWitnessStrategyFile
         System.out.println(cmd_convert)
         System.out.println(cmd_append)
         output_synth match {

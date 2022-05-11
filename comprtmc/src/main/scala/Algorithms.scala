@@ -201,7 +201,7 @@ class CompSafetyAlgorithm(
 }
 
 class CompSynthesisAlgorithm(
-    smv: fsm.SMV,
+    verilog: synthesis.Verilog,
     synthesisOracle: synthesis.SynthesisOracle,
     taMembershipOracle: ta.TAMembershipOracle,
     taInclusionOracle: EquivalenceOracle.DFAEquivalenceOracle[String],
@@ -271,8 +271,6 @@ class CompSynthesisAlgorithm(
     */
   class UpperBoundOracle // (fsmIntersectionOracle : fsm.FSMIntersectionOracle, taInclusionOracle : EquivalenceOracle.DFAEquivalenceOracle[String])
       extends EquivalenceOracle.DFAEquivalenceOracle[String] {
-    private val fsmMonitorMaker = fsm.SMVMonitorMaker(smv)
-    private val fsmIntersectionOracle = fsm.SMVIntersectionOracle(smv)
 
     override def findCounterExample(
         hypothesis: DFA[_, String],
@@ -372,7 +370,7 @@ class CompSynthesisAlgorithm(
   }
 
   def run(): Unit = {
-    val alph = Alphabets.fromList(smv.alphabet)
+    val alph = Alphabets.fromList(verilog.alphabet)
     val lstar = ClassicLStarDFABuilder[String]()
       .withAlphabet(alph)
       .withOracle(taMembershipOracle)
