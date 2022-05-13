@@ -11,6 +11,7 @@ object FSM {
   case object AIG extends FSMFormat
   case object Murphi extends FSMFormat
   case object TCheckerTA extends FSMFormat
+  case object Verilog extends FSMFormat
 
   sealed trait ModelChecker
   case object NuSMV extends ModelChecker {

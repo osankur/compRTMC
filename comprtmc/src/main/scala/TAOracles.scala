@@ -22,6 +22,8 @@ import de.learnlib.api.oracle.EquivalenceOracle
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.api.oracle._
 import de.learnlib.api.oracle.MembershipOracle
+import de.learnlib.api.oracle.MembershipOracle.DFAMembershipOracle
+
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.automata.fsa.DFA
@@ -424,7 +426,7 @@ class TCheckerMonitorMaker (
   }
 
 }
-abstract class TAMembershipOracle extends MembershipOracle[String, java.lang.Boolean]{
+abstract class TAMembershipOracle extends DFAMembershipOracle[String]{
   /**
    * Query TChecker whether the given untimed word prefix.suffix is accepted by the timed automaton.
    * @return Returns witness timed trace if the given word is in the untimed language; None otherwise.

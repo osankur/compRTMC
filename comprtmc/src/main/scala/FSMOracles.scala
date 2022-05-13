@@ -103,7 +103,7 @@ class SMV(inputFile: java.io.File) {
     }
     if (!invarErr) {
       throw ParseError(
-        "The main module must contain the precise specification \"INVARSPEC !err\" where err is a define."
+        "The main module must contain the precise specification \"INVARSPEC !error\"."
       )
     }
     // val alphabetAsArgs = alphabet.map("fsm._rt_"+_).mkString(", ")
@@ -129,7 +129,8 @@ class SMV(inputFile: java.io.File) {
     } else {
       strB.append("FALSE;\n")
     }
-    strB.append("INVARSPEC\n\t !_rt_nonexcl & (time.accepting -> !err)\n")
+    strB.append("DEFINE\n\t_rtmc_error := _rt_nonexcl | (time.accepting & error);\n")
+    strB.append("INVARSPEC\n\t !_rtmc_error\n")
     SMVStructure(fsm, strB.toString, alphabet.toList)
   }
   def fsm = _structure.fsm
@@ -257,11 +258,12 @@ class SMVIntersectionOracle(
       val regInput = "\\s*-> Input:.*<-\\s*".r
       val regState = "\\s*-> State:.*<-\\s*".r
       val regAssignmentTRUE = "\\s*_rt_(.+)\\s*=\\s*TRUE\\s*".r
-      val regError = "err = TRUE"
+      //val regError = "error = TRUE"
+      val regError = "_rtmc_error = TRUE"
       val trace = ListBuffer[String]()
       var readingInput = false
       val cexLines = regState.split(cexVerboseStr) // List of all states in the cex
-      val filteredStates = ListBuffer[String]() // List of all states but those with fsm.err = TRUE
+      val filteredStates = ListBuffer[String]() // List of all states but those with fsm.error = TRUE
       var errorHasBeenSeen = false
 
       // We remove states with fsm.err = TRUE since sync labels take arbitrary values along these states, and we want to cut the trace when err is reached
@@ -300,7 +302,7 @@ class TCheckerIntersectionOracle(
     fsm: TCheckerTA
 ) extends FSMIntersectionOracle {
   private val taMonitorMaker = TCheckerMonitorMaker(fsm, Alphabets.fromList(this.alphabet), Some("error"))
-
+  throw Exception("not supported")
   override def alphabet : List[String] = {
     fsm.externEvents
   }

@@ -56,7 +56,7 @@ class Verilog(val inputFile : File){
                     case arg if arg(0) == "output" => 
                         _outputs.append(arg(1))
                         if (arg(1).startsWith("_rt_")){
-                            _alphabet.append(arg(1))
+                            _alphabet.append(arg(1).substring(4))
                         } else {
                             if (arg(1) != errorName){
                                 throw Exception("There should be one output named 'error', and others must be prefixed with _rt_")
@@ -83,18 +83,20 @@ class Verilog(val inputFile : File){
      */
     def intersectedWith(hypothesis: DFA[_, String]) : String = {
         val sb = StringBuilder()
+        val _alphabet = alphabet.map("_rt_" + _)
+        // val _outputs = "error" :: outputs.filter(_ != "error").map("_rt_" + _)
         val inputsAsArgList = inputs.map("input " + _).mkString(", ")
-        val alphabetAsArgList = alphabet.map("output " + _).mkString(", ")
+        val alphabetAsArgList = _alphabet.map("output _rt_" + _).mkString(", ")
         val outputsAsArgList = outputs.map("output " + _).mkString(", ")
         
         val inputsAsArgs = inputs.map(x => s".$x($x)").mkString(", ")
-        val alphabetAsArgs = alphabet.map(x => s".$x($x)").mkString(", ")
-        val outputsAsArgs = inputs.map(x => s".$x($x)").mkString(", ")
+        val alphabetAsArgs = _alphabet.map(x => s".$x($x)").mkString(", ")
         
         sb.append(content+"\n\n")
-        sb.append(s"module _rtmc_($inputsAsArgList, output $errorName);\n")
+        // sb.append(s"module _rtmc_($inputsAsArgList, output $errorName);\n")
+        sb.append(s"module _rtmc_($inputsAsArgList, $outputsAsArgList);\n")
         sb.append(s"\twire _dfa_accept;\n\twire _fsm_err;\n\tassign $errorName = _dfa_accept && _fsm_err;\n")
-        alphabet foreach{
+        _alphabet foreach{
             alpha =>
                 sb.append(s"\twire $alpha;\n")
         }
@@ -105,25 +107,26 @@ class Verilog(val inputFile : File){
         assert(hypothesis.getInitialStates().size == 1)
         val states = hypothesis.getStates()
         val statesSize = (log10(states.size)/log10(2.0)+1).toInt
-        var acceptingStates = ListBuffer[String]()
+        var acceptingStates = ListBuffer[Int]()
         states foreach { state =>
             if (hypothesis.isAccepting(state)) then {
-                acceptingStates.append(state.toString)
+                acceptingStates.append(hypothesis.stateIDs.getStateId(state))
             }
         }
-        sb.append(s"module dfa(${alphabet.map("input " + _).mkString(", ")}, output _dfa_accept);\n")
+        sb.append(s"module dfa(${_alphabet.map("input " + _).mkString(", ")}, output _dfa_accept);\n")
         sb.append(s"\treg[$statesSize:0] state;\n")
         hypothesis.getInitialStates().toList match {
             case List() => throw Exception("No initial state found")
-            case List(i) => sb.append(s"\tinitial state = $i;\n")
+            case List(i) => sb.append(s"\tinitial state = ${hypothesis.stateIDs.getStateId(i)};\n")
             case _ => throw Exception("Automaton has several initial states")
         }
         sb.append(s"\tassign _dfa_accept = ${acceptingStates.map("state == " + _).mkString(" || ")};\n")
         sb.append("\talways #1 begin\n")
+        
+        var _firstIf = true
         states foreach { 
             state =>
             {
-                var _firstIf = true
                 for (sigma <- alphabet) {
                     val succs = hypothesis.getSuccessors(state, sigma);
                     for (succ <- succs) {
@@ -133,7 +136,7 @@ class Verilog(val inputFile : File){
                         } else {
                             sb.append("\t\telse ")
                         }
-                        sb.append(s"if (state == $state && $sigma) state = $succ;\n")
+                        sb.append(s"if (state == ${hypothesis.stateIDs.getStateId(state)} && _rt_$sigma) state = ${hypothesis.stateIDs.getStateId(succ)};\n")
                     }
                 }
             }
@@ -172,31 +175,37 @@ class AbssyntheOracle(verilog : Verilog) extends SynthesisOracle{
         logger.info("Calling synthesis for file " + verilogFile.toString)
         val tmpDirPath = configuration.globalConfiguration.tmpDirPath()
         // val cmd = s"echo \"read_model -i ${verilogFile.toString}; flatten_hierarchy; encode_variables; build_boolean_model; write_aiger_model -p ${File(tmpDirPath.toFile,smvFile.getName).toString}; quit;\"" #| "nuXmv -int"
-        val aigFile = File(tmpDirPath.toFile,verilogFile.getName).toString
-        val cmd = s"echo \"read_verilog ${verilogFile.toString}; synth -flatten; aigmap; write_aiger -ascii -symbols ${aigFile.toString}; exit\"" #| "yosys"
-        System.out.println(cmd)
-        val ret = cmd.!
-        assert(ret == 0)
-        // var aigFileName = File(tmpDirPath.toFile,verilogFile.getName).toString + "_invar_0.aag"
-        // val aigLines = Source.fromFile(File(aigFileName)).getLines().toList
-        // val aagHeaderReg = "aag ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*)".r
-        // val newaigLines = aigLines.head match{
-        //     case aagHeaderReg(ind, latches, inputs, outputs, gates, specs) =>
-        //         (s"aag $ind $latches $inputs 1 $gates") :: aigLines.tail
-        //     case _ =>
-        //         throw Exception(s"Unable to parse header from file $aigFileName")
-        // }
-        // val pw = PrintWriter(File(aigFileName))
-        // pw.write(newaigLines.mkString("\n"))
-        // pw.write("\n")
-        // pw.close()
+        // For conversion to aag
+        // 1) Convert to blif with yosys
+        //    echo "read_verilog $1; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif $1.blif" | yosys
+        // 2) Convert to aig with abc
+        //    berkeley-abc -c "read_blif a.blig; strash; refactor; rewrite; dfraig; write_aiger -s a.aig"
+        // 3) Convert aig to aag
+        //    aigtoaig a.aig a.aag
+        val tmpFilename = File(tmpDirPath.toFile,verilogFile.getName).toString
+        val cmd_yosys = s"echo \"read_verilog ${verilogFile.toString}; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif $tmpFilename.blif\"" #| "yosys -q"
+        val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; refactor; rewrite; dfraig; write_aiger -s $tmpFilename.aig\""
+        val cmd_aig = s"aigtoaig $tmpFilename.aig $tmpFilename.aag"
+        System.out.println(cmd_yosys)
+        
+        if (cmd_yosys.! != 0){
+            throw Exception("Yosys returned an error")
+        }
+        System.out.println(cmd_abc)
+        if (cmd_abc.! != 0){
+            throw Exception("berkeley-abc returned an error")
+        }
+        System.out.println(cmd_aig)
+        if (cmd_aig.! != 0){
+            throw Exception("aigtoaig returned an error")
+        }
         val witnessStrategyFile = Files.createTempFile(tmpDirPath, "strategy", ".aag").toFile()
-        val cmd_synth = s"abssynthe -v LD ${aigFile.toString} -o ${witnessStrategyFile.toString}"
+        val cmd_synth = s"abssynthe -v LD ${tmpFilename}.aag -o ${witnessStrategyFile.toString}"
         System.out.println(cmd_synth)
         val output_synth = cmd_synth.!
         val smvWitnessStrategyFile = File(witnessStrategyFile.toString + ".smv")
-        val cmd_convert = s"aigtosmv ${witnessStrategyFile.toString}" #> smvWitnessStrategyFile
-        val cmd_append = s"echo \"DEFINE err := oo0;\nINVARSPEC !${verilog.errorName}\n\"" #>> smvWitnessStrategyFile
+        val cmd_convert = s"aigtosmv -c ${witnessStrategyFile.toString}" #> smvWitnessStrategyFile
+        val cmd_append = s"echo \"INVARSPEC !${verilog.errorName}\n\"" #>> smvWitnessStrategyFile
         System.out.println(cmd_convert)
         System.out.println(cmd_append)
         output_synth match {

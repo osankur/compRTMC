@@ -44,6 +44,8 @@ object Main {
                 c.copy(fsmFile = x, fsmFormat = FSM.AIG)
               } else if (x.toString.contains(".ta")){
                 c.copy(fsmFile = x, fsmFormat = FSM.TCheckerTA, fsmModelChecker=FSM.TCheckerModelChecker)
+              } else if (x.toString.contains(".v")){
+                c.copy(fsmFile = x, fsmFormat = FSM.Verilog)
               } else {
                 throw Exception("Unknown fsm format")
               }
@@ -106,29 +108,40 @@ object Main {
         if (config.fsmFormat == FSM.TCheckerTA && config.fsmModelChecker != FSM.TCheckerModelChecker){
           throw Exception("TChecker model checker must be used with FSM files with extension .ta")
         }
-        "./remove_temp.sh".!
-        val fsmIntersectOracle : fsm.FSMIntersectionOracle = config.fsmFormat match{
-          case FSM.SMV => fsm.Factory.getSMVOracle(config.fsmFile)
-          case FSM.TCheckerTA => fsm.Factory.getTCheckerOracle(config.fsmFile)
-          case _ => throw Exception("FSM Format not supported")
+        if ( config.fsmFormat != FSM.Verilog && config.algorithm == Synthesis){
+          throw Exception("Synthesis is only supported with FSMs given in Verilog with extension .v")
         }
-        logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
-        
+        if ( config.fsmFormat == FSM.Verilog && config.algorithm != Synthesis){
+          throw Exception("Verilog FSM files are currently only supported with the synthesis algorithm")
+        }
+        "./remove_temp.sh".!        
         config.algorithm match {
           case HypothesisLearning =>
+            val fsmIntersectOracle : fsm.FSMIntersectionOracle = config.fsmFormat match{
+              case FSM.SMV => fsm.Factory.getSMVOracle(config.fsmFile)
+              case FSM.TCheckerTA => fsm.Factory.getTCheckerOracle(config.fsmFile)
+              case _ => throw Exception("FSM Format not supported")
+            }
+            logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
             val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
             val alg = algorithms.CompSafetyAlgorithm(fsmIntersectOracle, taMemOracle, taIncOracle)
             alg.run()
           case TraceAbstractionRefinement =>
+            val fsmIntersectOracle : fsm.FSMIntersectionOracle = config.fsmFormat match{
+              case FSM.SMV => fsm.Factory.getSMVOracle(config.fsmFile)
+              case FSM.TCheckerTA => fsm.Factory.getTCheckerOracle(config.fsmFile)
+              case _ => throw Exception("FSM Format not supported")
+            }
+            logger.info("Alphabet: " + fsmIntersectOracle.alphabet)
             val taInterpolantOracle = ta.Factory.getTCheckerInterpolationOracle(config.taFile, fsmIntersectOracle.alphabet) 
             val alg = algorithms.TARAlgorithm(fsmIntersectOracle, taInterpolantOracle)
             alg.run()
           case Synthesis =>
-            val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, fsmIntersectOracle.alphabet) 
-            val taContainmentOracle = ta.Factory.getTCheckerContainmentOracle(config.taFile, fsmIntersectOracle.alphabet)
-            val smv = fsm.SMV(config.fsmFile)
-            val synthesisOracle = synthesis.AbssyntheOracle(config.fsmFile)
-            val alg = algorithms.CompSynthesisAlgorithm(smv,synthesisOracle,taMemOracle, taIncOracle, taContainmentOracle)
+            val verilog = synthesis.Verilog(config.fsmFile)
+            val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, verilog.alphabet) 
+            val taContainmentOracle = ta.Factory.getTCheckerContainmentOracle(config.taFile, verilog.alphabet)
+            val synthesisOracle = synthesis.AbssyntheOracle(verilog)
+            val alg = algorithms.CompSynthesisAlgorithm(verilog,synthesisOracle,taMemOracle, taIncOracle, taContainmentOracle)
             alg.run()
         }
       case _ => 

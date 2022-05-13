@@ -1,0 +1,9 @@
+system:ex1
+
+clock:1:x
+clock:1:y
+event:get
+
+process:A
+location:A:q{initial:}
+edge:A:q:q:get{provided: x >= 2 && y <= 5: do : x = 0}

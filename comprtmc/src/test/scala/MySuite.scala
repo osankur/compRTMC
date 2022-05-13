@@ -147,13 +147,13 @@ class FullZG extends munit.FunSuite {
 }
 class SynthTest extends munit.FunSuite {
   test("abssynthe-unr"){
-    synthesis.AbssyntheOracle(File("/home/osankur/ulb/AbsSynthe/examples/example2.smv")).synthesize() match{
+    synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example2.smv"))).synthesize() match{
       case synthesis.Uncontrollable(_) => ()
       case _ => assert(false)
     }
   }
   test("abssynthe-rea"){
-    synthesis.AbssyntheOracle(File("/home/osankur/ulb/AbsSynthe/examples/example1.smv")).synthesize() match{
+    synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example1.smv"))).synthesize() match{
       case synthesis.Controllable(_) => ()
       case _ => assert(false)
     }
@@ -195,7 +195,7 @@ class VerilogTest extends munit.FunSuite {
     System.out.println("Alphabet: " + inp.alphabet)
     System.out.println("InterAlphabet: " + inp.inputs)
     System.out.println("Output: " + inp.outputs)
-    System.out.println(inp.intersect(target))
+    System.out.println(inp.intersectedWith(target))
   }
 }
 

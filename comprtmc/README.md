@@ -1,5 +1,5 @@
 # CompRTMC
-Compositional model checking algorithms for timed automata
+Compositional model checking and reactive synthesis algorithms for timed automata
 
 ## Dependencies
 The tool depends on several command line programs, most of which are shipped together:
@@ -7,13 +7,16 @@ The tool depends on several command line programs, most of which are shipped tog
 - `nuXmv` as an FSM model checker (not included in the archive due to its licence)
 - The TChecker timed automaton model checker executables: `tck-reach`, `tck-tar`, `tck-convert` (branch `tar`)
 - `abssynthe` circuit synthesis tool from AIG specifications (branch `env_win_region`)
-- `aigtosmv` for translating aig models to SMV
-- 
+  - Modified to produce the controlled system as output (-o) both when the circuit is realizable (system controlled by the controller),
+    and when it is not realizable (system controlled by the environment strategy).
+- `aigtosmv` for translating aig models to SMV (modified to produce parsable names)
+- `yosys`, `berkeley-abc`, `aigtoaig` for translating Verilog programs to ascii AIG
+  
 ## Usage
 Currently two safety verification algorithms are implemented.
 
 - `learning`: a DFA learning algorithm is run to learn the timed automaton model
-to apply compositional verification.
+applies compositional verification.
 
 - `tar`: trace abstraction refinement algorithm. This case requries the timed automaton
 to be deterministic in the sense that at each location there is at most one transition with
@@ -27,9 +30,9 @@ The _rt_events must all be variables. In fact, DEFINES are lost when translating
 ## Modeling
 - Explain the use of `_rt_events`. Typically one uses DEFINEs as predicates. 
 - These predicates must be pairwise disjoint.
-- A single err define or variable must be used to mark the error, and the invariant must be exactly `INVARSPEC !err`.
+- A single error define or variable must be used to mark the error, and the invariant must be exactly `INVARSPEC !error`.
 - Avoid defining _rt_events as inputs.
-- TODO provide a basic example
+- TODO provide basic examples
 
 ## Future Work
 - Faster learning options:
