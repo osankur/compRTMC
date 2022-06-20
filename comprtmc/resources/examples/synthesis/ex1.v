@@ -25,10 +25,9 @@
 //     end
 //     end
 // endmodule
-module bench( input  i, input controllable_i, output error, output _rt_get);
+module bench( input clk, input  i, input controllable_i, output error, output _rt_get);
   reg [2:0] counter;
   wire response;
-  // All rt events must be preconditioned with clk
   assign _rt_get =  i;
   assign response =  counter < 3 && i && controllable_i;
   assign error = reg_error;
@@ -38,7 +37,7 @@ module bench( input  i, input controllable_i, output error, output _rt_get);
     counter = 2'b0;
     reg_error = 0;
   end
-  always #1
+  always @(posedge clk)
   begin
     if(response) begin
         $display("\tresponse");
@@ -47,13 +46,3 @@ module bench( input  i, input controllable_i, output error, output _rt_get);
     reg_error = i & !response;
   end
 endmodule
-// For conversion to aag
-// 1) Convert to blif with yosys
-//    echo "read_verilog ex1.v; write_blif ex1.blif" | yosys
-// 2) Convert to aig with abc
-//    berkeley-abc -c "read_blif a.blig; strash; refactor; rewrite; dfraig; write_aiger -s a.aig"
-// 3) Convert aig to aag
-//    aigtoaig a.aig a.aag
-//
-// berkeley-abc cannot parse this verilog file; only yosys can
-// yosys cannot synthesize

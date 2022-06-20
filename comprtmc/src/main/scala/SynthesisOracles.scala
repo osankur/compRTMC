@@ -69,6 +69,9 @@ class Verilog(val inputFile : File){
                     throw Exception("Module in file " + inputFile.toString + " does not contain an error output")
             case _ => ()
         }
+        if (!_inputs.contains("clk") ){
+            throw Exception("The Verilog module must contain clk as an input")
+        }
         alphabet = _alphabet.toList
         inputs = _inputs.toList
         outputs = _outputs.toList
@@ -100,7 +103,7 @@ class Verilog(val inputFile : File){
             alpha =>
                 sb.append(s"\twire $alpha;\n")
         }
-        sb.append(s"\tdfa _dfa_($alphabetAsArgs, ._dfa_accept(_dfa_accept));\n")
+        sb.append(s"\tdfa _dfa_(.clk(clk), $alphabetAsArgs, ._dfa_accept(_dfa_accept));\n")
         sb.append(s"\t$moduleName _fsm_($inputsAsArgs, $alphabetAsArgs, .$errorName(_fsm_err));\n")
         sb.append("endmodule\n")
 
@@ -113,7 +116,7 @@ class Verilog(val inputFile : File){
                 acceptingStates.append(hypothesis.stateIDs.getStateId(state))
             }
         }
-        sb.append(s"module dfa(${_alphabet.map("input " + _).mkString(", ")}, output _dfa_accept);\n")
+        sb.append(s"module dfa(input clk, ${_alphabet.map("input " + _).mkString(", ")}, output _dfa_accept);\n")
         sb.append(s"\treg[$statesSize:0] state;\n")
         hypothesis.getInitialStates().toList match {
             case List() => throw Exception("No initial state found")
@@ -121,7 +124,7 @@ class Verilog(val inputFile : File){
             case _ => throw Exception("Automaton has several initial states")
         }
         sb.append(s"\tassign _dfa_accept = ${acceptingStates.map("state == " + _).mkString(" || ")};\n")
-        sb.append("\talways #1 begin\n")
+        sb.append("\talways @(posedge clk) begin\n")
         
         var _firstIf = true
         states foreach { 

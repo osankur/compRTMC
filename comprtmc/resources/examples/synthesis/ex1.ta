@@ -1,3 +1,6 @@
+#
+# This timed automaton models the language {eps, get, get.get, get.get.get}
+#
 system:ex1
 
 clock:1:x
@@ -6,4 +9,4 @@ event:get
 
 process:A
 location:A:q{initial:}
-edge:A:q:q:get{provided: x >= 2 && y <= 5: do : x = 0}
+edge:A:q:q:get{provided: x >= 2 && y <= 7: do : x = 0}

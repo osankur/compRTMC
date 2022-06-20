@@ -1,0 +1,122 @@
+MODULE stableproc(id, wake_up, receiving, msg_root, msg_seqn, normalize)
+VAR
+	state : {idle, broadcasting};
+
+
+	-- hb : 0..8;
+	myseq : 0..10;
+INIT
+	-- 0 <= hb & hb <= 4 &
+	0 <= myseq & myseq <= 2
+ASSIGN
+	init(state) := idle;
+	next(state) := case
+		wake_up & state=idle : broadcasting;
+		state=broadcasting : idle;
+        TRUE : idle;
+	esac;
+	-- next(hb) := case
+	--	wake_up & hb < 8 : hb + 1;
+	--	receiving & !ignoreMsg & msg_root < id : 0;
+	--	TRUE : hb;
+	--esac;
+	next(myseq) := case
+		state = broadcasting & 1 = id & myseq < 8 : myseq + 1;
+		receiving & !ignoreMsg : msg_seqn;
+		normalize & (myseq >= 1) : myseq - 1; -- Normalization
+		TRUE : myseq;
+	esac;
+DEFINE
+	ignoreMsg := (msg_root > 1
+					| 1 = id -- & hb < 3
+					| msg_root = 1 & msg_seqn <= myseq);
+					
+MODULE lastproc(id, wake_up, receiving, msg_root, msg_seqn, normalize)
+VAR
+	state : {idle, broadcasting};
+
+
+	hb : 0..8;
+	myroot : 1..3;
+	numentries : 0..4;
+	myseq : 0..10;
+ASSIGN
+	next(state) := case
+		wake_up & state=idle & (next(myroot) = id | myroot = id | numentries >= 4) : broadcasting;
+		state=broadcasting : idle;
+        TRUE : idle;
+	esac;
+	next(hb) := case
+		wake_up & hb < 8 : hb + 1;
+		receiving & !ignoreMsg & msg_root < id : 0;
+		TRUE : hb;
+	esac;
+	next(myroot) := case
+		wake_up & myroot != id & hb >= 8 : id;
+		receiving & msg_root < myroot : msg_root;
+		TRUE : myroot;
+	esac;
+	next(numentries) := case
+		receiving & !ignoreMsg & numentries < 4 : numentries + 1;
+		TRUE : numentries;
+	esac;
+	next(myseq) := case
+		state = broadcasting & myroot = id & myseq < 8 : myseq + 1;
+		receiving & !ignoreMsg : msg_seqn;
+		normalize & (myseq >= 1) : myseq - 1; -- Normalization
+		TRUE : myseq;
+	esac;
+DEFINE
+	ignoreMsg := (msg_root > myroot 
+					| myroot = id & hb < 3
+					| msg_root = myroot & msg_seqn <= myseq);
+					
+
+MODULE Others
+IVAR
+    msg_root : 2..3; -- Others can only send messages not coming from root.
+    msg_seq : 0..10; -- with arbitrary seq numbers
+
+
+MODULE main
+IVAR
+    others_sending_to_1 : boolean;
+    others_sending_to_2 : boolean;
+
+VAR
+    cmd : {idle, decrement_seqn, others, wake1, wake2};
+	 counter : 0..20;
+proc1 : stableproc(1, _rt_wakeup1, receiving1, msg_root, msg_seqn, cmd = decrement_seqn);
+proc2 : lastproc(2, _rt_wakeup2, receiving2, msg_root, msg_seqn, cmd = decrement_seqn);
+oth : Others;
+ASSIGN
+    init(counter) := 0;
+    next(counter) := case
+        cmd = wake1 & counter < 20 : counter + 1;
+        TRUE : counter;
+    esac;
+INVAR
+	(someone_broadcasting -> cmd = idle)
+	& (!someone_broadcasting & (cmd != others) &  proc1.myseq >= 1 & proc2.myseq >= 1 -> cmd = decrement_seqn)
+	& (cmd = decrement_seqn -> proc1.myseq >= 1 & proc2.myseq >= 1)
+DEFINE
+	err := counter = 20 & (proc2.myroot != 1);
+	_rt_wakeup1 := cmd = wake1;
+	_rt_wakeup2 := cmd = wake2;
+	receiving1 := proc2.state = broadcasting | (cmd = others & others_sending_to_1);
+	receiving2 := proc1.state = broadcasting | (cmd = others & others_sending_to_2);
+	msg_root := case
+        proc1.state = broadcasting : 1;
+        proc2.state = broadcasting : proc2.myroot;
+    cmd = others : oth.msg_root;
+    TRUE : 3;
+	esac;
+    msg_seqn := case
+        proc1.state = broadcasting : proc1.myseq;
+        proc2.state = broadcasting : proc2.myseq;
+        cmd = others : oth.msg_seq;
+        TRUE : 10;
+    esac;
+    someone_broadcasting := proc1.state = broadcasting | proc2.state = broadcasting;
+INVARSPEC !err
+

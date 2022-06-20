@@ -24,8 +24,6 @@ given event. TChecker is used to obtain an interpolant automaton, and the automa
 is used to compute unions of DFAs and their minimizations.
 
 - `synth`: synthesize.
-All events in the TA must be synchronizing events. Otherwise complementing is complicated.
-The _rt_events must all be variables. In fact, DEFINES are lost when translating to/from AIG.`
 
 ## Modeling
 - Explain the use of `_rt_events`. Typically one uses DEFINEs as predicates. 

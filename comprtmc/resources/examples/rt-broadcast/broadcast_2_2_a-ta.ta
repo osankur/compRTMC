@@ -1,0 +1,34 @@
+system:broadcast_bit_counter_2_2
+event:wakeup0
+event:sleep0
+event:wakeup1
+event:sleep1
+event:wakeup2
+event:sleep2
+event:deadline
+clock:3:x
+clock:1:t
+
+process:P0
+location:P0:sleeping{initial::invariant:x[0] <= 10}
+location:P0:awake{invariant:x[0] <= 0}
+edge:P0:sleeping:awake:wakeup0{provided:x[0] <= 10 && x[0] >= 10 : do : x[0] = 0}
+edge:P0:awake:sleeping:sleep0{provided:x[0] <= 0 && x[0] >= 0 : do : x[0] = 0}
+
+process:P1
+location:P1:sleeping{initial::invariant:x[1] <= 15}
+location:P1:awake{invariant:x[1] <= 0}
+edge:P1:sleeping:awake:wakeup1{provided:x[1] <= 15 && x[1] >= 15 : do : x[1] = 0}
+edge:P1:awake:sleeping:sleep1{provided:x[1] <= 0 && x[1] >= 0 : do : x[1] = 0}
+
+process:P2
+location:P2:sleeping{initial::invariant:x[2] <= 10}
+location:P2:awake{invariant:x[2] <= 0}
+edge:P2:sleeping:awake:wakeup2{provided:x[2] <= 10 && x[2] >= 10 : do : x[2] = 0}
+edge:P2:awake:sleeping:sleep2{provided:x[2] <= 0 && x[2] >= 0 : do : x[2] = 0}
+
+process:Monitor
+location:Monitor:init{initial::invariant:t <= 50}
+location:Monitor:err{urgent:}
+edge:Monitor:init:err:deadline{provided:t >= 50}
+

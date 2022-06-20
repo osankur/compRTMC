@@ -1,0 +1,118 @@
+@TIME_DOMAIN continuous
+MODULE proc(id, wakeup, crash, broadcasting, sender_id, recv_id)
+VAR
+	state : {ok, sending, crashed};
+	leader : 0..3;
+	hb : 0..4;
+ASSIGN
+    init(leader) := id;
+    next(leader) := case
+        wakeup & hb = 4: id;
+        state = ok & broadcasting & recv_id < id : recv_id;
+        state = crashed : {0, 1, 2};
+        TRUE : leader;
+    esac;
+    init(hb) := 0;
+    next(hb) := case
+        wakeup & hb < 4 : hb + 1;
+        state != sending & sender_id < id & broadcasting  : 0;
+        state = crashed : {0, 1, 2, 3};
+        TRUE : hb;
+    esac;
+    next(state) := case
+        state = ok & wakeup : sending;
+        state = sending : ok;
+        crash : crashed;
+        state = crashed & wakeup : ok;
+        TRUE : state;
+    esac;
+
+MODULE main
+FROZENVAR
+        
+	id0 : 0..3;
+	id1 : 0..3;
+	id2 : 0..3;
+VAR
+	cmd : {cmd_broadcast, cmd_wakeup0, cmd_crash0, cmd_wakeup1, cmd_crash1, cmd_wakeup2, cmd_crash2};
+
+    cnt : 0..20;
+    crash_cnt : 0..3;
+p0 : proc(id0, cmd = cmd_wakeup0, cmd = cmd_crash0, cmd = cmd_broadcast, sender_id, msg);
+p1 : proc(id1, cmd = cmd_wakeup1, cmd = cmd_crash1, cmd = cmd_broadcast, sender_id, msg);
+p2 : proc(id2, cmd = cmd_wakeup2, cmd = cmd_crash2, cmd = cmd_broadcast, sender_id, msg);
+
+     y : array 0..2 of clock;
+            
+INIT
+ TRUE 
+ & y[0] = 0
+ & y[1] = 0
+ & y[2] = 0
+ASSIGN
+
+        next(y[0]) := case
+            cmd = cmd_wakeup0 : 0;
+            TRUE : y[0];
+        esac;
+
+        next(y[1]) := case
+            cmd = cmd_wakeup1 : 0;
+            TRUE : y[1];
+        esac;
+
+        next(y[2]) := case
+            cmd = cmd_wakeup2 : 0;
+            TRUE : y[2];
+        esac;
+
+    init(cnt) := 0;
+    init(crash_cnt) := 0;
+    next(crash_cnt) := case
+        (cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) & crash_cnt < 3 : crash_cnt + 1;
+        TRUE : crash_cnt;
+    esac;
+    next(cnt) := case
+        (cmd = cmd_wakeup0) & cnt < 20 : cnt + 1;
+        crash_cnt != next(crash_cnt) : 0;
+        TRUE : cnt;
+    esac;
+INVAR
+	TRUE 
+	 & (id0 != id1)	 & (id0 != id2)	 & (id1 != id2)	& (id0 = 0 | id1 = 0 | id2 = 0)
+
+& (cmd = cmd_broadcast <-> (p0.state = sending | p1.state = sending | p2.state = sending))
+& ((cmd = cmd_wakeup0 & p0.state = ok) -> (4 <= y[0] & y[0] <= 4)) -- wakeup period
+& (p0.state = ok -> y[0] <= 4) -- invariant
+& (p0.state = crashed -> y[0] <= 12) -- invariant
+& ((cmd = cmd_wakeup0 & p0.state = crashed) -> (0 <= y[0] & y[0] <= 12)) -- crash time
+& ((cmd = cmd_wakeup1 & p1.state = ok) -> (4 <= y[1] & y[1] <= 4)) -- wakeup period
+& (p1.state = ok -> y[1] <= 4) -- invariant
+& (p1.state = crashed -> y[1] <= 12) -- invariant
+& ((cmd = cmd_wakeup1 & p1.state = crashed) -> (0 <= y[1] & y[1] <= 12)) -- crash time
+& ((cmd = cmd_wakeup2 & p2.state = ok) -> (3 <= y[2] & y[2] <= 3)) -- wakeup period
+& (p2.state = ok -> y[2] <= 3) -- invariant
+& (p2.state = crashed -> y[2] <= 12) -- invariant
+& ((cmd = cmd_wakeup2 & p2.state = crashed) -> (0 <= y[2] & y[2] <= 12)) -- crash time
+& ((cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) -> crash_cnt < 3)
+
+DEFINE 
+    msg := case
+	p0.state = sending : p0.leader;
+	p1.state = sending : p1.leader;
+	p2.state = sending : p2.leader;
+	TRUE : 3;
+esac;
+sender_id := case
+	p0.state = sending : id0;
+	p1.state = sending : id1;
+	p2.state = sending : id2;
+	TRUE : 3;
+esac;
+	stable := p0.leader = 0 & p1.leader = 0 & p2.leader = 0;
+	err := cnt=15 & !stable;
+	_rt_wakeup0 := cmd = cmd_wakeup0;
+	_rt_wakeup1 := cmd = cmd_wakeup1;
+	_rt_wakeup2 := cmd = cmd_wakeup2;
+    _rt_crash := cmd = cmd_crash0;
+INVARSPEC !err

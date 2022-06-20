@@ -1,0 +1,129 @@
+@TIME_DOMAIN continuous
+
+    MODULE main
+    VAR
+
+        active : array 0..2 of boolean;
+        carry : array 0..2 of boolean; -- carry[0] is an unconstrained input
+        bits : array 1..2 of boolean;
+        broadcast : boolean;
+   cmd : {cmd_check, cmd_wakeup0, cmd_sleep0, cmd_wakeup1, cmd_sleep1, cmd_wakeup2, cmd_sleep2};
+
+            x : array 0..2 of clock;
+            t : clock;
+ASSIGN
+	init(t) := 0;
+	next(t) := t;
+	init(broadcast) := FALSE;
+	next(broadcast) := case
+                !sufficient_actives & next(sufficient_actives) : TRUE;
+                TRUE : FALSE;
+        esac;
+        
+	init(active[1]) := FALSE;
+	init(bits[1]) := FALSE;
+	init(carry[1]) := FALSE;
+	next(active[1]) := case
+                cmd = cmd_wakeup1 : TRUE;
+                cmd = cmd_sleep1 : FALSE;
+                TRUE : active[1];
+            esac;
+            
+	next(bits[1]) := case
+            bits[1] & active[1] & broadcast & visible_carry0 : FALSE;
+            !bits[1] & active[1] & broadcast & visible_carry0 : TRUE;
+            bits[1] & active[1] & broadcast & !visible_carry0 : TRUE;
+            !bits[1] & active[1] & broadcast & !visible_carry0 : FALSE;
+            TRUE : bits[1];
+        esac;
+        next(carry[1]) := case
+            bits[1] & active[1] & broadcast & visible_carry0 : TRUE;
+            !bits[1] & active[1] & broadcast & visible_carry0 : FALSE;
+            bits[1] & active[1] & broadcast & !visible_carry0 : FALSE;
+            !bits[1] & active[1] & broadcast & !visible_carry0 : FALSE;
+	bits[2] != next(bits[2]) : FALSE; -- next bit will consume the carry
+	TRUE : carry[1];
+        esac;
+        
+	init(active[2]) := FALSE;
+	init(bits[2]) := FALSE;
+	init(carry[2]) := FALSE;
+	next(active[2]) := case
+                cmd = cmd_wakeup2 : TRUE;
+                cmd = cmd_sleep2 : FALSE;
+                TRUE : active[2];
+            esac;
+            
+	next(bits[2]) := case
+            bits[2] & active[2] & broadcast & visible_carry1 : FALSE;
+            !bits[2] & active[2] & broadcast & visible_carry1 : TRUE;
+            bits[2] & active[2] & broadcast & !visible_carry1 : TRUE;
+            !bits[2] & active[2] & broadcast & !visible_carry1 : FALSE;
+            TRUE : bits[2];
+        esac;
+        next(carry[2]) := case
+            bits[2] & active[2] & broadcast & visible_carry1 : TRUE;
+            !bits[2] & active[2] & broadcast & visible_carry1 : FALSE;
+            bits[2] & active[2] & broadcast & !visible_carry1 : FALSE;
+            !bits[2] & active[2] & broadcast & !visible_carry1 : FALSE;
+	TRUE : carry[2];
+        esac;
+        
+	init(x[0]) := 0;
+next(x[0]) := case
+                active[0] != next(active[0]) : 0;
+                TRUE : x[0];
+            esac;
+                
+	init(x[1]) := 0;
+next(x[1]) := case
+                active[1] != next(active[1]) : 0;
+                TRUE : x[1];
+            esac;
+                
+	init(x[2]) := 0;
+next(x[2]) := case
+                active[2] != next(active[2]) : 0;
+                TRUE : x[2];
+            esac;
+                
+TRANS
+	TRUE 
+            &(cmd = cmd_sleep0 ->  x[0] >= 2 & x[0] <= 3) 
+            &(cmd = cmd_sleep0 -> active[0])
+            &(cmd = cmd_wakeup0 -> !active[0])
+            &(cmd = cmd_wakeup0 -> x[0] >= 10 & x[0] <= 10) 
+            
+
+            &(cmd = cmd_sleep1 ->  x[1] >= 2 & x[1] <= 3) 
+            &(cmd = cmd_sleep1 -> active[1])
+            &(cmd = cmd_wakeup1 -> !active[1])
+            &(cmd = cmd_wakeup1 -> x[1] >= 14 & x[1] <= 14) 
+            
+
+            &(cmd = cmd_sleep2 ->  x[2] >= 0 & x[2] <= 1) 
+            &(cmd = cmd_sleep2 -> active[2])
+            &(cmd = cmd_wakeup2 -> !active[2])
+            &(cmd = cmd_wakeup2 -> x[2] >= 13 & x[2] <= 13) 
+            
+INVAR
+	TRUE
+	 & (active[0] -> x[0] <= 3) & (!active[0] -> x[0] <= 10)
+	 & (active[1] -> x[1] <= 3) & (!active[1] -> x[1] <= 14)
+	 & (active[2] -> x[2] <= 1) & (!active[2] -> x[2] <= 13)
+DEFINE
+	nb_actives := case active[0] : 1; TRUE : 0; esac + case active[1] : 1; TRUE : 0; esac + case active[2] : 1; TRUE : 0; esac;
+	sufficient_actives := nb_actives >= 2;
+visible_carry0 := case
+            active[0] : carry[0];
+            TRUE : FALSE;
+        esac;
+visible_carry1 := case
+            active[1] : carry[1];
+            TRUE : FALSE;
+        esac;
+visible_carry2 := case
+            active[2] : carry[2];
+            TRUE : FALSE;
+        esac;
+INVARSPEC (visible_carry2 -> t >= 50)

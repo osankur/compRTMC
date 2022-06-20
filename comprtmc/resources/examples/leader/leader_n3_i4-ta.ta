@@ -1,0 +1,23 @@
+system:leader3_ta
+event:wakeup0
+event:wakeup1
+event:wakeup2
+event:crash
+
+clock:3:y
+
+process:P0
+location:P0:ok{initial::invariant:y[0] <= 11}
+location:P0:crashed{invariant:y[0] <= 2}
+edge:P0:ok:ok:wakeup0{provided: y[0]>=7 && y[0] <= 11 : do : y[0] = 0}
+edge:P0:ok:crashed:crash{do : y[0] = 0}
+edge:P0:crashed:ok:wakeup0{provided: y[0] >= 0 && y[0] <= 2 : do : y[0] = 0}
+
+process:P1
+location:P1:ok{initial::invariant:y[1] <= 4}
+edge:P1:ok:ok:wakeup1{provided: y[1]>=2 && y[1] <= 4 : do : y[1] = 0}
+
+process:P2
+location:P2:ok{initial::invariant:y[2] <= 3}
+edge:P2:ok:ok:wakeup2{provided: y[2]>=3 && y[2] <= 3 : do : y[2] = 0}
+
