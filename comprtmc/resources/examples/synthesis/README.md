@@ -1,13 +1,13 @@
 # Benchmark Format
 The FSM part is a Verilog module in which the inputs are uncontrollable unless they are prefixed with "controllable_".
 There is a distinguished output named `error` which is true iff the system is at the error state.
-All other outputs are synchronization labels with the timed automaton are are to be prefixed with `_rt_`.
+All other outputs are synchronization labels with the timed automaton and are to be prefixed with `_rt_`.
 
 The module must have the distinguished `input clk` which defines the synchronous steps of the module;
 that is, a synchronous step happens on the rising edge of `clk`. This input should not be used elsewhere.
 
 As an example, consider the file `ex1.v`. Input `i` is uncontrollable, and `controllable_i` is controllable. There is a single synchronization label `_rt_get`. The accompanying timed automaton file `ex1.ta` determines the untimed language on the singleton alphabet `{_rt_get}`.
-Here, to avoid the error state, whenever `i` is true, `controllable_i` must be set to 1 as well. However, this is only possible if `counter < 3`, that is,
+Here, to avoid the error state, whenever `i` is true, `controllable_i` must be set to 1 as well. However, this is only possible if `counter <= 3`, that is,
 at most three times. The timed automaton model also restricts the language to at most three `_rt_get` events.
 Thus, the system is controllable.
 On the other hand, in `ex2.v`, the controller is only allowed to respond twice, so the system is uncontrollable.
