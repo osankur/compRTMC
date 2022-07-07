@@ -94,8 +94,8 @@ class CompSynthesisAlgorithm(
               System.out.println("Thread Interrupted");
           }          
         }
-        //if (verdict == None) 
-        System.out.println("<--" + BOLD + BLUE + " Switched to phase " + GREEN + targetPhase.toString  + RESET + " -->")
+        if (verdict == None) 
+          System.out.println("<--" + BOLD + BLUE + " Switched to phase " + GREEN + targetPhase.toString  + RESET + " -->")
       }
     }
     def setVerdict(v : Boolean) : Unit = {
@@ -141,12 +141,11 @@ class CompSynthesisAlgorithm(
                 RED + "OverAppr Query: Uncontrollable" + RESET + "\n"
               )
               System.out.println(
-                YELLOW + "Checking the feasibility of the counterstrategy w.r.t. TA" + RESET + "\n"
+                RED + "Checking the feasibility of the counterstrategy w.r.t. TA" + RESET + "\n"
               )
               SynthesisLearningLock.strategy = strat
               SynthesisLearningLock.switchPhase()
               SynthesisLearningLock.waitForPhase(OverApprPhase)
-              System.out.println("Got back to overappr")
               if (SynthesisLearningLock.verdict != None) {
                 null
               } else {
@@ -297,31 +296,15 @@ class CompSynthesisAlgorithm(
     // enable logging of models
     upperExperiment.setLogModels(true);
     lowerExperiment.setLogModels(true);
-    /*
-    val lowerThread = new Thread{
-        override def run() : Unit = {
-            SynthesisLearningLock.waitForPhase(UnderApprPhase)
-            lowerExperiment.run()
-        }
-    }
-    lowerThread.start()
-    */
     new Thread{
         override def run() : Unit = {
             SynthesisLearningLock.waitForPhase(UnderApprPhase)
-            lowerExperiment.run()
+            if SynthesisLearningLock.verdict == None then {
+              lowerExperiment.run()
+            }
         }
     }.start()
     upperExperiment.run()
-    /*
-    new Thread{
-        override def run() : Unit = {
-            // SynthesisLearningLock.waitForPhase(OverApprPhase)
-            upperExperiment.run()
-        }
-    }.start()
-    */
-    // lowerExperiment.run()
-    // upperExperiment.run()
+
   }
 }

@@ -14,8 +14,8 @@ module bench( input clk, input  i, input controllable_i, output error, output _r
   begin
     if(response) begin
         $display("\tresponse");
-        counter = counter + 1;
+        counter <= counter + 1;
     end
-    reg_error = i & !(counter <= 2 && i && controllable_i);
+    reg_error <= i & !(counter <= 2 && i && controllable_i);
   end
 endmodule
