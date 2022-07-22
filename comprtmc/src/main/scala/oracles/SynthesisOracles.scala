@@ -46,7 +46,23 @@ class Verilog(val inputFile : File){
         val _inputs = ListBuffer[String]()
         val _alphabet = ListBuffer[String]()
         val _outputs = ListBuffer[String]()
+        // Aggregate lines until the occurrence of ';'
+
+        val aggLines = ListBuffer[String]()
+        var insideModule = false
+        var currentLine = ""
         lines foreach {
+            case line => 
+                if line.contains("module") then
+                    insideModule = true
+                if insideModule then
+                    currentLine += line
+                    if line.contains(";") then
+                        aggLines.append(currentLine)
+                        currentLine = ""
+                        insideModule = false
+        }
+        aggLines foreach {
             case regModuleMain(name, params) =>
                 moduleName = name
                 val args = params.split(",").toList.map(_.split(" ").map(_.strip()).filter(_.length>0))
@@ -70,7 +86,7 @@ class Verilog(val inputFile : File){
             case _ => ()
         }
         if (!_inputs.contains("clk") ){
-            throw Exception("The Verilog module must contain clk as an input")
+            throw Exception("The Verilog module must contain clk as input" )
         }
         alphabet = _alphabet.toList
         inputs = _inputs.toList
@@ -97,8 +113,9 @@ class Verilog(val inputFile : File){
         
         sb.append(content+"\n\n")
         // sb.append(s"module _rtmc_($inputsAsArgList, output $errorName);\n")
-        sb.append(s"module _rtmc_($inputsAsArgList, $outputsAsArgList);\n")
+        sb.append(s"module _rtmc_($inputsAsArgList, $outputsAsArgList, output dfa_accept);\n")
         sb.append(s"\twire _dfa_accept;\n\twire _fsm_err;\n\tassign $errorName = _dfa_accept && _fsm_err;\n")
+        sb.append("\tassign dfa_accept = _dfa_accept;\n")
         _alphabet foreach{
             alpha =>
                 sb.append(s"\twire $alpha;\n")
@@ -117,15 +134,20 @@ class Verilog(val inputFile : File){
             }
         }
         sb.append(s"module dfa(input clk, ${_alphabet.map("input " + _).mkString(", ")}, output _dfa_accept);\n")
+        sb.append("\treg notfirst;\n")
         sb.append(s"\treg[$statesSize:0] state;\n")
+        sb.append("\tinitial begin\n")
         hypothesis.getInitialStates().toList match {
             case List() => throw Exception("No initial state found")
-            case List(i) => sb.append(s"\tinitial state = ${hypothesis.stateIDs.getStateId(i)};\n")
+            case List(i) => sb.append(s"\t\tstate = ${hypothesis.stateIDs.getStateId(i)};\n")
             case _ => throw Exception("Automaton has several initial states")
         }
+        sb.append("\t\tnotfirst = 0;\n")
+        sb.append("\tend\n")
         sb.append(s"\tassign _dfa_accept = ${acceptingStates.map("state == " + _).mkString(" || ")};\n")
         sb.append("\talways @(posedge clk) begin\n")
-        
+        sb.append("\tnotfirst <= 1;\n")
+        sb.append("\tif (notfirst) begin\n")
         var _firstIf = true
         states foreach { 
             state =>
@@ -134,16 +156,23 @@ class Verilog(val inputFile : File){
                     val succs = hypothesis.getSuccessors(state, sigma);
                     for (succ <- succs) {
                         if (_firstIf){
-                            sb.append("\t\t")
+                            sb.append("\t\t\t")
                             _firstIf = false
                         } else {
-                            sb.append("\t\telse ")
+                            sb.append("\t\t\telse ")
                         }
-                        sb.append(s"if (state == ${hypothesis.stateIDs.getStateId(state)} && _rt_$sigma) state = ${hypothesis.stateIDs.getStateId(succ)};\n")
+                        sb.append(s"if (state == ${hypothesis.stateIDs.getStateId(state)} && _rt_$sigma) state <= ${hypothesis.stateIDs.getStateId(succ)};\n")
                     }
                 }
             }
         }
+        sb.append("\tend else begin\n")
+        hypothesis.getInitialStates().toList match {
+            case List() => throw Exception("No initial state found")
+            case List(i) => sb.append(s"\t\tstate <= ${hypothesis.stateIDs.getStateId(i)};\n")
+            case _ => throw Exception("Automaton has several initial states")
+        }
+        sb.append("\tend\n")
         sb.append("end\n")
         sb.append("endmodule\n")
         sb.toString
@@ -187,8 +216,10 @@ class AbssyntheOracle(verilog : Verilog) extends SynthesisOracle{
         //    aigtoaig a.aig a.aag
         val tmpFilename = File(tmpDirPath.toFile,verilogFile.getName).toString
         val cmd_yosys = s"echo \"read_verilog ${verilogFile.toString}; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif $tmpFilename.blif\"" #| "yosys -q"
-        val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; refactor; rewrite; dfraig; write_aiger -s $tmpFilename.aig\""
-        val cmd_aig = s"aigtoaig $tmpFilename.aig $tmpFilename.aag"
+        // val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; refactor; rewrite; dfraig; write_aiger -s $tmpFilename.aig\""
+        val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; write_aiger -s $tmpFilename.aig\""
+        val cmd_aig = s"./resources/scripts/aig/bad2out $tmpFilename.aig $tmpFilename.aag"
+        //val cmd_bad2out = s"./resources/scripts/aig/bad2out $tmpFilename.aig $tmpFilename.aag"
         System.out.println(cmd_yosys)
         
         if (cmd_yosys.! != 0){

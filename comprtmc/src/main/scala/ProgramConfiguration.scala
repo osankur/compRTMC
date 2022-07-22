@@ -51,6 +51,7 @@ case class Configuration(
     algorithm: Algorithm = HypothesisLearning,
     keepTmpFiles: Boolean = false,
     verbose: Boolean = false,
+    verbose_MembershipQueries : Boolean = false,
     tmpDirName: String = ".crtmc/"
 ) {
   private var tmpDirFile: Option[Path] = None

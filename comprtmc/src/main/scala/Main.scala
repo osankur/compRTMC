@@ -139,9 +139,8 @@ object Main {
           case Synthesis =>
             val verilog = synthesis.Verilog(config.fsmFile)
             val (taMemOracle, taIncOracle) = ta.Factory.getTCheckerOracles(config.taFile, verilog.alphabet) 
-            val taContainmentOracle = ta.Factory.getTCheckerContainmentOracle(config.taFile, verilog.alphabet)
             val synthesisOracle = synthesis.AbssyntheOracle(verilog)
-            val alg = algorithms.CompSynthesisAlgorithm(verilog,synthesisOracle,taMemOracle, taIncOracle, taContainmentOracle)
+            val alg = algorithms.CompSynthesisAlgorithm(verilog,synthesisOracle,taMemOracle, taIncOracle)
             alg.run()
         }
       case _ => 

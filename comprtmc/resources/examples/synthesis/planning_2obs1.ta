@@ -1,0 +1,20 @@
+system:planning2
+
+clock:1:cr
+clock:1:co1
+clock:1:co2
+event:robot
+event:obs1
+event:obs2
+
+process:R
+location:R:q{initial::invariant:cr<=1}
+edge:R:q:q:robot{provided: cr >= 1 && cr <= 1: do : cr = 0}
+
+process:O1
+location:O1:q{initial::invariant:co1<=5}
+edge:O1:q:q:obs1{provided: co1 >= 5 && co1 <= 5: do : co1 = 0}
+
+process:O2
+location:O2:q{initial::invariant:co2<=5}
+edge:O2:q:q:obs2{provided: co2 >= 5 && co2 <= 5: do : co2 = 0}

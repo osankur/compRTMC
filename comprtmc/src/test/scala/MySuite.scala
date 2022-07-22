@@ -146,18 +146,18 @@ class FullZG extends munit.FunSuite {
   }
 }
 class SynthTest extends munit.FunSuite {
-  test("abssynthe-unr"){
-    synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example2.smv"))).synthesize() match{
-      case synthesis.Uncontrollable(_) => ()
-      case _ => assert(false)
-    }
-  }
-  test("abssynthe-rea"){
-    synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example1.smv"))).synthesize() match{
-      case synthesis.Controllable(_) => ()
-      case _ => assert(false)
-    }
-  }
+  // test("abssynthe-unr"){
+  //   synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example2.smv"))).synthesize() match{
+  //     case synthesis.Uncontrollable(_) => ()
+  //     case _ => assert(false)
+  //   }
+  // }
+  // test("abssynthe-rea"){
+  //   synthesis.AbssyntheOracle(synthesis.Verilog(File("/home/osankur/ulb/AbsSynthe/examples/example1.smv"))).synthesize() match{
+  //     case synthesis.Controllable(_) => ()
+  //     case _ => assert(false)
+  //   }
+  // }
 }
 
 /*
@@ -176,22 +176,22 @@ class SMVTest extends munit.FunSuite {
 }
 class VerilogTest extends munit.FunSuite {
   test("verilog1"){
-    val alphabetList = List("_rt_check", "_rt_event").asJava
+    val alphabetList = List("robot", "obs1", "obs2").asJava
     val alphabet: Alphabet[String] = Alphabets.fromList(alphabetList)
     val target: CompactDFA[String] =
       AutomatonBuilders
         .newDFA(alphabet)
         .withInitial("q0")
         .from("q0")
-        .on("_rt_check")
+        .on("robot")
         .to("q1")
         .from("q1")
-        .on("_rt_event")
+        .on("obs1")
         .to("q0")
         .withAccepting("q0")
         .create();
 
-    val inp = synthesis.Verilog(File("resources/examples/synthesis/cnt.v"))
+    val inp = synthesis.Verilog(File("resources/examples/synthesis/safe_planning.v"))
     System.out.println("Alphabet: " + inp.alphabet)
     System.out.println("InterAlphabet: " + inp.inputs)
     System.out.println("Output: " + inp.outputs)
@@ -227,6 +227,6 @@ class AutomataTest extends munit.FunSuite{
 
 class ThreadTest extends munit.FunSuite {
   test("thread-basic"){
-    Example.threadExample()
+    // Example.threadExample()
   }
 }

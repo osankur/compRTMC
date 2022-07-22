@@ -129,8 +129,9 @@ class SMV(inputFile: java.io.File) {
     } else {
       strB.append("FALSE;\n")
     }
-    strB.append("DEFINE\n\t_rtmc_error := _rt_nonexcl | (time.accepting & error);\n")
+    strB.append("DEFINE\n\t_rtmc_error :=  (time.accepting & error);\n")
     strB.append("INVARSPEC\n\t !_rtmc_error\n")
+    strB.append("INVARSPEC\n\t !_rt_nonexcl\n")
     SMVStructure(fsm, strB.toString, alphabet.toList)
   }
   def fsm = _structure.fsm
@@ -232,21 +233,20 @@ class SMVIntersectionOracle(
     val cmd =
       configuration.globalConfiguration.fsmAlgorithm match {
         case configuration.FSM.BDDAlgorithm =>
-          "echo \"read_model -i %s; go; check_invar; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
+          "echo \"read_model -i %s; go; check_invar -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
         case _ =>
-          "echo \"read_model -i %s; go_msat; check_invar_ic3; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
+          "echo \"read_model -i %s; go_msat; check_invar_ic3 -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
       }
-    System.out.println(YELLOW + "Model checking FSM with given hypothesis TA" + RESET)
+    System.out.println(YELLOW + s"Model checking FSM with given hypothesis TA: $productFile" + RESET)
     System.out.println(cmd)
     val output = cmd.!!
-    // System.out.println(output)
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("Trace Type: Counterexample")) {
-      if(output.contains("_rt_nonexcl = TRUE")){
-        throw ParseError("The real-time labels _rt_ must be mutually exclusive")
-      }
+      // if(output.contains("_rt_nonexcl = TRUE")){
+      //   throw ParseError("The real-time labels _rt_ must be mutually exclusive")
+      // }
       // The output should contain the counterexample twice
       // Return the first occurrence (nonverbose), but use the second occurrence (verbose) to extract trace
       val (cexStr,cexVerboseStr) = 

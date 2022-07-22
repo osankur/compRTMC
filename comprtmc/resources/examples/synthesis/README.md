@@ -31,11 +31,11 @@ In fact, we will consider overapproximations of the timed automaton, which means
 The user only needs to provide `.v` and `.ta` files but it might be useful to know how the tool translates Verilog to AIG to run reactive synthesis tools.
 The translation might give non-blocking warnings so make sure the FSM .v file is tested independently before proceeding to the TA synthesis.
 
- 1) Convert to blif with yosys
+1. Convert to blif with yosys
     echo "read_verilog ex1.v; write_blif ex1.blif" | yosys
- 2) Convert to aig with abc
+2. Convert to aig with abc
     berkeley-abc -c "read_blif a.blig; strash; refactor; rewrite; dfraig; write_aiger -s a.aig"
- 3) Convert aig to aag
+3. Convert aig to aag
     aigtoaig a.aig a.aag
 
 These operations are implemented in the script `make-aag.sh`.

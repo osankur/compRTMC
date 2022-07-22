@@ -390,7 +390,8 @@ class TCheckerMonitorMaker (
           "tck-reach -a covreach %s -l %s"
             .format(productFile.toString, label)
         }
-    System.out.println(cmd)
+    if configuration.globalConfiguration.verbose_MembershipQueries then
+      System.out.println(cmd)
     // var beginTime = System.nanoTime()
     val output = cmd.!!
     // this._elapsed = this._elapsed + (System.nanoTime() - beginTime)
@@ -493,15 +494,18 @@ class TCheckerMembershipOracle(
     this._nbQueries += 1
     val monitorDescription = taMonitorMaker.makeWordIntersecter(trace)
     val verdict = taMonitorMaker.checkEmpty(monitorDescription, generateWitness)
-    System.out.print(BLUE + "Membership query: " + trace + RESET)
+    if configuration.globalConfiguration.verbose_MembershipQueries then
+      System.out.print(BLUE + "Membership query: " + trace + RESET)
     verdict match {
       case taMonitorMaker.Empty =>
-        System.out.println(RED + " (false)" + RESET)
+        if configuration.globalConfiguration.verbose_MembershipQueries then
+          System.out.println(RED + " (false)" + RESET)
         statistics.negQueries = statistics.negQueries + trace.mkString(" ")
         None
       case taMonitorMaker.NonEmpty(cex) =>
         statistics.posQueries = statistics.posQueries + trace.mkString(" ")
-        System.out.println(GREEN + " (true)" + RESET)
+        if configuration.globalConfiguration.verbose_MembershipQueries then
+          System.out.println(GREEN + " (true)" + RESET)
         Some(cex)
     }
   }
@@ -638,6 +642,8 @@ class TCheckerInterpolationOracle(
 /** Oracle to check whether the language of the hypothesis H is included in that of the TA:
  *                              H <= T ? 
  *  Here, all locations of the TA is assumed to be accepting.
+ * 
+ *  FIXME Checking the emptiness of H /\ complement(T)  does not imply the above inclusiom on untimed traces!
  */
 class TCheckerContainmentOracle(
     taFile: File,
@@ -651,6 +657,7 @@ class TCheckerContainmentOracle(
 
   /** TCheckerTA which represents the complement of the given TA,
    *  with accepting label _complement_accept. */
+  
   private val complementTA = {
     val f = Files.createTempFile(tmpDirPath, "complement", ".ta").toFile()
     val cmd = s"tck-convert -c ${taFile.toString} -o ${f.toString}"
