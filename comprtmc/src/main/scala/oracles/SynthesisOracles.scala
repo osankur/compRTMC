@@ -79,7 +79,7 @@ class Verilog(val inputFile : File){
                             }
                         }
                     case arg => 
-                        throw Exception("All arguments of a module must be preceded by input or output")
+                        throw Exception("All arguments of a module must be preceded by input or output: " + arg(0))
                 }
                 if (!_outputs.contains(errorName))
                     throw Exception("Module in file " + inputFile.toString + " does not contain an error output")

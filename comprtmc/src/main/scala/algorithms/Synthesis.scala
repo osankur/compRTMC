@@ -73,6 +73,12 @@ class CompSynthesisAlgorithm(
       Word.fromList(List("")),
       java.lang.Boolean.FALSE
     )
+
+    // The current overapproximation aka overH
+    var overApproximation : Option[DFA[?, String]] = None
+    // The current underapproximation aka underH
+    var underApproximation : Option[DFA[?, String]] = None
+
     def switchPhase(): Unit = {
       phase = phase match {
         case OverApprPhase  => UnderApprPhase
@@ -103,6 +109,12 @@ class CompSynthesisAlgorithm(
             notifyAll()
         }
     }
+    def setOverApproximation(hypothesis: DFA[_, String]) : Unit = {
+      this.overApproximation = Some(hypothesis)
+    }
+    def setUnderApproximation(hypothesis: DFA[_, String]) : Unit = {
+      this.underApproximation = Some(hypothesis)
+    }
   }
 
   def strategy = SynthesisLearningLock.strategy
@@ -125,6 +137,7 @@ class CompSynthesisAlgorithm(
       taInclusionOracle.findCounterExample(hypothesis, inputs) match {
         case null => // T <= barH
           System.out.println("New over approximation found")
+          SynthesisLearningLock.setOverApproximation(hypothesis)
           Visualization.visualize(hypothesis,inputs)
           synthesisOracle.synthesizeIntersection(hypothesis) match {
             case synthesis.Controllable(strat) =>
@@ -213,6 +226,7 @@ class CompSynthesisAlgorithm(
         inputs: java.util.Collection[? <: String]
     ): DefaultQuery[String, java.lang.Boolean] = {
       System.out.println("Checking if lower bound is found: " + statistics.Counters.toString)
+      SynthesisLearningLock.setUnderApproximation(hypothesis)
       // Visualization.visualize(hypothesis,inputs)
 
       // Check if underH <= T
@@ -221,10 +235,13 @@ class CompSynthesisAlgorithm(
           System.out.println("New under approximation found")
           Visualization.visualize(hypothesis,inputs)
           System.out.println("Checking if the environment-controlled system " + SynthesisLearningLock.strategy + " conforms to underH")
+
           // Check whether FSM^sigma <= underH i.e. check FSM^sigma x comp(underH) = 0.
           val smvStrategy = fsm.SMV(SynthesisLearningLock.strategy)
           val fsmIntersectionOracle = fsm.SMVIntersectionOracle(smvStrategy)
           val compHypothesis = DFAs.complement(hypothesis, Alphabets.fromCollection(inputs))
+
+          // TODO Early termination: check if overH <= underH. This happens sometimes.
 
           fsmIntersectionOracle.checkIntersection(compHypothesis) match {
             case None =>

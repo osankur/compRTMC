@@ -17,7 +17,6 @@ module planning(input clk,
                            output _rt_obs1, output _rt_obs2, output _rt_robot);
   reg excl;
   reg notfirst;
-  reg [2:0] counter;
   reg [3:0] robot_x;
   reg [3:0] robot_y;
   reg [3:0] obs1_x;
@@ -28,20 +27,17 @@ module planning(input clk,
   wire coll1, coll2;
   wire cur_excl;
   assign cur_excl = `excl_exp;
-  //assign oexcl = excl & `excl_exp;
-  assign coll1 = (robot_x >= obs1_x-1 & robot_x <= obs1_x + 1 & robot_y == obs1_y);
-  assign coll2 = (robot_x >= obs2_x-1 & robot_x <= obs2_x + 1 & robot_y == obs2_y);
+  assign coll1 = (robot_x >= obs1_x & robot_x <= obs1_x  & robot_y == obs1_y);
+  assign coll2 = (robot_x >= obs2_x & robot_x <= obs2_x  & robot_y == obs2_y);
   reg reg_error;
-  // reg goal_reached;
+
   assign _rt_robot = notfirst & !error & move_robot;
   assign _rt_obs1 = notfirst & !error & (move_obs1_up | move_obs1_down | move_obs1_left | move_obs1_right);
   assign _rt_obs2 = notfirst & !error & (move_obs2_up | move_obs2_down | move_obs2_left | move_obs2_right);
   assign error = reg_error;
   initial
   begin
-    // initialized = 0;
     notfirst = 0;
-    // goal_reached = 0;
     reg_error = 0;
     robot_x = 0;
     robot_y = 0;
@@ -78,8 +74,6 @@ module planning(input clk,
         if (obs1_x < 3*`k-1)
           obs1_x <= obs1_x +1;
       end
-
-      // Obs2 shall remain between within [2`k,3`k-1] x [0,2`k-1]
       if (move_obs2_up) begin
         if (obs2_y < 3*`k-1)
           obs2_y <= obs2_y +1;

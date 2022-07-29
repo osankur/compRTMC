@@ -1,0 +1,21 @@
+system:sched2
+
+clock:1:x
+clock:1:t
+event:end_of_cycle
+event:sched_short
+event:sched_long
+event:end_task
+
+process:A
+location:A:q0{initial::urgent:}
+location:A:qshort{invariant: x<=5}
+location:A:qlong{invariant: x<=10}
+
+edge:A:q0:qlong:sched_long{provided: t <= 40-5 : do : x = 0}
+edge:A:qlong:q0:end_task{provided :  x == 5}
+
+edge:A:q0:qshort:sched_short{provided: t <= 40-10 : do : x = 0}
+edge:A:qshort:q0:end_task{provided : x == 10}
+
+edge:A:q0:q0:end_of_cycle{provided : t > 40 - 10}
