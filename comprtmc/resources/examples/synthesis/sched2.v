@@ -3,6 +3,9 @@
 /*
 We want to execute nb_tasks tasks within each cycle. We have the freedom to execute either task0 or task1.
 Each task has an internal state p0, p1 and the execution time can be short or long (_rt_sched_short or _rt_sched_long).
+
+This example does not seem adapted for our language game setting. In fact, since Controller's actions directly influence 
+the word that is being read in the TA, it can make sure the word is not accepted and win.
 */
 module sched(input clk, input controllable_sched0, input controllable_sched1, 
                         input end_task,

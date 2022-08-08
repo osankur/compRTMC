@@ -19,4 +19,5 @@ edge:A:q0:qshort:sched_long{provided: t <= 15-10 : do : x = 0}
 edge:A:qshort:q0:end_task{provided : x == 10}
 
 edge:A:q0:q0:end_of_cycle{provided : t > 15 - 10 : do : t = 0; x= 0}
-edge:A:q0:q0:end_of_cycle{provided : x >= 5 : do : t = 0; x=0}
+#edge:A:q0:q0:end_of_cycle{provided : x >= 5 : do : t = 0; x=0}
+

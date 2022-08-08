@@ -1,0 +1,34 @@
+system:ftsp_abs_4
+
+event:wakeup1
+event:wakeup2
+event:wakeup3
+event:wakeup4
+event:tau
+clock:4:x
+
+process:Process1
+location:Process1:q0{initial::invariant:x[0]<=11}
+location:Process1:q1{invariant:x[0]<=11}
+location:Process1:mark{labels:mark}
+edge:Process1:q0:q1:tau{do : x[0] = 0}
+edge:Process1:q1:q1:wakeup1{provided:x[0] >= 9 && x[0] <= 11: do : x[0] = 0}
+
+process:Process2
+location:Process2:q0{initial::invariant:x[1]<=11}
+location:Process2:q1{invariant:x[1]<=11}
+edge:Process2:q0:q1:tau{do : x[1] = 0}
+edge:Process2:q1:q1:wakeup2{provided:x[1] >= 9 && x[1] <= 11 : do : x[1] = 0}
+
+process:Process3
+location:Process3:q0{initial::invariant:x[2]<=11}
+location:Process3:q1{invariant:x[2]<=11}
+edge:Process3:q0:q1:tau{do : x[2] = 0}
+edge:Process3:q1:q1:wakeup3{provided:x[2] >= 9 && x[2] <= 11 : do : x[2] = 0}
+
+process:Process4
+location:Process4:q0{initial::invariant:x[3]<=11}
+location:Process4:q1{invariant:x[3]<=11}
+edge:Process4:q0:q1:tau{do : x[3] = 0}
+edge:Process4:q1:q1:wakeup4{provided:x[3] >= 9 && x[3] <= 11 : do : x[3] = 0}
+

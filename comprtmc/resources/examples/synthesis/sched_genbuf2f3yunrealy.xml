@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+// Inputs
+bool i_RtoB_ACK1;
+bool controllable_BtoR_REQ0;
+bool i_RtoB_ACK0;
+bool controllable_BtoR_REQ1;
+bool controllable_BtoS_ACK0;
+bool controllable_BtoS_ACK1;
+bool i_FULL;
+bool controllable_SLC0;
+bool i_nEMPTY;
+bool i_StoB_REQ0;
+bool controllable_ENQ;
+bool i_StoB_REQ1;
+bool controllable_DEQ;
+// Latches
+bool n29;
+bool reg_stateG7_0_out;
+bool reg_controllable_BtoR_REQ1_out;
+bool reg_i_RtoB_ACK1_out;
+bool sys_fair0done_out;
+bool reg_controllable_BtoS_ACK0_out;
+bool env_fair1done_out;
+bool reg_i_nEMPTY_out;
+bool reg_nstateG7_1_out;
+bool reg_controllable_BtoS_ACK1_out;
+bool reg_controllable_SLC0_out;
+bool sys_fair1done_out;
+bool env_fair0done_out;
+bool reg_controllable_ENQ_out;
+bool reg_i_FULL_out;
+bool reg_stateG12_out;
+bool fair_cnt0_out;
+bool fair_cnt1_out;
+bool reg_controllable_DEQ_out;
+bool env_safe_err_happened_out;
+bool reg_i_StoB_REQ1_out;
+bool reg_i_RtoB_ACK0_out;
+bool sys_fair2done_out;
+bool reg_controllable_BtoR_REQ0_out;
+bool reg_i_StoB_REQ0_out;
+
+void update(){
+	n29 = 1;
+	reg_stateG7_0_out = (!(!(!(reg_controllable_BtoR_REQ1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(reg_stateG7_0_out &amp;&amp; n29)) &amp;&amp; (!((!(reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(reg_controllable_BtoR_REQ1_out &amp;&amp; n29)) &amp;&amp; !(((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; (reg_controllable_BtoR_REQ1_out &amp;&amp; n29))));
+	reg_controllable_BtoR_REQ1_out = controllable_BtoR_REQ1;
+	reg_i_RtoB_ACK1_out = i_RtoB_ACK1;
+	sys_fair0done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))));
+	reg_controllable_BtoS_ACK0_out = controllable_BtoS_ACK0;
+	env_fair1done_out = ((!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0)))))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1))));
+	reg_i_nEMPTY_out = i_nEMPTY;
+	reg_nstateG7_1_out = !(!((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(!(!(!(reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29))) &amp;&amp; !(reg_controllable_BtoR_REQ1_out &amp;&amp; n29)));
+	reg_controllable_BtoS_ACK1_out = controllable_BtoS_ACK1;
+	reg_controllable_SLC0_out = controllable_SLC0;
+	sys_fair1done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))));
+	env_fair0done_out = ((!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0)))))) &amp;&amp; !(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))));
+	reg_controllable_ENQ_out = controllable_ENQ;
+	reg_i_FULL_out = i_FULL;
+	reg_stateG12_out = (!(!(reg_stateG12_out &amp;&amp; n29) &amp;&amp; !(reg_i_nEMPTY_out &amp;&amp; n29)) &amp;&amp; !(reg_controllable_DEQ_out &amp;&amp; n29));
+	fair_cnt0_out = ((!(!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(fair_cnt0_out &amp;&amp; n29)) &amp;&amp; !((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))));
+	fair_cnt1_out = (!(!(((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29)) &amp;&amp; !(fair_cnt1_out &amp;&amp; n29)) &amp;&amp; !(!((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29)) &amp;&amp; (fair_cnt1_out &amp;&amp; n29))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))));
+	reg_controllable_DEQ_out = controllable_DEQ;
+	env_safe_err_happened_out = !(!(env_safe_err_happened_out &amp;&amp; n29) &amp;&amp; (!(!((!((reg_i_nEMPTY_out &amp;&amp; n29) &amp;&amp; !i_nEMPTY) &amp;&amp; !(!(reg_i_nEMPTY_out &amp;&amp; n29) &amp;&amp; i_nEMPTY)) &amp;&amp; (!((reg_i_FULL_out &amp;&amp; n29) &amp;&amp; !i_FULL) &amp;&amp; !(!(reg_i_FULL_out &amp;&amp; n29) &amp;&amp; i_FULL))) &amp;&amp; (!((reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; !(!(reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; (reg_controllable_ENQ_out &amp;&amp; n29)))) &amp;&amp; (!(((reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; i_FULL) &amp;&amp; (!((!(reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; (reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; !i_nEMPTY) &amp;&amp; (!(((reg_i_RtoB_ACK1_out &amp;&amp; n29) &amp;&amp; !i_RtoB_ACK1) &amp;&amp; (reg_controllable_BtoR_REQ1_out &amp;&amp; n29)) &amp;&amp; (!(!(reg_controllable_BtoR_REQ1_out &amp;&amp; n29) &amp;&amp; i_RtoB_ACK1) &amp;&amp; (!(((reg_i_RtoB_ACK0_out &amp;&amp; n29) &amp;&amp; !i_RtoB_ACK0) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; ((!(!(!((reg_i_StoB_REQ1_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ1) &amp;&amp; !(reg_controllable_BtoS_ACK1_out &amp;&amp; n29)) &amp;&amp; !((reg_controllable_BtoS_ACK1_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ1)) &amp;&amp; !(!(!((reg_i_StoB_REQ0_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ0) &amp;&amp; !(reg_controllable_BtoS_ACK0_out &amp;&amp; n29)) &amp;&amp; !((reg_controllable_BtoS_ACK0_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ0))) &amp;&amp; !(!(reg_controllable_BtoR_REQ0_out &amp;&amp; n29) &amp;&amp; i_RtoB_ACK0)))))))));
+	reg_i_StoB_REQ1_out = i_StoB_REQ1;
+	reg_i_RtoB_ACK0_out = i_RtoB_ACK0;
+	sys_fair2done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)));
+	reg_controllable_BtoR_REQ0_out = controllable_BtoR_REQ0;
+	reg_i_StoB_REQ0_out = i_StoB_REQ0;
+}
+</declaration><template><name x="5" y="5">Template</name><declaration>// Place local declarations here.
+</declaration><location id="id0" x="16" y="-40"></location><init ref="id0"/></template><system>// Place template instantiations here.
+Process = Template();
+
+// List one or more processes to be composed into a system.
+system Process;</system></nta>
