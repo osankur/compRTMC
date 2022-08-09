@@ -46,7 +46,35 @@ void to_uppaal(aiger * spec){
     for(int i = 0; i < spec->num_latches; i++){
         std::cout << spec->latches[i].name << " = " << to_exp(spec, spec->latches[i].next) << ";\n";
     }
-
+    std::cout << "\n// Locations and Transitions\n";
+    for(int i = 0; i < spec->num_inputs; i++){
+        std::cout << "<location id=\"Set" << spec->inputs[i].name << "\" x=\"" << i*120 << "\" y=\"0\" >\n";
+        std::cout << "<name>Set" << spec->inputs[i].name << "</name><urgent/></location>\n\n";
+    }
+    std::cout << "<init ref=\"Set" << spec->inputs[0].name << "\"/>\n";
+    std::cout << "<location id=\"Update\" x=\"" << spec->num_inputs*60 << "\" y=\"200\" ></location>\n";
+    for(int i = 0; i < spec->num_inputs; i++){
+        std::string prev_loc;
+        if (i > 0 )
+            prev_loc = "Set" + std::string(spec->inputs[i-1].name);
+        else 
+            prev_loc = "Update";
+        for (int b = 0; b <= 1; b++){
+            if (std::string(spec->inputs[i].name).find("controllable") != std::string::npos){
+                std::cout << "<transition controllable=\"true\">\n";
+            } else {
+                std::cout << "<transition controllable=\"false\">\n";
+            }
+                std::cout << "<source ref=\"" << prev_loc << "\"/><target ref=\"Set"
+                    << spec->inputs[i].name  << "\"/>\n";
+            std::cout << "<label kind=\"assignment\">"<< spec->inputs[i].name
+                <<" = " << b<< "</label>\n";
+            std::cout << "</transition>\n\n";
+        }
+    }
+    std::cout << "<transition controllable=\"false\" action=\"update()\" ><source ref=\"Update\"/><target ref=\"Set" 
+              << spec->inputs[0].name << "\"/>"
+              << "</transition>\n";
 }
 
 int main(int argc, char ** args){

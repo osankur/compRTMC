@@ -39,3 +39,32 @@ The translation might give non-blocking warnings so make sure the FSM .v file is
     aigtoaig a.aig a.aag
 
 These operations are implemented in the script `make-aag.sh`.
+
+# Description of the benchmarks
+## Scheduling Problems
+In these benchmarks, there are two sporadic tasks whose start are indicated by the events `startA` and `startB`.
+The controller must schedule these using two machines. Each machine has an internal state,
+and the scheduling duration depends on the internal state. Some states require executing two external tasks, some others require executing three.
+The external task has a nondeterministic duration and is modeled by the event `tick`.
+The internal states of the machines change each time they finalize a task.
+The controller loses (error=1) if all machines are busy upon the arrival of a new task, or if it schedules a task on a busy machine.
+
+The timed model model gives interarrival times of the tasks, and the duration of a tick event.
+
+### Verilog-TChecker Files
+- `scheduling/sched_genbuf2f3yunrealy.v`
+  The combined internal states of both machines are modeled by the AIG circuit genbuf2f3yunrealy.aag (from the hardware model checking competition benchmarks).
+  Here, Environment chooses uncontrollable inputs of the genbuf model, and the controller chooses its controllable inputs.
+- `scheduling/sched_bitcounter64.v`
+  The internal state of each machine is an 8-bit counter.
+
+- `scheduling/sched_genbuf3f4y.v` and `scheduling/sched_genbuf1c2unrealy.v`
+  These are as the other genbuf model but the circuit's inputs depend on startA, startB, tick (There are no additional cont/uncont inputs).
+
+The timed automata model are: `scheda.ta`, `schedb.ta`, `schedc.ta`
+
+### Uppaal TIGA Files
+- `scheduling/sched_genbuf2f3yunrealy.xml`, `scheduling/sched_bitcounter64.xml` are the corresponding Uppaal files.
+- The query file is `sched.q`
+
+## Real-time planning

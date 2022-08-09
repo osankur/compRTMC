@@ -1,0 +1,22 @@
+system:sched3
+
+clock:1:x
+clock:1:y
+clock:1:t
+event:startA
+event:startB
+event:tick
+
+process:A
+#location:A:q{initial:}
+location:A:q{initial::invariant: x<=20}
+edge:A:q:q:startA{provided: x== 20 : do : x = 0}
+
+process:B
+location:B:q{initial::invariant: y<=20}
+edge:B:q:q:startB{provided: y == 20 : do : y = 0}
+
+process:T
+location:T:q{initial::invariant: t <= 5}
+#location:T:q{initial:}
+edge:T:q:q:tick{provided: t <= 5 : do : t = 0}
