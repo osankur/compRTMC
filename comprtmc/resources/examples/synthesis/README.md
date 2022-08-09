@@ -68,3 +68,16 @@ The timed automata model are: `scheda.ta`, `schedb.ta`, `schedc.ta`
 - The query file is `sched.q`
 
 ## Real-time planning
+One controlled robot, and an adversarial obstacle move in a 3k x 3k grid with two walls (at [k,k]x[0,2k], and at [2k,2k]x[k,3k]).
+They can both move to an adjacent cell on an event corresponding to their moves. The controlled robot moves upon the event `robot`, while the adversarial obstacle moevs upon the event `obs`.
+
+Moreover, both robots have internal states: periodically, both of them must make an idle (their decisions are ignored and they still at their current position at that step).
+
+Controller's objective is to avoid collision with the obstacle.
+
+### Verilog-TChecker Files
+- Verilog: `planning_a.v`
+- Timed automata; `planning_a.ta`, `planning_b.ta`
+
+### Uppaal TIGA Files
+`TODO`
