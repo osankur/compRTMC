@@ -11,7 +11,7 @@ Here, to avoid the error state, whenever `i` is true, `controllable_i` must be s
 at most three times. The timed automaton model also restricts the language to at most three `_rt_get` events.
 Thus, the system is controllable.
 On the other hand, in `ex2.v`, the controller is only allowed to respond twice, so the system is uncontrollable.
-
+    
 The real-time semantics is the following. 
 
 At each synchronous step:

@@ -248,7 +248,8 @@ class CompSynthesisAlgorithm(
               // We have FSM^sigma <= underH. Counterstrategy validated
               SynthesisLearningLock.setVerdict(false)
               System.out.println(RED + BOLD + "\nUncontrollable\n" + RESET)
-              Visualization.visualize(hypothesis,inputs)
+              if (configuration.globalConfiguration.visualizeDFA) then
+                Visualization.visualize(hypothesis,inputs)
               null
             case Some(fsm.CounterExample(cexDescription: String, cexTrace: List[String])) =>
               // We have FSM^sigma <=/= underH because cexTrace in FSM^sigma but not in barH.

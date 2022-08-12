@@ -100,7 +100,8 @@ class CompSafetyAlgorithm(
               )
               val word = Word.fromList(trace)
               if (trace == statistics.lastTrace) {
-                Visualization.visualize(hypothesis, inputs)
+                if (configuration.globalConfiguration.visualizeDFA) then
+                  Visualization.visualize(hypothesis, inputs)
                 throw Exception(
                   "The following counterexample trace was seen twice: " + trace
                 )
@@ -170,7 +171,8 @@ class CompSafetyAlgorithm(
       experiment.run();
       System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
       val result = experiment.getFinalHypothesis();
-      Visualization.visualize(result, alph)
+      if (configuration.globalConfiguration.visualizeDFA) then
+        Visualization.visualize(result, alph)
       System.out.println(SimpleProfiler.getResults());
       System.out.println(experiment.getRounds().getSummary());
       System.out.println("States: " + result.size());
@@ -235,7 +237,8 @@ class TARAlgorithm(
       fsmIntersectionOracle.checkIntersection(learnedDFA) match {
         case None =>
           System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
-          Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
+          if (configuration.globalConfiguration.visualizeDFA) then
+            Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
           decisionReached = true
         case Some(fsm.CounterExample(cexDescription, trace)) =>
           System.out.println(

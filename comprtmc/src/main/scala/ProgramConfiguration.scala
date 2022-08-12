@@ -52,7 +52,8 @@ case class Configuration(
     keepTmpFiles: Boolean = false,
     verbose: Boolean = false,
     verbose_MembershipQueries : Boolean = false,
-    tmpDirName: String = ".crtmc/"
+    tmpDirName: String = ".crtmc/",
+    visualizeDFA : Boolean = false
 ) {
   private var tmpDirFile: Option[Path] = None
   def tmpDirPath(): Path = {

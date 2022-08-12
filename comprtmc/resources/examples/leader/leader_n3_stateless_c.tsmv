@@ -27,6 +27,7 @@ ASSIGN
         TRUE : state;
     esac;
 
+
 MODULE main
 FROZENVAR
         
@@ -41,7 +42,6 @@ VAR
 p0 : proc(id0, cmd = cmd_wakeup0, cmd = cmd_crash0, cmd = cmd_broadcast, sender_id, msg);
 p1 : proc(id1, cmd = cmd_wakeup1, cmd = cmd_crash1, cmd = cmd_broadcast, sender_id, msg);
 p2 : proc(id2, cmd = cmd_wakeup2, cmd = cmd_crash2, cmd = cmd_broadcast, sender_id, msg);
-
      y : array 0..2 of clock;
             
 INIT
@@ -94,7 +94,9 @@ INVAR
 & (p2.state = ok -> y[2] <= 3) -- invariant
 & (p2.state = crashed -> y[2] <= 12) -- invariant
 & ((cmd = cmd_wakeup2 & p2.state = crashed) -> (0 <= y[2] & y[2] <= 12)) -- crash time
-& ((cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) -> crash_cnt < 3)
+& ((cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) ->  crash_cnt < 3)
+& (cmd != cmd_crash1)
+& (cmd != cmd_crash2)
 
 DEFINE 
     msg := case

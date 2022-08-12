@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int N = 3;        // Number of processes
+typedef int[0,N] pid_t;
+chan wakeup[N];
+chan crash[N];
+
+
+pid_t leader[N];
+pid_t id[N];
+
+
+// broadcat channel and msg content
+broadcast chan broadchan;
+pid_t msg;
+pid_t sender;
+
+// Step counter until stabilization
+int[0,20] cnt;
+int[0,3] crash_cnt;</declaration>
+	<template>
+		<name>Scheduler</name>
+		<location id="id0" x="-484" y="-25">
+		</location>
+		<location id="id1" x="-280" y="-25">
+			<committed/>
+		</location>
+		<location id="id2" x="-484" y="110">
+			<name x="-459" y="93">error</name>
+		</location>
+		<location id="id3" x="-1156" y="-51">
+			<committed/>
+		</location>
+		<location id="id4" x="-1045" y="-51">
+			<committed/>
+		</location>
+		<location id="id5" x="-909" y="-51">
+			<committed/>
+		</location>
+		<location id="id6" x="-748" y="-51">
+			<committed/>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-901" y="8">id[0]!=2 &amp;&amp; id[1] != 2</label>
+			<label kind="assignment" x="-875" y="-8">id[2] =2</label>
+			<nail x="-799" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-892" y="-68">id[0]!=0 &amp;&amp; id[1] != 0</label>
+			<label kind="assignment" x="-891" y="-51">id[2]=0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-891" y="-114">id[0]!=1&amp;&amp;id[1]!=1</label>
+			<label kind="assignment" x="-867" y="-136">id[2]=1</label>
+			<nail x="-833" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-1027" y="-59">id[0]!=2</label>
+			<label kind="assignment" x="-1028" y="-8">id[1]=2</label>
+			<nail x="-969" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-1003" y="-68">id[0]!=1</label>
+			<label kind="assignment" x="-969" y="0">id[1]=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-994" y="-136">id[0]!=0</label>
+			<label kind="assignment" x="-1037" y="-110">id[1]=0</label>
+			<nail x="-977" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-1138" y="-29">id[0]=2</label>
+			<nail x="-1088" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-1138" y="-51">id[0]=1</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-1147" y="-110">id[0]=0</label>
+			<nail x="-1130" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-416" y="0">cnt&gt;=20</label>
+			<nail x="-348" y="0"/>
+			<nail x="-442" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<nail x="-527" y="-161"/>
+			<nail x="-467" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-620" y="-161">wakeup[2]!</label>
+			<nail x="-561" y="-127"/>
+			<nail x="-535" y="-153"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-654" y="-127">wakeup[1]!</label>
+			<nail x="-603" y="-93"/>
+			<nail x="-569" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-467" y="42">(leader[0] != 0 || leader[1] != 0 || leader[2] != 0) &amp;&amp; cnt &gt;= 15</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-442" y="-68">cnt&lt;20</label>
+			<label kind="assignment" x="-382" y="-68">cnt=cnt+1</label>
+			<nail x="-425" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-425" y="-25">wakeup[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-620" y="8">crash_cnt&lt;3</label>
+			<label kind="synchronisation" x="-654" y="-34">crash[0]!</label>
+			<label kind="assignment" x="-731" y="-17">crash_cnt = crash_cnt + 1, cnt=0</label>
+			<nail x="-579" y="-17"/>
+			<nail x="-579" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Process0</name>
+		<parameter>pid_t i</parameter>
+		<declaration>// Place local declarations here.
+clock x;
+int[0,4] hb;
+pid_t prev;
+
+void receive(){
+        if (msg &lt; id[i]){
+        prev=leader[i];
+        leader[i] = msg;
+    }
+    if (sender &lt; id[i]){
+        hb = 0;
+    }
+}</declaration>
+		<location id="id7" x="-450" y="-17">
+			<name x="-476" y="-51">ok</name>
+			<label kind="invariant" x="-442" y="0">x&lt;=1</label>
+		</location>
+		<location id="id8" x="-85" y="-34">
+			<name x="-94" y="-68">sending</name>
+			<committed/>
+		</location>
+		<location id="id9" x="-238" y="144">
+			<name x="-247" y="110">crashed</name>
+			<label kind="invariant" x="-255" y="169">x&lt;=3</label>
+		</location>
+		<location id="id10" x="-722" y="-238">
+			<name x="-732" y="-272">initialize</name>
+			<committed/>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="assignment" x="-629" y="-178">leader[i]=N</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-111" y="110">broadchan?</label>
+			<nail x="-153" y="84"/>
+			<nail x="-145" y="101"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-366" y="220">leader[i]=2</label>
+			<nail x="-323" y="195"/>
+			<nail x="-289" y="220"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-306" y="76">hb=0</label>
+			<nail x="-289" y="110"/>
+			<nail x="-264" y="84"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-230" y="67">hb=1</label>
+			<nail x="-238" y="84"/>
+			<nail x="-187" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-289" y="246">leader[i]=1</label>
+			<nail x="-281" y="237"/>
+			<nail x="-238" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-204" y="237">leader[i]=0</label>
+			<nail x="-204" y="220"/>
+			<nail x="-230" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-179" y="195">hb=4</label>
+			<nail x="-170" y="186"/>
+			<nail x="-196" y="212"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-162" y="152">hb=3</label>
+			<nail x="-170" y="152"/>
+			<nail x="-170" y="178"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-170" y="118">hb=2</label>
+			<nail x="-179" y="118"/>
+			<nail x="-179" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-612" y="127">0&lt;=x &amp;&amp; x&lt;=3</label>
+			<label kind="synchronisation" x="-458" y="153">wakeup[i]?</label>
+			<label kind="assignment" x="-450" y="170">x=0</label>
+			<nail x="-348" y="170"/>
+			<nail x="-476" y="170"/>
+			<nail x="-476" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-374" y="127">crash[i]?</label>
+			<label kind="assignment" x="-425" y="127">x=0</label>
+			<nail x="-450" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-663" y="-25">broadchan?</label>
+			<label kind="assignment" x="-551" y="-29">receive()</label>
+			<nail x="-569" y="-42"/>
+			<nail x="-569" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-340" y="-136">broadchan!</label>
+			<nail x="-153" y="-110"/>
+			<nail x="-450" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-255" y="8">hb==4 &amp;&amp; x == 1</label>
+			<label kind="synchronisation" x="-110" y="8">wakeup[i]?</label>
+			<label kind="assignment" x="-345" y="29">prev=leader[i], leader[i]=id[i], msg=id[i],sender=id[i], hb=0</label>
+			<nail x="-399" y="0"/>
+			<nail x="-153" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-272" y="-59">hb&lt;4&amp;&amp; x==1</label>
+			<label kind="synchronisation" x="-357" y="-59">wakeup[i]?</label>
+			<label kind="assignment" x="-424" y="-42">hb=hb+1, msg=leader[i],sender=id[i],x=0</label>
+			<nail x="-399" y="-68"/>
+			<nail x="-144" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Process1</name>
+		<parameter>pid_t i</parameter>
+		<declaration>// Place local declarations here.
+clock x;
+int[0,4] hb;
+pid_t prev;
+
+void receive(){
+        if (msg &lt; id[i]){
+        prev=leader[i];
+        leader[i] = msg;
+    }
+    if (sender &lt; id[i]){
+        hb = 0;
+    }
+}</declaration>
+		<location id="id11" x="-450" y="-17">
+			<name x="-476" y="-51">ok</name>
+			<label kind="invariant" x="-442" y="0">x&lt;=1</label>
+		</location>
+		<location id="id12" x="-85" y="-34">
+			<name x="-94" y="-68">sending</name>
+			<committed/>
+		</location>
+		<location id="id13" x="-238" y="144">
+			<name x="-247" y="110">crashed</name>
+			<label kind="invariant" x="-255" y="169">x&lt;=1</label>
+		</location>
+		<location id="id14" x="-722" y="-238">
+			<name x="-732" y="-272">initialize</name>
+			<committed/>
+		</location>
+		<init ref="id14"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-629" y="-178">leader[i]=N</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-111" y="110">broadchan?</label>
+			<nail x="-153" y="84"/>
+			<nail x="-145" y="101"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-366" y="220">leader[i]=2</label>
+			<nail x="-323" y="195"/>
+			<nail x="-289" y="220"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-306" y="76">hb=0</label>
+			<nail x="-289" y="110"/>
+			<nail x="-264" y="84"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-230" y="67">hb=1</label>
+			<nail x="-238" y="84"/>
+			<nail x="-187" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-289" y="246">leader[i]=1</label>
+			<nail x="-281" y="237"/>
+			<nail x="-238" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-204" y="237">leader[i]=0</label>
+			<nail x="-204" y="220"/>
+			<nail x="-230" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-179" y="195">hb=4</label>
+			<nail x="-170" y="186"/>
+			<nail x="-196" y="212"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-162" y="152">hb=3</label>
+			<nail x="-170" y="152"/>
+			<nail x="-170" y="178"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-170" y="118">hb=2</label>
+			<nail x="-179" y="118"/>
+			<nail x="-179" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-527" y="119">x==1</label>
+			<label kind="synchronisation" x="-458" y="153">wakeup[i]?</label>
+			<label kind="assignment" x="-450" y="170">x=0</label>
+			<nail x="-348" y="170"/>
+			<nail x="-476" y="170"/>
+			<nail x="-476" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-374" y="127">crash[i]?</label>
+			<label kind="assignment" x="-425" y="127">x=0</label>
+			<nail x="-450" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-663" y="-25">broadchan?</label>
+			<label kind="assignment" x="-551" y="-29">receive()</label>
+			<nail x="-569" y="-42"/>
+			<nail x="-569" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-340" y="-136">broadchan!</label>
+			<nail x="-153" y="-110"/>
+			<nail x="-450" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-255" y="8">hb==4 &amp;&amp; x == 1</label>
+			<label kind="synchronisation" x="-110" y="8">wakeup[i]?</label>
+			<label kind="assignment" x="-345" y="29">prev=leader[i], leader[i]=id[i], msg=id[i],sender=id[i], hb=0</label>
+			<nail x="-399" y="0"/>
+			<nail x="-153" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-272" y="-59">hb&lt;4&amp;&amp; x==1</label>
+			<label kind="synchronisation" x="-357" y="-59">wakeup[i]?</label>
+			<label kind="assignment" x="-424" y="-42">hb=hb+1, msg=leader[i],sender=id[i],x=0</label>
+			<nail x="-399" y="-68"/>
+			<nail x="-144" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Process2</name>
+		<parameter>pid_t i</parameter>
+		<declaration>// Place local declarations here.
+clock x;
+int[0,4] hb;
+pid_t prev;
+
+void receive(){
+        if (msg &lt; id[i]){
+        prev=leader[i];
+        leader[i] = msg;
+    }
+    if (sender &lt; id[i]){
+        hb = 0;
+    }
+}</declaration>
+		<location id="id15" x="-450" y="-17">
+			<name x="-476" y="-51">ok</name>
+			<label kind="invariant" x="-442" y="0">x&lt;=2</label>
+		</location>
+		<location id="id16" x="-85" y="-34">
+			<name x="-94" y="-68">sending</name>
+			<committed/>
+		</location>
+		<location id="id17" x="-238" y="144">
+			<name x="-247" y="110">crashed</name>
+			<label kind="invariant" x="-255" y="169">x&lt;=2</label>
+		</location>
+		<location id="id18" x="-722" y="-238">
+			<name x="-732" y="-272">initialize</name>
+			<committed/>
+		</location>
+		<init ref="id18"/>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id15"/>
+			<label kind="assignment" x="-629" y="-178">leader[i]=N</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-111" y="110">broadchan?</label>
+			<nail x="-153" y="84"/>
+			<nail x="-145" y="101"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-366" y="220">leader[i]=2</label>
+			<nail x="-323" y="195"/>
+			<nail x="-289" y="220"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-306" y="76">hb=0</label>
+			<nail x="-289" y="110"/>
+			<nail x="-264" y="84"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-230" y="67">hb=1</label>
+			<nail x="-238" y="84"/>
+			<nail x="-187" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-289" y="246">leader[i]=1</label>
+			<nail x="-281" y="237"/>
+			<nail x="-238" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-204" y="237">leader[i]=0</label>
+			<nail x="-204" y="220"/>
+			<nail x="-230" y="237"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-179" y="195">hb=4</label>
+			<nail x="-170" y="186"/>
+			<nail x="-196" y="212"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-162" y="152">hb=3</label>
+			<nail x="-170" y="152"/>
+			<nail x="-170" y="178"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-170" y="118">hb=2</label>
+			<nail x="-179" y="118"/>
+			<nail x="-179" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-527" y="119">x==2</label>
+			<label kind="synchronisation" x="-458" y="153">wakeup[i]?</label>
+			<label kind="assignment" x="-450" y="170">x=0</label>
+			<nail x="-348" y="170"/>
+			<nail x="-476" y="170"/>
+			<nail x="-476" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-374" y="127">crash[i]?</label>
+			<label kind="assignment" x="-425" y="127">x=0</label>
+			<nail x="-450" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-663" y="-25">broadchan?</label>
+			<label kind="assignment" x="-551" y="-29">receive()</label>
+			<nail x="-569" y="-42"/>
+			<nail x="-569" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-340" y="-136">broadchan!</label>
+			<nail x="-153" y="-110"/>
+			<nail x="-450" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-255" y="8">hb==4 &amp;&amp; x == 2</label>
+			<label kind="synchronisation" x="-110" y="8">wakeup[i]?</label>
+			<label kind="assignment" x="-345" y="29">prev=leader[i], leader[i]=id[i], msg=id[i],sender=id[i], hb=0</label>
+			<nail x="-399" y="0"/>
+			<nail x="-153" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-272" y="-59">hb&lt;4&amp;&amp; x==2</label>
+			<label kind="synchronisation" x="-357" y="-59">wakeup[i]?</label>
+			<label kind="assignment" x="-424" y="-42">hb=hb+1, msg=leader[i],sender=id[i],x=0</label>
+			<nail x="-399" y="-68"/>
+			<nail x="-144" y="-68"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+// List one or more processes to be composed into a system.
+p0 = Process0(0);
+p1 = Process1(1);
+p2 = Process2(2);
+s = Scheduler();
+system p0, p1, p2, s;
+    </system>
+	<queries>
+		<query>
+			<formula>A[]!s.error</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

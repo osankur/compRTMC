@@ -1,0 +1,262 @@
+
+MODULE proc(id, wakeup, crash, broadcasting, sender_id, recv_id)
+VAR
+	state : {ok, sending, crashed};
+	leader : 0..3;
+	hb : 0..4;
+ASSIGN
+    init(leader) := id;
+    next(leader) := case
+        wakeup & hb = 4: id;
+        state = ok & broadcasting & recv_id < id : recv_id;
+        state = crashed : {0, 1, 2};
+        TRUE : leader;
+    esac;
+    init(hb) := 0;
+    next(hb) := case
+        wakeup & hb < 4 : hb + 1;
+        state != sending & sender_id < id & broadcasting  : 0;
+        state = crashed : {0, 1, 2, 3};
+        TRUE : hb;
+    esac;
+    next(state) := case
+        state = ok & wakeup : sending;
+        state = sending : ok;
+        crash : crashed;
+        state = crashed & wakeup : ok;
+        TRUE : state;
+    esac;
+
+
+MODULE stay
+IVAR
+--inputs
+controllable_c0_g : boolean;
+controllable_c1_g : boolean;
+controllable_c2_g : boolean;
+controllable_c3_g : boolean;
+controllable_c4_g : boolean;
+controllable_c5_g : boolean;
+in0_g : boolean;
+in1_g : boolean;
+in2_g : boolean;
+in3_g : boolean;
+in4_g : boolean;
+in5_g : boolean;
+controllable_s : boolean;
+--latches
+VAR
+benchn29 : boolean;
+benchbad_out : boolean;
+benchstate_g0_g_out : boolean;
+benchstate_g1_g_out : boolean;
+benchstate_g2_g_out : boolean;
+benchstate_g3_g_out : boolean;
+benchstate_g4_g_out : boolean;
+benchstate_g5_g_out : boolean;
+ASSIGN
+init(benchn29) := FALSE;
+next(benchn29) := TRUE;
+init(benchbad_out) := FALSE;
+next(benchbad_out) := !a70;
+init(benchstate_g0_g_out) := FALSE;
+next(benchstate_g0_g_out) := a268;
+init(benchstate_g1_g_out) := FALSE;
+next(benchstate_g1_g_out) := a274;
+init(benchstate_g2_g_out) := FALSE;
+next(benchstate_g2_g_out) := a280;
+init(benchstate_g3_g_out) := FALSE;
+next(benchstate_g3_g_out) := a286;
+init(benchstate_g4_g_out) := FALSE;
+next(benchstate_g4_g_out) := a292;
+init(benchstate_g5_g_out) := FALSE;
+next(benchstate_g5_g_out) := !a298;
+DEFINE
+--ands
+a44 := benchbad_out & benchn29;
+a46 := benchstate_g0_g_out & benchn29;
+a48 := benchstate_g1_g_out & benchn29;
+a50 := a48 & a46;
+a52 := benchstate_g2_g_out & benchn29;
+a54 := a52 & a50;
+a56 := benchstate_g3_g_out & benchn29;
+a58 := a56 & a54;
+a60 := benchstate_g4_g_out & benchn29;
+a62 := a60 & a58;
+a64 := benchstate_g5_g_out & benchn29;
+a66 := a64 & a62;
+a68 := a66 & a44;
+a70 := !a44 & !controllable_s;
+a72 := !in0_g & !controllable_c5_g;
+a74 := !a72 & controllable_c4_g;
+a76 := in0_g & controllable_c3_g;
+a78 := in0_g & controllable_c2_g;
+a80 := in2_g & controllable_c0_g;
+a82 := in1_g & controllable_c0_g;
+a84 := in0_g & controllable_c1_g;
+a86 := a84 & a82;
+a88 := in1_g & controllable_c1_g;
+a90 := a88 & !a86;
+a92 := !a90 & !a80;
+a94 := a88 & a80;
+a96 := a94 & !in0_g;
+a98 := !a96 & !a92;
+a100 := a98 & a78;
+a102 := in1_g & controllable_c2_g;
+a104 := in3_g & controllable_c0_g;
+a106 := !a94 & !a86;
+a108 := in2_g & controllable_c1_g;
+a110 := !a108 & a106;
+a112 := !a110 & !a94;
+a114 := a112 & a104;
+a116 := !a112 & !a104;
+a118 := !a116 & !a114;
+a120 := a118 & a102;
+a122 := !a118 & !a102;
+a124 := !a122 & !a120;
+a126 := a124 & a100;
+a128 := !a124 & !a100;
+a130 := !a128 & !a126;
+a132 := a130 & a76;
+a134 := in1_g & controllable_c3_g;
+a136 := in4_g & controllable_c0_g;
+a138 := in3_g & controllable_c1_g;
+a140 := a138 & !a136;
+a142 := !a138 & a136;
+a144 := !a142 & !a140;
+a146 := !a110 & a104;
+a148 := !a146 & !a94;
+a150 := a148 & a144;
+a152 := !a148 & !a144;
+a154 := !a152 & !a150;
+a156 := !a122 & a100;
+a158 := !a156 & !a120;
+a160 := in2_g & controllable_c2_g;
+a162 := a160 & !a158;
+a164 := !a160 & a158;
+a166 := !a164 & !a162;
+a168 := a166 & a154;
+a170 := !a166 & !a154;
+a172 := !a170 & !a168;
+a174 := a172 & a134;
+a176 := !a172 & !a134;
+a178 := !a176 & !a174;
+a180 := a178 & a132;
+a182 := !a178 & !a132;
+a184 := !a182 & !a180;
+a186 := a184 & !controllable_c5_g;
+a188 := a186 & !a74;
+a190 := !a186 & a74;
+a192 := !a190 & !a188;
+a194 := !a192 & !in5_g;
+a196 := a192 & in5_g;
+a198 := !a196 & !a194;
+a200 := controllable_c5_g & controllable_c3_g;
+a202 := !a130 & !a76;
+a204 := !a202 & !a132;
+a206 := a204 & !controllable_c5_g;
+a208 := !a206 & !a200;
+a210 := !a208 & !in4_g;
+a212 := a208 & in4_g;
+a214 := !a212 & !a210;
+a216 := controllable_c5_g & controllable_c2_g;
+a218 := !a98 & !a78;
+a220 := !a218 & !a100;
+a222 := a220 & !controllable_c5_g;
+a224 := !a222 & !a216;
+a226 := !a224 & !in3_g;
+a228 := a224 & in3_g;
+a230 := !a228 & !a226;
+a232 := !in2_g & !controllable_c1_g;
+a234 := a232 & a82;
+a236 := !in1_g & !controllable_c0_g;
+a238 := !a236 & !a82;
+a240 := !a238 & a108;
+a242 := !a240 & !a234;
+a244 := !a242 & controllable_c5_g;
+a246 := !controllable_c1_g & !controllable_c0_g;
+a248 := !a246 & controllable_c5_g;
+a250 := !a248 & !in1_g;
+a252 := a250 & !in2_g;
+a254 := !a252 & !a244;
+a256 := !a254 & !in0_g;
+a258 := a256 & a230;
+a260 := a258 & a214;
+a262 := a260 & a198;
+a264 := !a262 & a46;
+a266 := a262 & !a46;
+a268 := !a266 & !a264;
+a270 := a264 & a48;
+a272 := !a264 & !a48;
+a274 := !a272 & !a270;
+a276 := a270 & a52;
+a278 := !a270 & !a52;
+a280 := !a278 & !a276;
+a282 := a276 & a56;
+a284 := !a276 & !a56;
+a286 := !a284 & !a282;
+a288 := a282 & a60;
+a290 := !a282 & !a60;
+a292 := !a290 & !a288;
+a294 := a288 & !a64;
+a296 := !a288 & a64;
+a298 := !a296 & !a294;
+--outputs
+out := a68;
+
+
+
+MODULE main
+FROZENVAR
+	id0 : 0..3;
+	id1 : 0..3;
+	id2 : 0..3;
+VAR
+	cmd : {cmd_broadcast, cmd_wakeup0, cmd_crash0, cmd_wakeup1, cmd_crash1, cmd_wakeup2, cmd_crash2};
+    s : stay;
+    cnt : 0..20;
+    crash_cnt : 0..3;
+    p0 : proc(id0, cmd = cmd_wakeup0, cmd = cmd_crash0, cmd = cmd_broadcast, sender_id, msg);
+    p1 : proc(id1, cmd = cmd_wakeup1, cmd = cmd_crash1, cmd = cmd_broadcast, sender_id, msg);
+    p2 : proc(id2, cmd = cmd_wakeup2, cmd = cmd_crash2, cmd = cmd_broadcast, sender_id, msg);
+ASSIGN
+    init(cnt) := 0;
+    init(crash_cnt) := 0;
+    next(crash_cnt) := case
+        (cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) & crash_cnt < 3 : crash_cnt + 1;
+        TRUE : crash_cnt;
+    esac;
+    next(cnt) := case
+        (cmd = cmd_wakeup0) & cnt < 20 : cnt + 1;
+        crash_cnt != next(crash_cnt) : 0;
+        TRUE : cnt;
+    esac;
+INVAR
+	TRUE 
+	 & (id0 != id1)	 & (id0 != id2)	 & (id1 != id2)	& (id0 = 0 | id1 = 0 | id2 = 0)
+    & (cmd = cmd_broadcast <-> (p0.state = sending | p1.state = sending | p2.state = sending))
+    & ((cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) -> s.out & crash_cnt < 3)
+    -- & ((cmd = cmd_crash0 | cmd = cmd_crash1 | cmd = cmd_crash2) -> crash_cnt < 3)
+    & cmd != cmd_crash1
+    & cmd != cmd_crash2
+
+DEFINE 
+    msg := case
+	p0.state = sending : p0.leader;
+	p1.state = sending : p1.leader;
+	p2.state = sending : p2.leader;
+	TRUE : 3;
+esac;
+sender_id := case
+	p0.state = sending : id0;
+	p1.state = sending : id1;
+	p2.state = sending : id2;
+	TRUE : 3;
+esac;
+	stable := p0.leader = 0 & p1.leader = 0 & p2.leader = 0;
+	error := cnt=15 & !stable;
+	_rt_wakeup0 := cmd = cmd_wakeup0;
+	_rt_wakeup1 := cmd = cmd_wakeup1;
+	_rt_wakeup2 := cmd = cmd_wakeup2;
+    _rt_crash := cmd = cmd_crash0;
+INVARSPEC !error

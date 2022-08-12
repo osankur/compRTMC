@@ -54,19 +54,23 @@ object Main {
         opt[String]("alg")
           .action({(alg, c) =>
                 alg match{
-                case "learning" => c.copy(algorithm = HypothesisLearning)
+                case "verify" => c.copy(algorithm = HypothesisLearning)
                 case "tar" => c.copy(algorithm = TraceAbstractionRefinement)
-                case "synthesis" => c.copy(algorithm = Synthesis)
+                case "synthesize" => c.copy(algorithm = Synthesis)
                 case _ => throw Exception("Unknown algorithm")
               }
             }
-            ).valueName("(learning|tar|synthesis)"),
+            ).valueName("(verify|tar|synthesize)"),
         opt[Boolean]("verbose")
           .action((_, c) => c.copy(verbose = true))
           .valueName("(true|false)"),
         opt[Boolean]("keepTmpFiles")
           .action((_, c) => c.copy(keepTmpFiles = true))
           .valueName("(true|false)"),
+        opt[Boolean]("visualizeDFA")
+          .action((_, c) => c.copy(visualizeDFA = true))
+          .valueName("(true|false)")
+          .text("Visualize the DFA that was learned"),
         opt[String]("fsmModelChecker")
           .action((mc, c) => {
             mc match{

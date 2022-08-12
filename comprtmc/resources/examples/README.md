@@ -27,7 +27,7 @@ TODO: !Try other fsm protocols for which nuXmv would be slower!
 TODO: ring protocol, see disc01.pdf
     
 # Robust Leader Election
-The `leader/`  directory contains models for a leader election protocol inspired from the following paper:
+The `leader/`  directory contains models for a leader election protocol inspired by the following paper:
 _Delporte-Gallet, Devismes, Fauconnier. Robust Stabilizing Leader Election. SSS'07._
 
 Here, processes are asynchronous and communicate by broadcast. Each process wakes up within a given period,
@@ -38,8 +38,50 @@ The model allows one node to crash, that is, to disappear and stop all interacti
 At most a given number of crashes (`max_crash = 3`) are allowed. The specification is that after `max_cnt` steps
 after the last crash, all nodes should agree that the least node is the leader.
 
-TODO also find unsafe instances
-TODO make a list of the results
+The circuit stay6y was integrated in the model stay. Only process 0 can crash, and it does so only if the circuit is at the error state.
+
+- leader_n3.smv with leader_n3_i0-ta.ta
+compRTMC: 3 minutes
+Uppaal: MEMOUT
+nuXMV: MEMOUT
+
+- leader_stay_n3.smv X leader_n3_i1-ta
+Learning [ms]: 5480, (5.48 s)
+Searching for counterexample [ms]: 195437, (195.437 s)
+learning rounds [#]: 26
+States: 29
+Sigma: 4
+Total system calls: 0ms
+Nb of membership queries: 661
+Time per query: 0ms
+[success] Total time: 201 s 
+
+nuXmv-time.sh leader_n3_i1.tsmv -> memout (4GB)
+Uppaal -> memout
+
+- leader_stay_n3.smv X leader_n3_i2-ta
+Learning [ms]: 9034, (9.034 s)
+Searching for counterexample [ms]: 154595, (154.595 s)
+learning rounds [#]: 33
+States: 53
+Sigma: 4
+Total system calls: 0ms
+Nb of membership queries: 997
+Time per query: 0ms
+[success] Total time: 164 s
+
+- leader_stay_n3.smv X leader_n3_i3-ta.ta
+
+Learning [ms]: 5423, (5.423 s)
+Searching for counterexample [ms]: 205593, (205.593 s)
+learning rounds [#]: 26
+States: 29
+Sigma: 4
+Total system calls: 0ms
+Nb of membership queries: 661
+Time per query: 0ms
+[success] Total time: 212 s
+
 
 # FTSP
 ## Concrete
