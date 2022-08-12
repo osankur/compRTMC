@@ -1,0 +1,53 @@
+- ftsp-line-2.smv X ftsp-line-2.ta
+Learning [ms]: 1495, (1.495 s)
+Searching for counterexample [ms]: 429, (0.429 s)
+learning rounds [#]: 5
+States: 18
+Sigma: 2
+Total system calls: 0ms
+Nb of membership queries: 182
+Time per query: 0ms
+[success] Total time: 2 s, completed Aug 12, 2022, 10:57:27 AM
+
+
+- ftsp-line-3.smv X ftsp-line-3.ta
+Learning [ms]: 52038, (52.038 s)
+Searching for counterexample [ms]: 87527, (87.527 s)
+learning rounds [#]: 74
+States: 251
+Sigma: 3
+Total system calls: 0ms
+Nb of membership queries: 6673
+Time per query: 0ms
+[success] Total time: 140 s
+
+
+- ftsp-abs-3-fsm.smv X ftsp-abs-3-ta.ta
+    Safety holds
+
+    Learning [ms]: 49283, (49.283 s)
+    Searching for counterexample [ms]: 126137, (126.137 s)
+    learning rounds [#]: 88
+    States: 217
+    Sigma: 3
+    Total system calls: 0ms
+    Nb of membership queries: 5756
+    Time per query: 0ms
+    [success] Total time: 176 s 
+
+- n=3, timed model b
+Safety holds
+
+Learning [ms]: 3089, (3.089 s)
+Searching for counterexample [ms]: 49450, (49.45 s)
+
+learning rounds [#]: 17
+States: 23
+Sigma: 3
+Total system calls: 0ms
+Nb of membership queries: 340
+Time per query: 0ms
+
+real	0m53,508s
+user	0m52,623s
+sys	0m2,189s

@@ -12,7 +12,7 @@ const int MAX_COUNT = 30;
 
 int[0,MAX_COUNT] counter = 0;
 // Processes are numbered 1...N; 0 is a dummy process
-// All process 1..N are initialized in an arbitrary state where they are already converged:
+// All processes 1..N are initialized in an arbitrary state where they are already converged:
 //    myroot = 1 /\ myseq[1] = 2 /\ myseq[2..N] &lt;= 1
 //    and their clocks take arbitrary values
 //
@@ -45,11 +45,11 @@ broadcast chan go;
 clock x;</declaration>
 		<location id="id0" x="0" y="0">
 			<name x="-10" y="-34">q</name>
-			<label kind="invariant" x="-10" y="17">x&lt;=11</label>
+			<label kind="invariant" x="-10" y="17">x&lt;=4</label>
 		</location>
 		<location id="id1" x="-161" y="0">
 			<name x="-171" y="-34">q0</name>
-			<label kind="invariant" x="-171" y="17">x&lt;=11</label>
+			<label kind="invariant" x="-171" y="17">x&lt;=4</label>
 		</location>
 		<init ref="id1"/>
 		<transition>
@@ -67,7 +67,7 @@ clock x;</declaration>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-85" y="-110">x&gt;=9 &amp;&amp; x&lt;= 11</label>
+			<label kind="guard" x="-85" y="-110">x&gt;=3 &amp;&amp; x&lt;= 4</label>
 			<label kind="synchronisation" x="-51" y="-93">wakeup[i]!</label>
 			<label kind="assignment" x="-41" y="-67">x=0</label>
 			<nail x="-59" y="-59"/>
@@ -96,15 +96,23 @@ int[0,MAX_NUMENTRIES] numentries = 0;
 			<name x="-52" y="127">normalize</name>
 			<committed/>
 		</location>
-		<location id="id6" x="-586" y="-59">
+		<location id="id6" x="-629" y="-17">
 		</location>
 		<init ref="id6"/>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id2"/>
+			<label kind="synchronisation" x="-611" y="-68">go?</label>
+			<label kind="assignment" x="-611" y="-51">myroot=1,
+myseq[id] = 1</label>
+			<nail x="-510" y="-85"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id2"/>
 			<label kind="synchronisation" x="-433" y="-110">go?</label>
 			<label kind="assignment" x="-544" y="-136">myroot=1,
-myseq[id] = (id == 1)? 2 : 1</label>
+myseq[id] = 0</label>
 			<nail x="-535" y="-102"/>
 		</transition>
 		<transition>
@@ -112,7 +120,7 @@ myseq[id] = (id == 1)? 2 : 1</label>
 			<target ref="id2"/>
 			<label kind="synchronisation" x="-568" y="-50">go?</label>
 			<label kind="assignment" x="-561" y="-76">myroot=1,
-myseq[id] = (id == 1)? 2 : 0</label>
+myseq[id] = 2</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>

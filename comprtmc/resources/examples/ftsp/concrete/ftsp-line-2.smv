@@ -59,7 +59,7 @@ INVAR
 	& (!someone_broadcasting & proc1.myseq >= 1 & proc2.myseq >= 1 -> cmd = decrement_seqn)
 	& (cmd = decrement_seqn -> proc1.myseq >= 1 & proc2.myseq >= 1)
 DEFINE
-    err := counter = 20 & (proc1.myroot != 1 | proc2.myroot != 1);
+    error := counter = 20 & (proc1.myroot != 1 | proc2.myroot != 1);
     _rt_wakeup1 := cmd = wake1;
     receiving1 := proc2.state = broadcasting;
     _rt_wakeup2 := cmd = wake2;
@@ -75,4 +75,4 @@ DEFINE
         TRUE : 10;
     esac;
     someone_broadcasting := proc1.state = broadcasting | proc2.state = broadcasting;    
-INVARSPEC !err
+INVARSPEC !error

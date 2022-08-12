@@ -1,0 +1,68 @@
+- broadcast_amba.smv broadcast_2_2_a-ta.ta:
+  Safety holds
+
+  Learning [ms]: 13720, (13.72 s)
+  Searching for counterexample [ms]: 48178, (48.178 s)
+
+  learning rounds [#]: 49
+  States: 63
+  Sigma: 7
+  Total system calls: 0ms
+  Nb of membership queries: 1324
+  Time per query: 0ms
+
+  real	1m2,522s
+
+- nuXmv broadcast_amba_a.tsmv 107s
+
+- broadcast_amba.smv broadcast_2_2_b-ta.ta:
+    Safety holds
+
+    Learning [ms]: 19501, (19.501 s)
+    Searching for counterexample [ms]: 91502, (91.502 s)
+
+    learning rounds [#]: 41
+    States: 63
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 1100
+    Time per query: 0ms
+
+    real	1m51,755s
+    user	1m49,830s
+    sys	0m4,553s
+
+
+- broadcast_amba.smv broadcast_2_2_c-ta.ta:
+    Safety holds
+
+    Learning [ms]: 8191, (8.191 s)
+    Searching for counterexample [ms]: 19868, (19.868 s)
+
+    learning rounds [#]: 21
+    States: 39
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 590
+    Time per query: 0ms
+
+    real	0m28,679s
+    user	0m29,205s
+    sys	0m2,248s
+
+- broadcast_amba.smv broadcast_2_2_d-ta.ta:
+    Safety holds
+
+    Learning [ms]: 8398, (8.398 s)
+    Searching for counterexample [ms]: 41110, (41.11 s)
+
+    learning rounds [#]: 27
+    States: 52
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 901
+    Time per query: 0ms
+
+    real	0m50,207s
+    user	0m50,702s
+    sys	0m3,104s

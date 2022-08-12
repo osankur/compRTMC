@@ -174,30 +174,30 @@ class SMVTest extends munit.FunSuite {
     val inp = fsm.SMV(File("resources/examples/mono_scheduling/genbuf2b3unrealy.smv"))
   }
 }
-class VerilogTest extends munit.FunSuite {
-  test("verilog1"){
-    val alphabetList = List("robot", "obs1", "obs2").asJava
-    val alphabet: Alphabet[String] = Alphabets.fromList(alphabetList)
-    val target: CompactDFA[String] =
-      AutomatonBuilders
-        .newDFA(alphabet)
-        .withInitial("q0")
-        .from("q0")
-        .on("robot")
-        .to("q1")
-        .from("q1")
-        .on("obs1")
-        .to("q0")
-        .withAccepting("q0")
-        .create();
+// class VerilogTest extends munit.FunSuite {
+//   test("verilog1"){
+//     val alphabetList = List("robot", "obs1", "obs2").asJava
+//     val alphabet: Alphabet[String] = Alphabets.fromList(alphabetList)
+//     val target: CompactDFA[String] =
+//       AutomatonBuilders
+//         .newDFA(alphabet)
+//         .withInitial("q0")
+//         .from("q0")
+//         .on("robot")
+//         .to("q1")
+//         .from("q1")
+//         .on("obs1")
+//         .to("q0")
+//         .withAccepting("q0")
+//         .create();
 
-    val inp = synthesis.Verilog(File("resources/examples/synthesis/safe_planning.v"))
-    System.out.println("Alphabet: " + inp.alphabet)
-    System.out.println("InterAlphabet: " + inp.inputs)
-    System.out.println("Output: " + inp.outputs)
-    System.out.println(inp.intersectedWith(target))
-  }
-}
+//     val inp = synthesis.Verilog(File("resources/examples/synthesis/safe_planning.v"))
+//     System.out.println("Alphabet: " + inp.alphabet)
+//     System.out.println("InterAlphabet: " + inp.inputs)
+//     System.out.println("Output: " + inp.outputs)
+//     System.out.println(inp.intersectedWith(target))
+//   }
+// }
 
 class AutomataTest extends munit.FunSuite{
   test("determinize"){

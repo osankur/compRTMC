@@ -1,0 +1,35 @@
+
+- `leader_stay_n3_a`
+  Learning [ms]: 2063, (2.063 s)
+  Searching for counterexample [ms]: 149015, (149.015 s)
+  learning rounds [#]: 13
+  States: 15
+  Sigma: 4
+  Total system calls: 0ms
+  Nb of membership queries: 232
+  Time per query: 0ms
+  [success] Total time: 152 s (02:32), completed Aug 12, 2022, 10:48:02 AM
+
+- `leader_stay_n3_b`
+  Learning [ms]: 5656, (5.656 s)
+  Searching for counterexample [ms]: 191812, (191.812 s)
+  learning rounds [#]: 26
+  States: 29
+  Sigma: 4
+  Total system calls: 0ms
+  Nb of membership queries: 661
+  Time per query: 0ms
+  [success] Total time: 198 s (03:18), completed Aug 12, 2022, 10:34:54 AM
+
+- `leader_stay_n3_c`
+  Learning [ms]: 8349, (8.349 s)
+  Searching for counterexample [ms]: 146183, (146.183 s)
+  learning rounds [#]: 33
+  States: 53
+  Sigma: 4
+  Total system calls: 0ms
+  Nb of membership queries: 997
+  Time per query: 0ms
+  [success] Total time: 155 s (02:35), completed Aug 12, 2022, 10:44:51 AM
+
+- `leader_n3_d`

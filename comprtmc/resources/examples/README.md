@@ -23,8 +23,6 @@ TODO: !Try other fsm protocols for which nuXmv would be slower!
     - Round based protocol: Each round has a duration within `[a,b]`, while fair events `e` must occur within `[0,d_e]`
       Due to clock synchronization: between each round increment
       Aspnes
-
-TODO: ring protocol, see disc01.pdf
     
 # Robust Leader Election
 The `leader/`  directory contains models for a leader election protocol inspired by the following paper:

@@ -45,11 +45,11 @@ broadcast chan go;
 clock x;</declaration>
 		<location id="id0" x="0" y="0">
 			<name x="-10" y="-34">q</name>
-			<label kind="invariant" x="-10" y="17">x&lt;=11</label>
+			<label kind="invariant" x="-10" y="17">x&lt;=4</label>
 		</location>
 		<location id="id1" x="-161" y="0">
 			<name x="-171" y="-34">q0</name>
-			<label kind="invariant" x="-171" y="17">x&lt;=11</label>
+			<label kind="invariant" x="-171" y="17">x&lt;=4</label>
 		</location>
 		<init ref="id1"/>
 		<transition>
@@ -67,7 +67,7 @@ clock x;</declaration>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-85" y="-110">x&gt;=9 &amp;&amp; x&lt;= 11</label>
+			<label kind="guard" x="-85" y="-110">x&gt;=3 &amp;&amp; x&lt;= 4</label>
 			<label kind="synchronisation" x="-51" y="-93">wakeup[i]!</label>
 			<label kind="assignment" x="-41" y="-67">x=0</label>
 			<nail x="-59" y="-59"/>
