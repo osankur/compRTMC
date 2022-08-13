@@ -112,7 +112,7 @@ module counter(input clk, input update, input[0:1] bit, output outstate);
     assign outstate = state[bit];
     always @(posedge clk)begin
         if (update) begin
-            if (state < 128) 
+            if (state < 64) 
                 state <= state + 1;
             else 
                 state <= 0;

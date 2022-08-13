@@ -9,12 +9,12 @@ event:tick
 
 process:A
 #location:A:q{initial:}
-location:A:q{initial::invariant: x<=20}
+location:A:q{initial::invariant: x<=25}
 edge:A:q:q:startA{provided: x== 20 : do : x = 0}
 
 process:B
-location:B:q{initial::invariant: y<=20}
-edge:B:q:q:startB{provided: y >= 15 : do : y = 0}
+location:B:q{initial::invariant: y<=25}
+edge:B:q:q:startB{provided: y >= 20 : do : y = 0}
 
 process:T
 location:T:q{initial::invariant: t <= 5}

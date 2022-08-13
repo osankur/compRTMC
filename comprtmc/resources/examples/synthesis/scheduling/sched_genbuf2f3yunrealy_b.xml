@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>clock a;
+clock b;
+clock t;
+
+const int Au = 5;
+const int Al = 4;
+const int Bu = 10;
+const int Bl = 5;
+const int Tmax = 1;
+
+// Inputs
+bool i_RtoB_ACK1;
+bool i_StoB_REQ1;
+bool i_RtoB_ACK0;
+bool i_FULL;
+bool i_nEMPTY;
+bool i_StoB_REQ0;
+
+bool startA, startB, tick;
+bool controllable_sched0;
+bool controllable_sched1;
+bool error;
+
+int[0,2] m0_occupied, m1_occupied;
+int[0,2] m0_counter, m1_counter;
+// bool up0, up1;
+
+bool controllable_BtoR_REQ0;
+bool controllable_BtoR_REQ1;
+bool controllable_BtoS_ACK0;
+bool controllable_BtoS_ACK1;
+bool controllable_SLC0;
+bool controllable_ENQ;
+bool controllable_DEQ;
+// Latches
+bool n29;
+bool reg_stateG7_0_out;
+bool reg_controllable_BtoR_REQ1_out;
+bool reg_i_RtoB_ACK1_out;
+bool sys_fair0done_out;
+bool reg_controllable_BtoS_ACK0_out;
+bool env_fair1done_out;
+bool reg_i_nEMPTY_out;
+bool reg_nstateG7_1_out;
+bool reg_controllable_BtoS_ACK1_out;
+bool reg_controllable_SLC0_out;
+bool sys_fair1done_out;
+bool env_fair0done_out;
+bool reg_controllable_ENQ_out;
+bool reg_i_FULL_out;
+bool reg_stateG12_out;
+bool fair_cnt0_out;
+bool fair_cnt1_out;
+bool reg_controllable_DEQ_out;
+bool env_safe_err_happened_out;
+bool reg_i_StoB_REQ1_out;
+bool reg_i_RtoB_ACK0_out;
+bool sys_fair2done_out;
+bool reg_controllable_BtoR_REQ0_out;
+bool reg_i_StoB_REQ0_out;
+
+bool pout0;
+bool pout1;
+
+void update(){
+	pout0 = reg_stateG7_0_out;
+	pout1 = reg_nstateG7_1_out || reg_stateG12_out;
+
+	if (controllable_sched0 &amp;&amp; m0_occupied &gt;0 || controllable_sched1 &amp;&amp; m1_occupied&gt;0
+		|| (startB || startA) &amp;&amp; !controllable_sched0 &amp;&amp; !controllable_sched1){
+		error = 1;
+	}
+	if (startA){
+		if(controllable_sched0){
+			m0_occupied = 1;
+			m0_counter =0;
+		}
+		else if(controllable_sched1){
+			m1_occupied = 1;
+			m1_counter =0;
+		}
+	}
+	if (startB){
+		if(controllable_sched0){
+			m0_occupied = 2;
+			m0_counter =0;
+		}
+		else if(controllable_sched1){
+			m1_occupied = 2;
+			m1_counter =0;
+		}
+	}
+	if(tick){
+		// if(m0_occupied&gt;0){up0=1;}
+		// if(m1_occupied&gt;0){up1=1;}
+		if (m0_occupied &gt; 0 &amp;&amp; (pout0 &amp;&amp; m0_counter &lt; 1 || !pout0 &amp;&amp; m0_counter &lt; 2)){
+                    m0_counter = m0_counter + 1;			
+		}
+                else if (m0_occupied &gt; 0 &amp;&amp; (pout0 &amp;&amp; m0_counter &gt;= 1 || !pout0 &amp;&amp; m0_counter &gt;=  2)) {
+	            // finished
+                    m0_counter = 0;
+                    m0_occupied = 0;
+                }
+                if (m1_occupied &gt; 0 &amp;&amp; (pout1 &amp;&amp; m1_counter &lt; 1 || !pout1 &amp;&amp; m1_counter &lt; 2)) {
+	            // not yet finished
+                    m1_counter = m1_counter + 1;
+                } else if (m1_occupied &gt; 0 &amp;&amp; (pout1 &amp;&amp; m1_counter &gt;= 1 || !pout1 &amp;&amp; m1_counter &gt;= 2)) {
+        	    // finished
+                    m1_counter = 0;
+                    m1_occupied = 0;
+                }
+	}
+	// update internal state
+	n29 = 1;
+	reg_stateG7_0_out = (!(!(!(reg_controllable_BtoR_REQ1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(reg_stateG7_0_out &amp;&amp; n29)) &amp;&amp; (!((!(reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(reg_controllable_BtoR_REQ1_out &amp;&amp; n29)) &amp;&amp; !(((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; (reg_controllable_BtoR_REQ1_out &amp;&amp; n29))));
+	reg_controllable_BtoR_REQ1_out = controllable_BtoR_REQ1;
+	reg_i_RtoB_ACK1_out = i_RtoB_ACK1;
+	sys_fair0done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))));
+	reg_controllable_BtoS_ACK0_out = controllable_BtoS_ACK0;
+	env_fair1done_out = ((!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0)))))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1))));
+	reg_i_nEMPTY_out = i_nEMPTY;
+	reg_nstateG7_1_out = !(!((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !(!(!(!(reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; !((reg_nstateG7_1_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_BtoR_REQ0_out &amp;&amp; n29))) &amp;&amp; !(reg_controllable_BtoR_REQ1_out &amp;&amp; n29)));
+	reg_controllable_BtoS_ACK1_out = controllable_BtoS_ACK1;
+	reg_controllable_SLC0_out = controllable_SLC0;
+	sys_fair1done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))));
+	env_fair0done_out = ((!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0)))))) &amp;&amp; !(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))));
+	reg_controllable_ENQ_out = controllable_ENQ;
+	reg_i_FULL_out = i_FULL;
+	reg_stateG12_out = (!(!(reg_stateG12_out &amp;&amp; n29) &amp;&amp; !(reg_i_nEMPTY_out &amp;&amp; n29)) &amp;&amp; !(reg_controllable_DEQ_out &amp;&amp; n29));
+	fair_cnt0_out = ((!(!(!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; !(fair_cnt0_out &amp;&amp; n29)) &amp;&amp; !((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))));
+	fair_cnt1_out = (!(!(((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29)) &amp;&amp; !(fair_cnt1_out &amp;&amp; n29)) &amp;&amp; !(!((!(!(env_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(!i_RtoB_ACK0 &amp;&amp; controllable_BtoR_REQ0) &amp;&amp; !(i_RtoB_ACK0 &amp;&amp; !controllable_BtoR_REQ0))) &amp;&amp; !(!(env_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(controllable_BtoR_REQ1 &amp;&amp; !i_RtoB_ACK1) &amp;&amp; !(!controllable_BtoR_REQ1 &amp;&amp; i_RtoB_ACK1)))) &amp;&amp; (fair_cnt0_out &amp;&amp; n29)) &amp;&amp; (fair_cnt1_out &amp;&amp; n29))) &amp;&amp; !(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))));
+	reg_controllable_DEQ_out = controllable_DEQ;
+	env_safe_err_happened_out = !(!(env_safe_err_happened_out &amp;&amp; n29) &amp;&amp; (!(!((!((reg_i_nEMPTY_out &amp;&amp; n29) &amp;&amp; !i_nEMPTY) &amp;&amp; !(!(reg_i_nEMPTY_out &amp;&amp; n29) &amp;&amp; i_nEMPTY)) &amp;&amp; (!((reg_i_FULL_out &amp;&amp; n29) &amp;&amp; !i_FULL) &amp;&amp; !(!(reg_i_FULL_out &amp;&amp; n29) &amp;&amp; i_FULL))) &amp;&amp; (!((reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; !(!(reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; (reg_controllable_ENQ_out &amp;&amp; n29)))) &amp;&amp; (!(((reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; !(reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; i_FULL) &amp;&amp; (!((!(reg_controllable_DEQ_out &amp;&amp; n29) &amp;&amp; (reg_controllable_ENQ_out &amp;&amp; n29)) &amp;&amp; !i_nEMPTY) &amp;&amp; (!(((reg_i_RtoB_ACK1_out &amp;&amp; n29) &amp;&amp; !i_RtoB_ACK1) &amp;&amp; (reg_controllable_BtoR_REQ1_out &amp;&amp; n29)) &amp;&amp; (!(!(reg_controllable_BtoR_REQ1_out &amp;&amp; n29) &amp;&amp; i_RtoB_ACK1) &amp;&amp; (!(((reg_i_RtoB_ACK0_out &amp;&amp; n29) &amp;&amp; !i_RtoB_ACK0) &amp;&amp; (reg_controllable_BtoR_REQ0_out &amp;&amp; n29)) &amp;&amp; ((!(!(!((reg_i_StoB_REQ1_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ1) &amp;&amp; !(reg_controllable_BtoS_ACK1_out &amp;&amp; n29)) &amp;&amp; !((reg_controllable_BtoS_ACK1_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ1)) &amp;&amp; !(!(!((reg_i_StoB_REQ0_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ0) &amp;&amp; !(reg_controllable_BtoS_ACK0_out &amp;&amp; n29)) &amp;&amp; !((reg_controllable_BtoS_ACK0_out &amp;&amp; n29) &amp;&amp; !i_StoB_REQ0))) &amp;&amp; !(!(reg_controllable_BtoR_REQ0_out &amp;&amp; n29) &amp;&amp; i_RtoB_ACK0)))))))));
+	reg_i_StoB_REQ1_out = i_StoB_REQ1;
+	reg_i_RtoB_ACK0_out = i_RtoB_ACK0;
+	sys_fair2done_out = (!(!(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)) &amp;&amp; (!(!(sys_fair1done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ1 &amp;&amp; !controllable_BtoS_ACK1) &amp;&amp; !(!i_StoB_REQ1 &amp;&amp; controllable_BtoS_ACK1))) &amp;&amp; !(!(sys_fair0done_out &amp;&amp; n29) &amp;&amp; !(!(i_StoB_REQ0 &amp;&amp; !controllable_BtoS_ACK0) &amp;&amp; !(!i_StoB_REQ0 &amp;&amp; controllable_BtoS_ACK0))))) &amp;&amp; !(!(sys_fair2done_out &amp;&amp; n29) &amp;&amp; (reg_stateG12_out &amp;&amp; n29)));
+	reg_controllable_BtoR_REQ0_out = controllable_BtoR_REQ0;
+	reg_i_StoB_REQ0_out = i_StoB_REQ0;
+}
+</declaration><template><name x="5" y="5">Template</name><declaration>// Place local declarations here.
+</declaration><location id="id0" x="-160" y="-48"><label kind="invariant" x="-170" y="-33">t&lt;=Tmax &amp;&amp; a &lt;= Au &amp;&amp; b &lt;= Bu</label></location><location id="id1" x="-344" y="-48"><urgent/></location><location id="id2" x="-520" y="-40"><urgent/></location><location id="id3" x="-512" y="88"><urgent/></location><location id="id4" x="-376" y="96"><urgent/></location><location id="id5" x="-256" y="96"><urgent/></location><location id="id6" x="-120" y="96"><urgent/></location><location id="id7" x="0" y="96"><urgent/></location><location id="id8" x="120" y="96"><urgent/></location><location id="id9" x="264" y="104"><urgent/></location><location id="id10" x="400" y="104"><urgent/></location><location id="id11" x="584" y="120"><urgent/></location><location id="id12" x="720" y="112"><urgent/></location><location id="id13" x="728" y="-48"><urgent/></location><location id="id14" x="560" y="-40"><urgent/></location><location id="id15" x="416" y="-40"><urgent/></location><location id="id16" x="280" y="-48"><urgent/></location><location id="id17" x="144" y="-40"><urgent/></location><location id="id18" x="16" y="-40"><urgent/></location><init ref="id18"/><transition controllable="false" action="update()"><source ref="id0"/><target ref="id18"/></transition><transition action=""><source ref="id1"/><target ref="id0"/><label kind="assignment" x="-320" y="-48">controllable_DEQ=1</label><nail x="-224" y="-16"/></transition><transition action=""><source ref="id1"/><target ref="id0"/><label kind="assignment" x="-320" y="-48">controllable_DEQ=0</label><nail x="-248" y="-88"/></transition><transition action=""><source ref="id2"/><target ref="id1"/><label kind="assignment" x="-492" y="-44">controllable_ENQ=1</label><nail x="-432" y="-32"/></transition><transition action=""><source ref="id2"/><target ref="id1"/><label kind="assignment" x="-492" y="-44">controllable_ENQ=0</label><nail x="-448" y="-80"/></transition><transition action=""><source ref="id3"/><target ref="id2"/><label kind="assignment" x="-576" y="24">controllable_SLC0=1</label></transition><transition action=""><source ref="id3"/><target ref="id2"/><label kind="assignment" x="-576" y="24">controllable_SLC0=0</label><nail x="-568" y="24"/></transition><transition action=""><source ref="id4"/><target ref="id3"/><label kind="assignment" x="-504" y="92">controllable_BtoS_ACK1=1</label><nail x="-472" y="144"/></transition><transition action=""><source ref="id4"/><target ref="id3"/><label kind="assignment" x="-504" y="92">controllable_BtoS_ACK1=0</label><nail x="-472" y="32"/></transition><transition action=""><source ref="id5"/><target ref="id4"/><label kind="assignment" x="-392" y="48">controllable_BtoS_ACK0=1</label><nail x="-344" y="152"/></transition><transition action=""><source ref="id5"/><target ref="id4"/><label kind="assignment" x="-376" y="96">controllable_BtoS_ACK0=0</label><nail x="-344" y="40"/></transition><transition action=""><source ref="id6"/><target ref="id5"/><label kind="assignment" x="-248" y="96">controllable_BtoR_REQ1=1</label><nail x="-200" y="136"/></transition><transition action=""><source ref="id6"/><target ref="id5"/><label kind="assignment" x="-248" y="96">controllable_BtoR_REQ1=0</label><nail x="-200" y="48"/></transition><transition action=""><source ref="id7"/><target ref="id6"/><label kind="assignment" x="-120" y="96">controllable_BtoR_REQ0=1</label><nail x="-72" y="136"/></transition><transition action=""><source ref="id7"/><target ref="id6"/><label kind="assignment" x="-120" y="96">controllable_BtoR_REQ0=0</label><nail x="-72" y="48"/></transition><transition action=""><source ref="id8"/><target ref="id7"/><label kind="assignment" x="0" y="96">controllable_sched1=1</label><nail x="24" y="136"/></transition><transition action=""><source ref="id8"/><target ref="id7"/><label kind="assignment" x="0" y="96">controllable_sched1=0</label><nail x="40" y="48"/></transition><transition action=""><source ref="id9"/><target ref="id8"/><label kind="assignment" x="128" y="112">controllable_sched0=1</label><nail x="168" y="136"/></transition><transition action=""><source ref="id9"/><target ref="id8"/><label kind="assignment" x="136" y="32">controllable_sched0=0</label><nail x="160" y="48"/></transition><transition controllable="false" action=""><source ref="id10"/><target ref="id9"/><label kind="guard" x="272" y="74">!startA &amp;&amp; !startB &amp;&amp; t&lt;=Tmax</label><label kind="assignment" x="280" y="104">tick=1, t=0</label><nail x="312" y="160"/></transition><transition controllable="false" action=""><source ref="id10"/><target ref="id9"/><label kind="assignment" x="296" y="120">tick=0</label><nail x="320" y="72"/></transition><transition controllable="false" action=""><source ref="id11"/><target ref="id10"/><label kind="guard" x="432" y="82">!startA &amp;&amp; b&lt;= Bu &amp;&amp; b &gt;= Bl</label><label kind="assignment" x="424" y="120">startB=1,b=0</label><nail x="456" y="160"/></transition><transition controllable="false" action=""><source ref="id11"/><target ref="id10"/><label kind="assignment" x="432" y="96">startB=0</label><nail x="464" y="64"/></transition><transition controllable="false" action=""><source ref="id12"/><target ref="id11"/><label kind="guard" x="592" y="86">a&lt;=Au &amp;&amp; a &gt;= Al</label><label kind="assignment" x="592" y="104">startA=1,a=0</label><nail x="648" y="160"/></transition><transition controllable="false" action=""><source ref="id12"/><target ref="id11"/><label kind="assignment" x="624" y="120">startA=0</label><nail x="616" y="80"/></transition><transition controllable="false" action=""><source ref="id13"/><target ref="id12"/><label kind="assignment" x="664" y="32">i_StoB_REQ0=0</label></transition><transition controllable="false" action=""><source ref="id13"/><target ref="id12"/><label kind="assignment" x="664" y="32">i_StoB_REQ0=1</label><nail x="792" y="48"/></transition><transition controllable="false" action=""><source ref="id14"/><target ref="id13"/><label kind="assignment" x="584" y="-44">i_nEMPTY=1</label><nail x="672" y="16"/></transition><transition controllable="false" action=""><source ref="id15"/><target ref="id14"/><label kind="assignment" x="428" y="-40">i_FULL=1</label><nail x="488" y="8"/></transition><transition controllable="false" action=""><source ref="id16"/><target ref="id15"/><label kind="assignment" x="288" y="-44">i_RtoB_ACK0=1</label><nail x="344" y="8"/></transition><transition controllable="false" action=""><source ref="id17"/><target ref="id16"/><label kind="assignment" x="152" y="-44">i_StoB_REQ1=1</label><nail x="208" y="16"/></transition><transition controllable="false" action=""><source ref="id18"/><target ref="id17"/><label kind="assignment" x="20" y="-40">i_RtoB_ACK1=0</label><nail x="80" y="16"/></transition><transition controllable="false" action=""><source ref="id14"/><target ref="id13"/><label kind="assignment" x="584" y="-44">i_nEMPTY=0</label><nail x="632" y="-120"/></transition><transition controllable="false" action=""><source ref="id15"/><target ref="id14"/><label kind="assignment" x="428" y="-40">i_FULL=0</label><nail x="472" y="-112"/></transition><transition controllable="false" action=""><source ref="id16"/><target ref="id15"/><label kind="assignment" x="288" y="-44">i_RtoB_ACK0=0</label><nail x="352" y="-120"/></transition><transition controllable="false" action=""><source ref="id17"/><target ref="id16"/><label kind="assignment" x="152" y="-44">i_StoB_REQ1=0</label><nail x="208" y="-104"/></transition><transition controllable="false" action=""><source ref="id18"/><target ref="id17"/><label kind="assignment" x="16" y="-64">i_RtoB_ACK1=1</label><nail x="64" y="-96"/></transition></template><system>// Place template instantiations here.
+Process = Template();
+
+// List one or more processes to be composed into a system.
+system Process;</system></nta>

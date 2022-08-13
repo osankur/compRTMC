@@ -138,7 +138,8 @@ class CompSynthesisAlgorithm(
         case null => // T <= barH
           System.out.println("New over approximation found")
           SynthesisLearningLock.setOverApproximation(hypothesis)
-          Visualization.visualize(hypothesis,inputs)
+          if (configuration.globalConfiguration.visualizeDFA) then
+            Visualization.visualize(hypothesis,inputs)
           synthesisOracle.synthesizeIntersection(hypothesis) match {
             case synthesis.Controllable(strat) =>
               // Synthesis succeeded
@@ -146,7 +147,8 @@ class CompSynthesisAlgorithm(
               SynthesisLearningLock.strategy = strat
               SynthesisLearningLock.setVerdict(true)
               System.out.println(GREEN + BOLD + "\nControllable\n" + RESET)
-              Visualization.visualize(hypothesis,inputs)
+              if (configuration.globalConfiguration.visualizeDFA) then
+                Visualization.visualize(hypothesis,inputs)
               null
             case synthesis.Uncontrollable(strat) =>
               System.out.println(
@@ -225,7 +227,7 @@ class CompSynthesisAlgorithm(
         hypothesis: DFA[_, String],
         inputs: java.util.Collection[? <: String]
     ): DefaultQuery[String, java.lang.Boolean] = {
-      System.out.println("Checking if lower bound is found: " + statistics.Counters.toString)
+      System.out.println("Checking if lower bound is found |DFA|=" + hypothesis.size() + ": " + statistics.Counters.toString)
       SynthesisLearningLock.setUnderApproximation(hypothesis)
       // Visualization.visualize(hypothesis,inputs)
 
@@ -233,7 +235,8 @@ class CompSynthesisAlgorithm(
       wpInclusionOracle.findCounterExample(hypothesis, inputs) match {
         case null => // underH <= T
           System.out.println("New under approximation found")
-          Visualization.visualize(hypothesis,inputs)
+          if (configuration.globalConfiguration.visualizeDFA) then
+            Visualization.visualize(hypothesis,inputs)
           System.out.println("Checking if the environment-controlled system " + SynthesisLearningLock.strategy + " conforms to underH")
 
           // Check whether FSM^sigma <= underH i.e. check FSM^sigma x comp(underH) = 0.

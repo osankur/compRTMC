@@ -44,7 +44,7 @@ process:Proc0
 location:Proc0:q{initial:}
 location:Proc0:sink0{labels:p0miss}
 edge:Proc0:q:q:ready0{provided: y[0] >= 15 : do : y[0] = 0}
-edge:Proc0:q:sink0:miss{provided: y[0] >= 20}
+edge:Proc0:q:sink0:miss{provided: y[0] > 20}
 
 process:Proc1
 location:Proc1:q{initial:}

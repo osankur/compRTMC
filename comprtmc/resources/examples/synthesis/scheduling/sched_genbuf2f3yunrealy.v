@@ -246,7 +246,8 @@ reg sys_fair2done;
 reg sys_fair3done;
 reg [2:0] fair_cnt;
 
-assign pout0 = reg_stateG7_0;
+//assign pout0 = reg_stateG7_0;
+assign pout0 = ~env_safe_err & ~env_safe_err_happened & (sys_safe_err | fair_err);
 assign pout1 = reg_nstateG7_1 || reg_stateG12;
 
 

@@ -53,7 +53,7 @@ The timed model model gives interarrival times of the tasks, and the duration of
 
 ### Verilog-TChecker Files
 - `scheduling/sched_genbuf2f3yunrealy.v`
-  The combined internal states of both machines are modeled by the AIG circuit genbuf2f3yunrealy.aag (from the hardware model checking competition benchmarks).
+  The combined internal states of both machines are modeled by the AIG circuit genbuf2f3yunrealy.aag (from the synthesis scompetition benchmarks).
   Here, Environment chooses uncontrollable inputs of the genbuf model, and the controller chooses its controllable inputs.
 - `scheduling/sched_bitcounter64.v`
   The internal state of each machine is an 8-bit counter.
