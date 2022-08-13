@@ -442,4 +442,5 @@ DEFINE
     _rt_sched1 := cmd = cmd_sched & !is_ready0 & is_ready1 & nondet;
     _rt_idle := cmd = cmd_sched & !is_ready0 & !is_ready1;
     _rt_release := cmd = cmd_release & nondet;
+    error := err;
 INVARSPEC !err

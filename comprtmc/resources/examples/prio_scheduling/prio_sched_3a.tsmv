@@ -1,30 +1,75 @@
--- Priority-based scheduler without preemption between two processes.
--- Each process sends signal _rt_readyi whenever it is ready to execute its rt task.
--- Whenever the scheduler is available, it schedules process 1 if it is ready,
--- otherwise, process 2 if it is ready, if none of them are ready,
--- then schedules a low priority task called idle.
--- Each task ends with a _rt_release signal, while _rt_miss means a deadline miss, and leads to the error state.
---
--- At each bigstep, the smv model is queried to know whether processes are _rt_ready.
--- Whether a process is ready depends on its internal state described by the circuit below.
--- Moreover, the timed automaton model constrains the interarrival times (time elapsed between two _rt_readyi),
--- and the task execution times for each process.
---
--- The circuit is bs16y.smv
+@TIME_DOMAIN continuous
+
+MODULE sched(_rt_ready0, is_ready0, _rt_ready1, is_ready1,_rt_ready2, is_ready2)
+VAR
+    y0 : clock;
+    y1 : clock;
+    y2 : clock;
+    x : clock;
+    state : {wait, p0, p1, p2, idle, sink};
+ASSIGN
+    init(x) := 0;
+    init(y0) := 0;
+    init(y1) := 0;
+    init(y2) := 0;
+    init(state) := wait;
+    next(state) := case
+        (is_ready0 & y0 > 20) | (is_ready1 & y1 > 20) | (is_ready1 & y1 > 40): sink; -- deadlines
+        state = wait & is_ready0 : p0;
+        state = wait & !is_ready0 & is_ready1 : p1;
+        state = wait & !is_ready0 & !is_ready1 & is_ready2 : p2;
+        state = wait & !is_ready0 & !is_ready1 & !is_ready2: idle;
+        state = p0 & x >= 3 & x <= 5 : {p0, wait}; -- computation time p0
+        state = p1 & x >= 2 & x <= 4 : {p1, wait}; -- computation time p1
+        state = p2 & x >= 2 & x <= 5 : {p2, wait}; -- computation time p1
+        state = idle & x <= 5 : {idle, wait}; -- computation time idle
+    esac;
+    next(y0) := case
+        _rt_ready0 : 0;
+        TRUE : y0;
+    esac;
+    next(y1) := case
+        _rt_ready1 : 0;
+        TRUE : y1;
+    esac;
+    next(y2) := case
+        _rt_ready2 : 0;
+        TRUE : y2;
+    esac;
+    next(x) := case
+        state = wait : 0;
+        TRUE : x;
+    esac;
+INVAR
+      (state = p0 -> x <= 5) -- computation upper bound p0
+    & (state = p1 -> x <= 4) -- computation upper bound p1
+    & (state = p2 -> x <= 5) -- computation upper bound p2
+    & (state=idle -> x <= 5) -- computation upper bound idle
+URGENT
+    state = wait
+DEFINE
+    sched0 := state = p0;
+    sched1 := state = p1;
+    sched2 := state = p2;
+    interTimeElapsed0 := y0 >= 15; -- interarrival time p0
+    interTimeElapsed1 := y1 >= 20; -- interarrival time p1
+    interTimeElapsed2 := y2 >= 25; -- interarrival time p1
+
 MODULE main
-FROZENVAR
-controllable_do_shift : boolean;
 VAR
 --inputs
-cmd : {check_ready0, check_ready1, cmd_sched, cmd_release, cmd_miss0, cmd_miss1};
+cmd : {check_ready0, check_ready1, check_ready2, cmd_sched, cmd_release, cmd_miss};
 is_ready0 : boolean;
 is_ready1 : boolean;
+is_ready2 : boolean;
 err : boolean;
 nondet : boolean;
+controllable_do_shift : boolean;
 sh_0_ : boolean;
 sh_1_ : boolean;
 sh_2_ : boolean;
 sh_3_ : boolean;
+sched : sched(_rt_ready0, is_ready0, _rt_ready1, is_ready1,_rt_ready2, is_ready2);
 --latches
 benchn13 : boolean;
 benchr_0__out : boolean;
@@ -47,26 +92,32 @@ ASSIGN
 init(cmd) := cmd_sched;
 next(cmd) := case
     cmd = check_ready0 : check_ready1;
-    cmd = check_ready1 : cmd_sched;
+    cmd = check_ready1 : check_ready2;
+    cmd = check_ready2 : cmd_sched;
     cmd = cmd_sched : cmd_release;
-    cmd = cmd_release : cmd_miss0;
-    cmd = cmd_miss0 : cmd_miss1;
-    cmd = cmd_miss1 : check_ready0;
+    cmd = cmd_release : cmd_miss;
+    cmd = cmd_miss : check_ready0;
 esac;
 init(is_ready0) := TRUE;
 next(is_ready0) := case 
-    _rt_sched0 : FALSE;
-    _rt_ready0 : TRUE;
+    sched.sched0 : FALSE;
+    _rt_ready0 & sched.interTimeElapsed0 : TRUE;
     TRUE : is_ready0;
 esac;
 init(is_ready1) := TRUE;
 next(is_ready1) := case 
-    _rt_sched1 : FALSE;
-    _rt_ready1 : TRUE;
+    sched.sched1 : FALSE;
+    _rt_ready1 & sched.interTimeElapsed1 : TRUE;
     TRUE : is_ready1;
 esac;
+init(is_ready2) := TRUE;
+next(is_ready2) := case 
+    sched.sched2 : FALSE;
+    _rt_ready2 & sched.interTimeElapsed2 : TRUE;
+    TRUE : is_ready2;
+esac;
 init(err) := FALSE;
-next(err) := err | _rt_miss0 | _rt_miss1;
+next(err) := err | _rt_miss;
 init(benchn13) := FALSE;
 next(benchn13) := TRUE;
 init(benchr_0__out) := FALSE;
@@ -362,13 +413,14 @@ a556 := !a554 & !a552;
 --outputs
 o0 := a46;
 DEFINE
-    _rt_miss0 := cmd = cmd_miss0 & is_ready0 & nondet;
-    _rt_miss1 := cmd = cmd_miss1 & is_ready1 & nondet;
+    _rt_miss := cmd = cmd_miss & nondet;
     _rt_ready0 := cmd = check_ready0 & benchr_0__out & nondet;
     _rt_ready1 := cmd = check_ready1 & benchr_1__out & nondet;
+    _rt_ready2 := cmd = check_ready2 & benchr_2__out & nondet;
     _rt_sched0 := cmd = cmd_sched & is_ready0 & nondet;
     _rt_sched1 := cmd = cmd_sched & !is_ready0 & is_ready1 & nondet;
-    _rt_idle := cmd = cmd_sched & !is_ready0 & !is_ready1;
+    _rt_sched2 := cmd = cmd_sched & !is_ready0 & !is_ready1 & is_ready2 & nondet;
+    _rt_idle := cmd = cmd_sched & !is_ready0 & !is_ready1 & !is_ready2;
     _rt_release := cmd = cmd_release & nondet;
     error := err;
-INVARSPEC !err
+INVARSPEC sched.state != sink

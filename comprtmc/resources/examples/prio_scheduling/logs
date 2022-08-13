@@ -1,0 +1,16 @@
+- prio_sched_2a.smv X prio_sched_2.ta
+    Safety holds
+
+    Learning [ms]: 8342, (8.342 s)
+    Searching for counterexample [ms]: 3489, (3.489 s)
+
+    learning rounds [#]: 29
+    States: 42
+    Sigma: 8
+    Total system calls: 0ms
+    Nb of membership queries: 1162
+    Time per query: 0ms
+
+    real	0m12,354s
+    user	0m11,061s
+    sys	0m4,964s

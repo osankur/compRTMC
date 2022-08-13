@@ -49,8 +49,8 @@ edge:Proc0:q:sink0:miss{provided: y[0] >= 20}
 process:Proc1
 location:Proc1:q{initial:}
 location:Proc1:sink1{labels:p1miss}
-edge:Proc1:q:q:ready1{provided: y[1] >= 10 : do : y[1] = 0}
-edge:Proc1:q:sink1:miss{provided: y[1] > 10}
+edge:Proc1:q:q:ready1{provided: y[1] >= 20 : do : y[1] = 0}
+edge:Proc1:q:sink1:miss{provided: y[1] > 20}
 
 
 process:Proc2
