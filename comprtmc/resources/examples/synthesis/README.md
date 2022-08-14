@@ -55,29 +55,28 @@ The timed model model gives interarrival times of the tasks, and the duration of
 - `scheduling/sched_genbuf2f3yunrealy.v`
   The combined internal states of both machines are modeled by the AIG circuit genbuf2f3yunrealy.aag (from the synthesis scompetition benchmarks).
   Here, Environment chooses uncontrollable inputs of the genbuf model, and the controller chooses its controllable inputs.
-- `scheduling/sched_bitcounter64.v`
-  The internal state of each machine is an 8-bit counter.
+- `scheduling/sched_counter64.v`
+  The internal state of each machine is an 6-bit counter.
 
-- `scheduling/sched_genbuf3f4y.v` and `scheduling/sched_genbuf1c2unrealy.v`
-  These are as the other genbuf model but the circuit's inputs depend on startA, startB, tick (There are no additional cont/uncont inputs).
-
-The timed automata model are: `scheda.ta`, `schedb.ta`, `schedc.ta`
+The timed automata model are: `sched*.ta`
 
 ### Uppaal TIGA Files
-- `scheduling/sched_genbuf2f3yunrealy.xml`, `scheduling/sched_bitcounter64.xml` are the corresponding Uppaal files.
+- `scheduling/sched_genbuf2f3yunrealy_*.xml`, `scheduling/sched_counter64_*.xml` are the corresponding Uppaal files.
 - The query file is `sched.q`
 
 ## Real-time planning
 One controlled robot, and an adversarial obstacle move in a 3k x 3k grid with two walls (at [k,k]x[0,2k], and at [2k,2k]x[k,3k]).
 They can both move to an adjacent cell on an event corresponding to their moves. The controlled robot moves upon the event `robot`, while the adversarial obstacle moevs upon the event `obs`.
 
-Moreover, both robots have internal states: periodically, both of them must make an idle (their decisions are ignored and they still at their current position at that step).
-
 Controller's objective is to avoid collision with the obstacle.
+This is the stateles version.
+
+In the genbuf version, both robots have internal states: both of them have a glitch depending on their internal states, during which they stay idle for one step.
 
 ### Verilog-TChecker Files
-- Verilog: `planning_a.v`
-- Timed automata; `planning_a.ta`, `planning_b.ta`
+- Verilog: `planning_genbuf.v`, `planning_stateless.v`
+- Timed automata; `planning_*.ta`
 
 ### Uppaal TIGA Files
-`TODO`
+- `planning_stateless_*.xml`
+- `planning_genbuf_*.xml`
