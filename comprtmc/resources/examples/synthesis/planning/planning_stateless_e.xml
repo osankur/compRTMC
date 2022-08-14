@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>const int K =3;
+const int CNTMAX=0;
+chan robot, obs;
+bool rleft, rright, rup, rdown;
+bool oleft, oright, oup, odown;
+
+int[0,3*K] robot_x, robot_y;
+int[0,3*K] obs1_x=2;
+int[0,3*K] obs1_y;
+
+
+int[0,128] cntr;
+int[0,128] cnto;
+
+
+bool error;
+
+
+bool shock;
+bool maintenance;
+
+void update(){
+	shock = (cntr &amp; 4)&gt;&gt;2;
+	maintenance = (cnto &amp; 2)&gt;&gt;1;
+	shock = 0;
+	maintenance = 0;
+      if (!maintenance &amp;&amp; oup) {
+        if (obs1_y &lt; 3*K-1)
+          obs1_y = obs1_y +1;
+      }
+      else if (!maintenance &amp;&amp; odown) {
+        if (obs1_y &gt; 0)
+          obs1_y = obs1_y -1;
+      }
+      if (!maintenance &amp;&amp; oleft) {
+        if (obs1_x &gt; 0)
+          obs1_x = obs1_x -1;
+      }
+      else if (!maintenance &amp;&amp; oright) {
+        if (obs1_x &lt; 3*K-1)
+          obs1_x = obs1_x +1;
+      }
+      if (!shock) {
+        if (rdown &amp; robot_y &gt; 0) 
+          robot_y = robot_y - 1;
+        else if (rup &amp; robot_y &lt; 3*K-1)
+          robot_y = robot_y + 1;
+        else if (rleft &amp; robot_x &gt; 0 )
+          robot_x = robot_x - 1;
+        else if (rright &amp; robot_x &lt; 3*K-1 )
+          robot_x = robot_x + 1;
+      }
+	if((robot_x == obs1_x &amp; robot_y == obs1_y)){
+		error = 1;
+	}
+	rleft=0;
+	rright=0;
+	rup=0;
+	rdown=0;
+	oleft=0;
+	oright=0;
+	oup=0;
+	odown=0;
+}
+</declaration><template><name x="5" y="5">Template</name><declaration>// Place local declarations here.
+</declaration><location id="id0" x="-40" y="-136"></location><location id="id1" x="304" y="312"><urgent/></location><location id="id2" x="392" y="312"><urgent/></location><location id="id3" x="480" y="304"><urgent/></location><location id="id4" x="568" y="296"><urgent/></location><location id="id5" x="416" y="184"><urgent/></location><location id="id6" x="480" y="176"><urgent/></location><location id="id7" x="-120" y="96"></location><location id="id8" x="264" y="104"><urgent/></location><location id="id9" x="480" y="112"><urgent/></location><location id="id10" x="584" y="120"><urgent/></location><location id="id11" x="720" y="112"><urgent/></location><location id="id12" x="16" y="-40"><urgent/></location><init ref="id0"/><transition><source ref="id8"/><target ref="id7"/></transition><transition><source ref="id12"/><target ref="id11"/><nail x="712" y="-16"/></transition><transition><source ref="id0"/><target ref="id12"/></transition><transition controllable="false" action=""><source ref="id1"/><target ref="id8"/><label kind="assignment" x="224" y="208">odown=0</label><nail x="200" y="264"/></transition><transition controllable="false" action=""><source ref="id2"/><target ref="id1"/><label kind="assignment" x="320" y="336">oup=0</label><nail x="336" y="248"/></transition><transition controllable="false" action=""><source ref="id3"/><target ref="id2"/><label kind="assignment" x="376" y="308">oright=1</label><nail x="392" y="256"/></transition><transition controllable="false" action=""><source ref="id1"/><target ref="id8"/><label kind="assignment" x="224" y="208">odown=1</label></transition><transition controllable="false" action=""><source ref="id2"/><target ref="id1"/><label kind="assignment" x="288" y="312">oup=1</label></transition><transition controllable="false" action=""><source ref="id3"/><target ref="id2"/><label kind="assignment" x="376" y="308">oright=0</label></transition><transition controllable="false" action=""><source ref="id4"/><target ref="id3"/><label kind="assignment" x="464" y="300">oleft=0</label></transition><transition controllable="false" action=""><source ref="id4"/><target ref="id3"/><label kind="assignment" x="464" y="300">oleft=1</label><nail x="488" y="232"/></transition><transition controllable="false" action=""><source ref="id11"/><target ref="id4"/><label kind="synchronisation" x="584" y="189">obs?</label><label kind="assignment" x="584" y="204">cnto = (cnto &lt; CNTMAX) ? cnto + 1 : 0</label></transition><transition action=""><source ref="id5"/><target ref="id8"/><label kind="assignment" x="312" y="120">rdown=1</label><nail x="376" y="104"/></transition><transition action=""><source ref="id5"/><target ref="id8"/><label kind="assignment" x="320" y="80">rdown=0</label></transition><transition action=""><source ref="id6"/><target ref="id5"/><label kind="assignment" x="456" y="200">rup=1</label><nail x="456" y="216"/></transition><transition action=""><source ref="id6"/><target ref="id5"/><label kind="assignment" x="440" y="184">rup=0</label></transition><transition action=""><source ref="id9"/><target ref="id6"/><label kind="assignment" x="420" y="144">rright=0</label><nail x="456" y="152"/></transition><transition action=""><source ref="id9"/><target ref="id6"/><label kind="assignment" x="420" y="144">rright=1</label></transition><transition controllable="false" action=""><source ref="id7"/><target ref="id12"/><label kind="assignment" x="-112" y="8">update()</label></transition><transition action=""><source ref="id10"/><target ref="id9"/><label kind="assignment" x="520" y="136">rleft=0</label><nail x="528" y="160"/></transition><transition action=""><source ref="id10"/><target ref="id9"/><label kind="assignment" x="504" y="104">rleft=1</label><nail x="536" y="72"/></transition><transition controllable="false" action=""><source ref="id11"/><target ref="id10"/><label kind="synchronisation" x="592" y="101">robot?</label><label kind="assignment" x="592" y="144">cntr = (cntr &lt; CNTMAX) ? cntr + 1 : 0</label><nail x="648" y="120"/></transition></template><template><name>Obs</name><declaration>clock x;</declaration><location id="id13" x="-344" y="-56"><label kind="invariant" x="-354" y="-41">x&lt;=2</label></location><init ref="id13"/><transition controllable="false" action=""><source ref="id13"/><target ref="id13"/><label kind="guard" x="-424" y="-192">x&lt;=2 &amp;&amp; x&gt;=0</label><label kind="synchronisation" x="-404" y="-71">obs!</label><label kind="assignment" x="-404" y="-56">x=0</label><nail x="-416" y="-160"/><nail x="-328" y="-168"/></transition></template><template><name>Robot</name><declaration>clock x;</declaration><location id="id14" x="-552" y="-200"><label kind="invariant" x="-562" y="-185">x&lt;=8</label></location><init ref="id14"/><transition controllable="false" action=""><source ref="id14"/><target ref="id14"/><label kind="guard" x="-612" y="-230">x&gt;=5 &amp;&amp; x&lt;=8</label><label kind="synchronisation" x="-612" y="-215">robot!</label><label kind="assignment" x="-612" y="-200">x=0</label><nail x="-600" y="-104"/><nail x="-488" y="-120"/></transition></template><system>// Place template instantiations here.
+Process = Template();
+
+// List one or more processes to be composed into a system.
+system Process,Obs,Robot;</system></nta>

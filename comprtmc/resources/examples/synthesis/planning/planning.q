@@ -2,11 +2,5 @@
 
 /*
 
-E<>error
-*/
-//NO_QUERY
-
-/*
-
 */
 control: A[]!error

@@ -1,4 +1,4 @@
-`define k 2
+`define k 3
 `define excl_exp (_rt_robot + _rt_obs1  <= 1)
 
 module planning(input clk, 
@@ -15,10 +15,10 @@ module planning(input clk,
   reg [3:0] obs1_x;
   reg [3:0] obs1_y;
 
-  wire maintenance;
-  wire shock;
-  counter c0(clk, _rt_obs1, 3'b010, maintenance);
-  counter c1(clk, _rt_obs1, 3'b111, shock);
+  wire maintenance =0;
+  wire shock = 0;
+  // counter c0(clk, _rt_obs1, 3'b010, maintenance);
+  // counter c1(clk, _rt_obs1, 3'b100, shock);
 
   wire coll1;
   wire cur_excl;
@@ -72,10 +72,14 @@ module planning(input clk,
           robot_y <= robot_y - 1;
         else if (controllable_up & robot_y < 3*`k-1)
           robot_y <= robot_y + 1;
-        else if (controllable_left & robot_x > 0 & (robot_x != `k | robot_y >= 2*`k) & (robot_x != 2*`k | robot_y < 2*`k))
+        else if (controllable_left & robot_x > 0 )
           robot_x <= robot_x - 1;
-        else if (controllable_right & robot_x < 3*`k-1 & (robot_x != `k-1 | robot_y >= 2*`k) & (robot_x != 2*`k-1 | robot_y < 2*`k))
+        else if (controllable_right & robot_x < 3*`k-1 )
           robot_x <= robot_x + 1;
+        // else if (controllable_left & robot_x > 0 & (robot_x != `k | robot_y >= 2*`k) & (robot_x != 2*`k | robot_y < 2*`k))
+        //   robot_x <= robot_x - 1;
+        // else if (controllable_right & robot_x < 3*`k-1 & (robot_x != `k-1 | robot_y >= 2*`k) & (robot_x != 2*`k-1 | robot_y < 2*`k))
+        //   robot_x <= robot_x + 1;
       end
     end
   end
@@ -88,7 +92,7 @@ module counter(input clk, input update, input[0:2] bit, output outstate);
     assign outstate = state[bit];
     always @(posedge clk)begin
         if (update) begin
-            if (state < 32)
+            if (state < 128)
                 state <= state + 1;
             else 
                 state <= 0;
