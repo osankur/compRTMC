@@ -1,0 +1,3059 @@
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 508 CASE has no explicit default condition
+at line 508 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- invariant sched.state != sink  is false
+-- as demonstrated by the following execution sequence
+Trace Description: IC3 smt counterexample 
+Trace Type: Counterexample 
+  -> State: 1.1 <-
+    sched.y0 = 0.0
+    sched.y1 = 0.0
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    is_ready0 = TRUE
+    is_ready1 = TRUE
+    is_ready2 = TRUE
+    err = FALSE
+    nondet = FALSE
+    sched.state = wait
+    obsx_0_0_6 = FALSE
+    obsx_1 = TRUE
+    obsx_2 = TRUE
+    obsy_0_0_6 = FALSE
+    obsy_1 = TRUE
+    obsy_2 = TRUE
+    robx_0_0_7 = FALSE
+    robx_1 = FALSE
+    robx_2 = FALSE
+    roby_0_0_7 = FALSE
+    roby_1 = FALSE
+    roby_2 = FALSE
+    glitches_0_0_1 = FALSE
+    controllable_movx_0_0_2 = FALSE
+    controllable_movx_1 = FALSE
+    controllable_movy_0_0_2 = FALSE
+    controllable_movy_1 = FALSE
+    controllable_obsmove = TRUE
+    IsNotFirstRound = FALSE
+    prev_obsx_0_0_6 = FALSE
+    prev_obsx_1 = FALSE
+    prev_obsx_2 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    prev_obsy_1 = FALSE
+    prev_obsy_2 = FALSE
+    prev_robx_0_0_7 = FALSE
+    prev_robx_1 = FALSE
+    prev_robx_2 = FALSE
+    prev_roby_0_0_7 = FALSE
+    prev_roby_1 = FALSE
+    prev_roby_2 = FALSE
+    prev_glitches_0_0_1 = FALSE
+    prev_movx_0_0_2 = FALSE
+    prev_movx_1 = FALSE
+    prev_movy_0_0_2 = FALSE
+    prev_movy_1 = FALSE
+    prev_obsmove = FALSE
+    AssumptionsAlreadyViolated = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = FALSE
+    a692 = FALSE
+    a690 = FALSE
+    a688 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a682 = TRUE
+    a680 = FALSE
+    a678 = TRUE
+    a676 = FALSE
+    a674 = FALSE
+    a672 = TRUE
+    a670 = FALSE
+    a668 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a660 = FALSE
+    a658 = TRUE
+    a656 = TRUE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a646 = FALSE
+    a644 = FALSE
+    a642 = FALSE
+    a640 = FALSE
+    a638 = TRUE
+    a636 = FALSE
+    a634 = TRUE
+    a632 = FALSE
+    a630 = FALSE
+    a628 = TRUE
+    a626 = FALSE
+    a624 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a616 = FALSE
+    a614 = TRUE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a604 = FALSE
+    a602 = FALSE
+    a600 = FALSE
+    a598 = FALSE
+    a596 = FALSE
+    a594 = TRUE
+    a592 = FALSE
+    a590 = FALSE
+    a588 = FALSE
+    a586 = TRUE
+    a584 = TRUE
+    a582 = FALSE
+    a580 = FALSE
+    a578 = FALSE
+    a576 = TRUE
+    a574 = FALSE
+    a572 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = FALSE
+    a562 = FALSE
+    a560 = TRUE
+    a558 = TRUE
+    a556 = TRUE
+    a554 = FALSE
+    a552 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = FALSE
+    a544 = FALSE
+    a542 = TRUE
+    a540 = TRUE
+    a538 = TRUE
+    a536 = FALSE
+    a534 = FALSE
+    a532 = FALSE
+    a530 = FALSE
+    a528 = FALSE
+    a526 = TRUE
+    a524 = FALSE
+    a522 = FALSE
+    a520 = TRUE
+    a518 = FALSE
+    a516 = TRUE
+    a514 = FALSE
+    a512 = TRUE
+    a510 = FALSE
+    a508 = FALSE
+    a506 = TRUE
+    a504 = FALSE
+    a502 = TRUE
+    a500 = FALSE
+    a498 = TRUE
+    a496 = FALSE
+    a494 = TRUE
+    a492 = FALSE
+    a490 = TRUE
+    a488 = FALSE
+    a486 = TRUE
+    a484 = FALSE
+    a482 = TRUE
+    a480 = FALSE
+    a478 = FALSE
+    a476 = FALSE
+    a474 = FALSE
+    a472 = TRUE
+    a470 = FALSE
+    a468 = FALSE
+    a466 = FALSE
+    a464 = FALSE
+    a462 = TRUE
+    a460 = FALSE
+    a458 = FALSE
+    a456 = FALSE
+    a454 = FALSE
+    a452 = TRUE
+    a450 = FALSE
+    a448 = FALSE
+    a446 = TRUE
+    a444 = TRUE
+    a442 = TRUE
+    a440 = TRUE
+    a438 = TRUE
+    a436 = FALSE
+    a434 = FALSE
+    a432 = TRUE
+    a430 = FALSE
+    a428 = TRUE
+    a426 = FALSE
+    a424 = TRUE
+    a422 = FALSE
+    a420 = FALSE
+    a418 = TRUE
+    a416 = FALSE
+    a414 = FALSE
+    a412 = TRUE
+    a410 = FALSE
+    a408 = TRUE
+    a406 = FALSE
+    a404 = TRUE
+    a402 = FALSE
+    a400 = TRUE
+    a398 = FALSE
+    a396 = TRUE
+    a394 = FALSE
+    a392 = FALSE
+    a390 = FALSE
+    a388 = FALSE
+    a386 = TRUE
+    a384 = FALSE
+    a382 = FALSE
+    a380 = FALSE
+    a378 = FALSE
+    a376 = TRUE
+    a374 = FALSE
+    a372 = FALSE
+    a370 = FALSE
+    a368 = FALSE
+    a366 = TRUE
+    a364 = FALSE
+    a362 = FALSE
+    a360 = TRUE
+    a358 = TRUE
+    a356 = TRUE
+    a354 = TRUE
+    a352 = FALSE
+    a350 = FALSE
+    a348 = FALSE
+    a346 = TRUE
+    a344 = FALSE
+    a342 = TRUE
+    a340 = FALSE
+    a338 = FALSE
+    a336 = FALSE
+    a334 = FALSE
+    a332 = FALSE
+    a330 = FALSE
+    a328 = TRUE
+    a326 = FALSE
+    a324 = FALSE
+    a322 = FALSE
+    a320 = FALSE
+    a318 = FALSE
+    a316 = TRUE
+    a314 = FALSE
+    a312 = TRUE
+    a310 = FALSE
+    a308 = FALSE
+    a306 = FALSE
+    a304 = FALSE
+    a302 = FALSE
+    a300 = FALSE
+    a298 = TRUE
+    a296 = FALSE
+    a294 = FALSE
+    a292 = FALSE
+    a290 = FALSE
+    a288 = FALSE
+    a286 = TRUE
+    a284 = FALSE
+    a282 = FALSE
+    a280 = FALSE
+    a278 = FALSE
+    a276 = TRUE
+    a274 = FALSE
+    a272 = FALSE
+    a270 = TRUE
+    a268 = FALSE
+    a266 = FALSE
+    a264 = FALSE
+    a262 = TRUE
+    a260 = TRUE
+    a258 = FALSE
+    a256 = FALSE
+    a254 = FALSE
+    a252 = FALSE
+    a250 = TRUE
+    a248 = FALSE
+    a246 = FALSE
+    a244 = FALSE
+    a242 = FALSE
+    a240 = TRUE
+    a238 = FALSE
+    a236 = FALSE
+    a234 = TRUE
+    a232 = FALSE
+    a230 = FALSE
+    a228 = FALSE
+    a226 = TRUE
+    a224 = TRUE
+    a222 = FALSE
+    a220 = FALSE
+    a218 = FALSE
+    a216 = FALSE
+    a214 = TRUE
+    a212 = TRUE
+    a210 = FALSE
+    a208 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a200 = FALSE
+    a198 = FALSE
+    a196 = FALSE
+    a194 = FALSE
+    a192 = TRUE
+    a190 = TRUE
+    a188 = FALSE
+    a186 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a178 = FALSE
+    a176 = FALSE
+    a174 = TRUE
+    a172 = TRUE
+    a170 = FALSE
+    a168 = FALSE
+    a166 = FALSE
+    a164 = TRUE
+    a162 = TRUE
+    a160 = TRUE
+    a158 = FALSE
+    a156 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a150 = FALSE
+    a148 = TRUE
+    a146 = FALSE
+    a144 = TRUE
+    a142 = TRUE
+    a140 = FALSE
+    a138 = FALSE
+    a136 = FALSE
+    a134 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a128 = FALSE
+    a126 = FALSE
+    a124 = FALSE
+    a122 = FALSE
+    a120 = FALSE
+    a118 = TRUE
+    a116 = FALSE
+    a114 = TRUE
+    a112 = FALSE
+    a110 = TRUE
+    a108 = FALSE
+    a106 = FALSE
+    a104 = TRUE
+    a102 = TRUE
+    a100 = TRUE
+    a98 = TRUE
+    a96 = TRUE
+    a94 = TRUE
+    a92 = TRUE
+    a90 = TRUE
+    a88 = TRUE
+    a86 = TRUE
+    a84 = TRUE
+    a82 = TRUE
+    a80 = FALSE
+    a78 = FALSE
+    error = FALSE
+    _rt_release = FALSE
+    _rt_idle = FALSE
+    _rt_sched2 = FALSE
+    _rt_sched1 = FALSE
+    _rt_sched0 = FALSE
+    _rt_ready2 = FALSE
+    _rt_ready1 = FALSE
+    _rt_ready0 = FALSE
+    _rt_miss = FALSE
+    sched.interTimeElapsed2 = FALSE
+    sched.interTimeElapsed1 = FALSE
+    sched.interTimeElapsed0 = FALSE
+    sched.sched2 = FALSE
+    sched.sched1 = FALSE
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.2 <-
+    cmd = cmd_release
+    sched.state = p0
+    IsNotFirstRound = TRUE
+    prev_obsx_1 = TRUE
+    prev_obsx_2 = TRUE
+    prev_obsy_1 = TRUE
+    prev_obsy_2 = TRUE
+    prev_obsmove = TRUE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a682 = FALSE
+    a678 = FALSE
+    a676 = TRUE
+    a674 = TRUE
+    a672 = FALSE
+    a668 = FALSE
+    a666 = FALSE
+    a664 = TRUE
+    a662 = FALSE
+    a658 = FALSE
+    a656 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a644 = TRUE
+    a640 = TRUE
+    a638 = FALSE
+    a634 = FALSE
+    a632 = TRUE
+    a630 = TRUE
+    a628 = FALSE
+    a624 = FALSE
+    a622 = FALSE
+    a620 = TRUE
+    a618 = FALSE
+    a614 = FALSE
+    a612 = TRUE
+    a610 = FALSE
+    a602 = TRUE
+    a598 = TRUE
+    a596 = TRUE
+    a594 = FALSE
+    a580 = TRUE
+    a578 = TRUE
+    a576 = FALSE
+    a572 = FALSE
+    a570 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a558 = FALSE
+    a556 = FALSE
+    a554 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a540 = FALSE
+    a538 = FALSE
+    a536 = TRUE
+    a532 = TRUE
+    a528 = TRUE
+    a352 = TRUE
+    a322 = TRUE
+    a292 = TRUE
+    a256 = TRUE
+    a220 = TRUE
+    a216 = TRUE
+    a214 = FALSE
+    a198 = TRUE
+    a194 = TRUE
+    a192 = FALSE
+    a176 = TRUE
+    a174 = FALSE
+    a166 = TRUE
+    a164 = FALSE
+    a162 = FALSE
+    a160 = FALSE
+    a158 = TRUE
+    a150 = TRUE
+    a148 = FALSE
+    a144 = FALSE
+    a136 = TRUE
+    a134 = FALSE
+    a132 = FALSE
+    a130 = FALSE
+    a128 = TRUE
+    a120 = TRUE
+    a118 = FALSE
+    sched.sched0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.3 <-
+    cmd = cmd_miss
+    is_ready0 = FALSE
+    sched.state = idle
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.4 <-
+    cmd = check_ready0
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.5 <-
+    cmd = check_ready1
+    sched.state = p1
+    _rt_ready1 = TRUE
+    _rt_ready0 = FALSE
+    sched.sched1 = TRUE
+  -- [ time elapse: time = 0.0; delta = 1.0 ] --
+  -> State: 1.6 <-
+    sched.y0 = 1.0
+    sched.y1 = 1.0
+    sched.y2 = 1.0
+    sched.x = 1.0
+  -- [ discrete transition ] --
+  -> State: 1.7 <-
+    sched.y1 = 0.0
+    cmd = check_ready2
+    is_ready1 = FALSE
+    sched.state = wait
+    _rt_ready2 = TRUE
+    _rt_ready1 = FALSE
+    sched.sched1 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.8 <-
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    nondet = FALSE
+    sched.state = p2
+    _rt_ready2 = FALSE
+    sched.sched2 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.9 <-
+    cmd = cmd_release
+    is_ready2 = FALSE
+    sched.state = idle
+    sched.sched2 = FALSE
+  -- [ time elapse: time = 1.0; delta = 1.0 ] --
+  -> State: 1.10 <-
+    sched.y0 = 2.0
+    sched.y1 = 1.0
+    sched.y2 = 1.0
+    sched.x = 1.0
+  -- [ discrete transition ] --
+  -> State: 1.11 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.12 <-
+    cmd = check_ready0
+  -- [ discrete transition ] --
+  -> State: 1.13 <-
+    cmd = check_ready1
+    nondet = TRUE
+    _rt_ready1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.14 <-
+    sched.y1 = 0.0
+    cmd = check_ready2
+    nondet = FALSE
+    _rt_ready1 = FALSE
+  -- [ time elapse: time = 2.0; delta = 4.0 ] --
+  -> State: 1.15 <-
+    sched.y0 = 6.0
+    sched.y1 = 4.0
+    sched.y2 = 5.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.16 <-
+    cmd = cmd_sched
+    sched.state = wait
+    _rt_idle = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.17 <-
+    sched.x = 0.0
+    cmd = cmd_release
+    sched.state = idle
+    _rt_idle = FALSE
+  -- [ time elapse: time = 6.0; delta = 5.0 ] --
+  -> State: 1.18 <-
+    sched.y0 = 11.0
+    sched.y1 = 9.0
+    sched.y2 = 10.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.19 <-
+    cmd = cmd_miss
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.20 <-
+    sched.x = 0.0
+    cmd = check_ready0
+    sched.state = idle
+  -- [ time elapse: time = 11.0; delta = 5.0 ] --
+  -> State: 1.21 <-
+    sched.y0 = 16.0
+    sched.y1 = 14.0
+    sched.y2 = 15.0
+    sched.x = 5.0
+    sched.interTimeElapsed2 = TRUE
+    sched.interTimeElapsed1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.22 <-
+    cmd = check_ready1
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.23 <-
+    sched.y1 = 0.0
+    sched.x = 0.0
+    cmd = check_ready2
+    is_ready1 = TRUE
+    sched.state = idle
+    _rt_ready2 = TRUE
+    _rt_ready1 = FALSE
+    sched.interTimeElapsed1 = FALSE
+  -- [ time elapse: time = 16.0; delta = f'1/4 ] --
+  -> State: 1.24 <-
+    sched.y0 = f'65/4
+    sched.y1 = f'1/4
+    sched.y2 = f'61/4
+    sched.x = f'1/4
+  -- [ time elapse: time = f'65/4; delta = f'7/4 ] --
+  -> State: 1.25 <-
+    sched.y0 = 18.0
+    sched.y1 = 2.0
+    sched.y2 = 17.0
+    sched.x = 2.0
+    sched.interTimeElapsed0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.26 <-
+    sched.y2 = 0.0
+    cmd = cmd_sched
+    is_ready2 = TRUE
+    nondet = FALSE
+    _rt_ready2 = FALSE
+    sched.interTimeElapsed2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.27 <-
+    cmd = cmd_release
+  -- [ discrete transition ] --
+  -> State: 1.28 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.29 <-
+    cmd = check_ready0
+    nondet = TRUE
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.30 <-
+    sched.y0 = 0.0
+    cmd = check_ready1
+    is_ready0 = TRUE
+    nondet = FALSE
+    obsx_0_0_6 = TRUE
+    obsx_1 = FALSE
+    obsy_0_0_6 = TRUE
+    obsy_1 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a560 = FALSE
+    a558 = TRUE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a542 = FALSE
+    a540 = TRUE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a150 = FALSE
+    a120 = FALSE
+    a110 = FALSE
+    a104 = FALSE
+    a102 = FALSE
+    a100 = FALSE
+    a98 = FALSE
+    a96 = FALSE
+    a94 = FALSE
+    a92 = FALSE
+    _rt_ready0 = FALSE
+    sched.interTimeElapsed0 = FALSE
+  -- [ time elapse: time = 18.0; delta = 3.0 ] --
+  -> State: 1.31 <-
+    sched.y0 = 3.0
+    sched.y1 = 5.0
+    sched.y2 = 3.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.32 <-
+    cmd = check_ready2
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a674 = FALSE
+    a672 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = FALSE
+    a630 = FALSE
+    a628 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = FALSE
+    a570 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a158 = FALSE
+    a156 = TRUE
+    a128 = FALSE
+    a126 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.33 <-
+    cmd = cmd_sched
+    sched.state = wait
+    obsy_0_0_6 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.34 <-
+    sched.x = 0.0
+    cmd = cmd_release
+    sched.state = p0
+    obsx_0_0_6 = FALSE
+    obsy_0_0_6 = TRUE
+    obsy_1 = TRUE
+    obsy_2 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a558 = TRUE
+    a556 = TRUE
+    a554 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a162 = TRUE
+    a160 = TRUE
+    a156 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a124 = TRUE
+    a122 = TRUE
+    a78 = TRUE
+    sched.sched0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.35 <-
+    cmd = cmd_miss
+    is_ready0 = FALSE
+    sched.state = idle
+    obsx_0_0_6 = TRUE
+    obsx_1 = TRUE
+    obsx_2 = FALSE
+    prev_obsx_0_0_6 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = TRUE
+    prev_obsy_2 = FALSE
+    a662 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = TRUE
+    a640 = FALSE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a556 = FALSE
+    a552 = TRUE
+    a540 = TRUE
+    a538 = TRUE
+    a536 = FALSE
+    a208 = TRUE
+    a204 = FALSE
+    a202 = FALSE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a150 = TRUE
+    a146 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a126 = FALSE
+    a124 = FALSE
+    a122 = FALSE
+    a106 = TRUE
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.36 <-
+    cmd = check_ready0
+    obsy_0_0_6 = FALSE
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = TRUE
+    prev_obsx_2 = FALSE
+    a618 = FALSE
+    a612 = TRUE
+    a610 = FALSE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = TRUE
+    a598 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a538 = FALSE
+    a534 = TRUE
+    a216 = FALSE
+    a214 = TRUE
+    a212 = FALSE
+    a208 = FALSE
+    a206 = FALSE
+    a200 = TRUE
+    a186 = TRUE
+    a182 = FALSE
+    a180 = FALSE
+    a152 = TRUE
+    a120 = TRUE
+    a116 = TRUE
+    a98 = TRUE
+    a78 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.37 <-
+    cmd = check_ready1
+    obsy_0_0_6 = TRUE
+    obsy_1 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    a672 = FALSE
+    a666 = FALSE
+    a664 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a558 = TRUE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a172 = FALSE
+    a170 = TRUE
+    a166 = FALSE
+    a162 = FALSE
+    a160 = FALSE
+    a158 = TRUE
+    a152 = FALSE
+    a150 = FALSE
+    a148 = TRUE
+    a146 = FALSE
+    a98 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.38 <-
+    cmd = check_ready2
+    nondet = TRUE
+    obsx_0_0_6 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = FALSE
+    a678 = TRUE
+    a676 = FALSE
+    a672 = TRUE
+    a668 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = FALSE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a194 = FALSE
+    a192 = TRUE
+    a190 = FALSE
+    a186 = FALSE
+    a184 = FALSE
+    a178 = TRUE
+    a158 = FALSE
+    a156 = TRUE
+    a122 = TRUE
+    a106 = FALSE
+    a92 = TRUE
+    _rt_ready2 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.39 <-
+    sched.y2 = 0.0
+    cmd = cmd_sched
+    nondet = FALSE
+    obsx_0_0_6 = TRUE
+    obsx_1 = FALSE
+    prev_obsx_0_0_6 = FALSE
+    a628 = FALSE
+    a622 = FALSE
+    a620 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a540 = TRUE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a142 = FALSE
+    a140 = TRUE
+    a136 = FALSE
+    a132 = FALSE
+    a130 = FALSE
+    a128 = TRUE
+    a122 = FALSE
+    a120 = FALSE
+    a118 = TRUE
+    a116 = FALSE
+    a92 = FALSE
+    _rt_ready2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.40 <-
+    cmd = cmd_release
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a634 = TRUE
+    a632 = FALSE
+    a628 = TRUE
+    a624 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = FALSE
+    a570 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a128 = FALSE
+    a126 = TRUE
+  -- [ time elapse: time = 21.0; delta = f'1/4 ] --
+  -> State: 1.41 <-
+    sched.y0 = f'13/4
+    sched.y1 = f'21/4
+    sched.y2 = f'1/4
+    sched.x = f'1/4
+  -- [ time elapse: time = f'85/4; delta = f'15/4 ] --
+  -> State: 1.42 <-
+    sched.y0 = 7.0
+    sched.y1 = 9.0
+    sched.y2 = 4.0
+    sched.x = 4.0
+  -- [ discrete transition ] --
+  -> State: 1.43 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.44 <-
+    cmd = check_ready0
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.45 <-
+    sched.x = 0.0
+    cmd = check_ready1
+    sched.state = p1
+    sched.sched1 = TRUE
+  -- [ time elapse: time = 25.0; delta = f'1/4 ] --
+  -> State: 1.46 <-
+    sched.y0 = f'29/4
+    sched.y1 = f'37/4
+    sched.y2 = f'17/4
+    sched.x = f'1/4
+  -- [ discrete transition ] --
+  -> State: 1.47 <-
+    cmd = check_ready2
+    is_ready1 = FALSE
+    sched.state = idle
+    sched.sched1 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.48 <-
+    cmd = cmd_sched
+  -- [ discrete transition ] --
+  -> State: 1.49 <-
+    cmd = cmd_release
+  -- [ time elapse: time = f'101/4; delta = f'19/4 ] --
+  -> State: 1.50 <-
+    sched.y0 = 12.0
+    sched.y1 = 14.0
+    sched.y2 = 9.0
+    sched.x = 5.0
+    sched.interTimeElapsed1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.51 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.52 <-
+    cmd = check_ready0
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.53 <-
+    sched.x = 0.0
+    cmd = check_ready1
+    sched.state = p2
+    sched.sched2 = TRUE
+  -- [ time elapse: time = 30.0; delta = 2.0 ] --
+  -> State: 1.54 <-
+    sched.y0 = 14.0
+    sched.y1 = 16.0
+    sched.y2 = 11.0
+    sched.x = 2.0
+  -- [ time elapse: time = 32.0; delta = 4.0 ] --
+  -> State: 1.55 <-
+    sched.y0 = 18.0
+    sched.y1 = 20.0
+    sched.y2 = 15.0
+    sched.x = 6.0
+    sched.interTimeElapsed2 = TRUE
+    sched.interTimeElapsed0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.56 <-
+    cmd = check_ready2
+    is_ready2 = FALSE
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready2 = TRUE
+    sched.sched2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.57 <-
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    is_ready2 = TRUE
+    nondet = FALSE
+    sched.state = idle
+    _rt_ready2 = FALSE
+    sched.interTimeElapsed2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.58 <-
+    cmd = cmd_release
+  -- [ discrete transition ] --
+  -> State: 1.59 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.60 <-
+    cmd = check_ready0
+    nondet = TRUE
+    obsy_0_0_6 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.61 <-
+    sched.y0 = 0.0
+    cmd = check_ready1
+    is_ready0 = TRUE
+    obsx_0_0_6 = FALSE
+    controllable_obsmove = FALSE
+    prev_obsy_0_0_6 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a656 = TRUE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a592 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a560 = TRUE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a124 = TRUE
+    a122 = TRUE
+    _rt_ready0 = FALSE
+    sched.interTimeElapsed0 = FALSE
+  -- [ time elapse: time = 36.0; delta = 3.0 ] --
+  -> State: 1.62 <-
+    sched.y0 = 3.0
+    sched.y1 = 23.0
+    sched.y2 = 3.0
+    sched.x = 3.0
+  -- [ discrete transition ] --
+  -> State: 1.63 <-
+    cmd = check_ready2
+    sched.state = wait
+    prev_obsx_0_0_6 = FALSE
+    prev_obsmove = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a688 = TRUE
+    a686 = FALSE
+    a682 = TRUE
+    a658 = TRUE
+    a638 = TRUE
+    a614 = TRUE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a570 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a542 = TRUE
+    a124 = FALSE
+    a122 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.64 <-
+    sched.x = 0.0
+    cmd = cmd_sched
+    sched.state = p0
+    obsx_2 = TRUE
+    obsy_0_0_6 = TRUE
+    controllable_obsmove = TRUE
+    o0 = FALSE
+    a698 = FALSE
+    a688 = FALSE
+    a684 = TRUE
+    a592 = FALSE
+    a586 = FALSE
+    a584 = FALSE
+    a582 = TRUE
+    a580 = FALSE
+    a578 = FALSE
+    a576 = TRUE
+    a572 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a560 = FALSE
+    a550 = FALSE
+    a538 = TRUE
+    a534 = FALSE
+    a532 = FALSE
+    a528 = FALSE
+    a352 = FALSE
+    a322 = FALSE
+    a292 = FALSE
+    a256 = FALSE
+    a220 = FALSE
+    a204 = TRUE
+    a202 = TRUE
+    a198 = FALSE
+    a190 = TRUE
+    a178 = FALSE
+    a176 = FALSE
+    a144 = TRUE
+    a142 = TRUE
+    a140 = FALSE
+    _rt_sched0 = TRUE
+    sched.sched0 = TRUE
+  -- [ time elapse: time = 39.0; delta = 2.0 ] --
+  -> State: 1.65 <-
+    sched.y0 = 5.0
+    sched.y1 = 25.0
+    sched.y2 = 5.0
+    sched.x = 2.0
+  -- [ time elapse: time = 41.0; delta = f'1/4 ] --
+  -> State: 1.66 <-
+    sched.y0 = f'21/4
+    sched.y1 = f'101/4
+    sched.y2 = f'21/4
+    sched.x = f'9/4
+  -- [ discrete transition ] --
+  -> State: 1.67 <-
+    cmd = cmd_release
+    is_ready0 = FALSE
+    nondet = FALSE
+    sched.state = sink
+    obsx_0_0_6 = TRUE
+    obsx_1 = TRUE
+    obsx_2 = FALSE
+    obsy_0_0_6 = FALSE
+    obsy_1 = TRUE
+    obsy_2 = TRUE
+    robx_0_0_7 = TRUE
+    robx_1 = TRUE
+    robx_2 = TRUE
+    roby_0_0_7 = TRUE
+    roby_1 = TRUE
+    roby_2 = TRUE
+    glitches_0_0_1 = TRUE
+    controllable_movx_0_0_2 = TRUE
+    controllable_movx_1 = TRUE
+    controllable_movy_0_0_2 = TRUE
+    controllable_movy_1 = TRUE
+    controllable_obsmove = FALSE
+    prev_obsx_2 = TRUE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsmove = TRUE
+    AssumptionsAlreadyViolated = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a682 = FALSE
+    a658 = FALSE
+    a656 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a650 = TRUE
+    a648 = TRUE
+    a638 = FALSE
+    a634 = FALSE
+    a632 = TRUE
+    a624 = FALSE
+    a614 = FALSE
+    a598 = TRUE
+    a596 = FALSE
+    a590 = TRUE
+    a588 = TRUE
+    a576 = FALSE
+    a574 = TRUE
+    a572 = FALSE
+    a558 = TRUE
+    a556 = TRUE
+    a552 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a542 = FALSE
+    a540 = TRUE
+    a526 = FALSE
+    a502 = FALSE
+    a500 = TRUE
+    a494 = FALSE
+    a492 = TRUE
+    a490 = FALSE
+    a488 = TRUE
+    a486 = FALSE
+    a460 = TRUE
+    a444 = FALSE
+    a442 = FALSE
+    a438 = FALSE
+    a414 = TRUE
+    a408 = FALSE
+    a406 = TRUE
+    a404 = FALSE
+    a402 = TRUE
+    a400 = FALSE
+    a374 = TRUE
+    a358 = FALSE
+    a356 = FALSE
+    a328 = FALSE
+    a326 = TRUE
+    a324 = TRUE
+    a298 = FALSE
+    a296 = TRUE
+    a294 = TRUE
+    a290 = TRUE
+    a288 = TRUE
+    a286 = FALSE
+    a280 = TRUE
+    a278 = TRUE
+    a276 = FALSE
+    a270 = FALSE
+    a268 = TRUE
+    a254 = TRUE
+    a252 = TRUE
+    a250 = FALSE
+    a244 = TRUE
+    a242 = TRUE
+    a240 = FALSE
+    a234 = FALSE
+    a232 = TRUE
+    a212 = TRUE
+    a204 = FALSE
+    a202 = FALSE
+    a200 = FALSE
+    a194 = TRUE
+    a192 = FALSE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a174 = TRUE
+    a172 = TRUE
+    a170 = FALSE
+    a160 = TRUE
+    a156 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+    a144 = FALSE
+    a136 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a126 = FALSE
+    a118 = FALSE
+    a106 = TRUE
+    a100 = TRUE
+    a98 = TRUE
+    a90 = FALSE
+    a88 = FALSE
+    a86 = FALSE
+    a84 = FALSE
+    a82 = FALSE
+    _rt_sched0 = FALSE
+    sched.sched0 = FALSE
+elapse: 11.47 seconds, total: 11.47 seconds
+prio_sched_2a.tsmv
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 408 CASE has no explicit default condition
+at line 408 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- no proof or counterexample found with bound 11
+-- no proof or counterexample found with bound 12
+-- no proof or counterexample found with bound 13
+-- no proof or counterexample found with bound 14
+-- no proof or counterexample found with bound 15
+-- no proof or counterexample found with bound 16
+-- invariant sched.state != sink  is true
+elapse: 6.72 seconds, total: 6.72 seconds
+prio_sched_2b.tsmv
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 489 CASE has no explicit default condition
+at line 489 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- no proof or counterexample found with bound 11
+-- no proof or counterexample found with bound 12
+-- invariant sched.state != sink  is true
+elapse: 1.95 seconds, total: 1.95 seconds
+prio_sched_3c.tsmv
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 508 CASE has no explicit default condition
+at line 508 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- no proof or counterexample found with bound 11
+-- no proof or counterexample found with bound 12
+-- no proof or counterexample found with bound 13
+-- no proof or counterexample found with bound 14
+-- no proof or counterexample found with bound 15
+-- no proof or counterexample found with bound 16
+-- no proof or counterexample found with bound 17
+-- no proof or counterexample found with bound 18
+-- no proof or counterexample found with bound 19
+-- invariant sched.state != sink  is true
+elapse: 5.57 seconds, total: 5.57 seconds
+prio_sched_3d.tsmv
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 508 CASE has no explicit default condition
+at line 508 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- no proof or counterexample found with bound 11
+-- no proof or counterexample found with bound 12
+-- no proof or counterexample found with bound 13
+-- no proof or counterexample found with bound 14
+-- no proof or counterexample found with bound 15
+-- no proof or counterexample found with bound 16
+-- no proof or counterexample found with bound 17
+-- invariant sched.state != sink  is true
+elapse: 7.71 seconds, total: 7.71 seconds
+prio_sched_3e.tsmv
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 17:48:12 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > at line 508 CASE has no explicit default condition
+at line 508 CASE has no explicit default condition
+-- no proof or counterexample found with bound 0
+-- no proof or counterexample found with bound 1
+-- no proof or counterexample found with bound 2
+-- no proof or counterexample found with bound 3
+-- no proof or counterexample found with bound 4
+-- no proof or counterexample found with bound 5
+-- no proof or counterexample found with bound 6
+-- no proof or counterexample found with bound 7
+-- no proof or counterexample found with bound 8
+-- no proof or counterexample found with bound 9
+-- no proof or counterexample found with bound 10
+-- invariant sched.state != sink  is false
+-- as demonstrated by the following execution sequence
+Trace Description: IC3 smt counterexample 
+Trace Type: Counterexample 
+  -> State: 1.1 <-
+    sched.y0 = 0.0
+    sched.y1 = 0.0
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    is_ready0 = TRUE
+    is_ready1 = TRUE
+    is_ready2 = TRUE
+    err = FALSE
+    nondet = FALSE
+    sched.state = wait
+    obsx_0_0_6 = FALSE
+    obsx_1 = TRUE
+    obsx_2 = TRUE
+    obsy_0_0_6 = FALSE
+    obsy_1 = TRUE
+    obsy_2 = TRUE
+    robx_0_0_7 = FALSE
+    robx_1 = FALSE
+    robx_2 = FALSE
+    roby_0_0_7 = FALSE
+    roby_1 = FALSE
+    roby_2 = FALSE
+    glitches_0_0_1 = FALSE
+    controllable_movx_0_0_2 = FALSE
+    controllable_movx_1 = FALSE
+    controllable_movy_0_0_2 = FALSE
+    controllable_movy_1 = FALSE
+    controllable_obsmove = TRUE
+    IsNotFirstRound = FALSE
+    prev_obsx_0_0_6 = FALSE
+    prev_obsx_1 = FALSE
+    prev_obsx_2 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    prev_obsy_1 = FALSE
+    prev_obsy_2 = FALSE
+    prev_robx_0_0_7 = FALSE
+    prev_robx_1 = FALSE
+    prev_robx_2 = FALSE
+    prev_roby_0_0_7 = FALSE
+    prev_roby_1 = FALSE
+    prev_roby_2 = FALSE
+    prev_glitches_0_0_1 = FALSE
+    prev_movx_0_0_2 = FALSE
+    prev_movx_1 = FALSE
+    prev_movy_0_0_2 = FALSE
+    prev_movy_1 = FALSE
+    prev_obsmove = FALSE
+    AssumptionsAlreadyViolated = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = FALSE
+    a692 = FALSE
+    a690 = FALSE
+    a688 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a682 = TRUE
+    a680 = FALSE
+    a678 = TRUE
+    a676 = FALSE
+    a674 = FALSE
+    a672 = TRUE
+    a670 = FALSE
+    a668 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a660 = FALSE
+    a658 = TRUE
+    a656 = TRUE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a646 = FALSE
+    a644 = FALSE
+    a642 = FALSE
+    a640 = FALSE
+    a638 = TRUE
+    a636 = FALSE
+    a634 = TRUE
+    a632 = FALSE
+    a630 = FALSE
+    a628 = TRUE
+    a626 = FALSE
+    a624 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a616 = FALSE
+    a614 = TRUE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a604 = FALSE
+    a602 = FALSE
+    a600 = FALSE
+    a598 = FALSE
+    a596 = FALSE
+    a594 = TRUE
+    a592 = FALSE
+    a590 = FALSE
+    a588 = FALSE
+    a586 = TRUE
+    a584 = TRUE
+    a582 = FALSE
+    a580 = FALSE
+    a578 = FALSE
+    a576 = TRUE
+    a574 = FALSE
+    a572 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = FALSE
+    a562 = FALSE
+    a560 = TRUE
+    a558 = TRUE
+    a556 = TRUE
+    a554 = FALSE
+    a552 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = FALSE
+    a544 = FALSE
+    a542 = TRUE
+    a540 = TRUE
+    a538 = TRUE
+    a536 = FALSE
+    a534 = FALSE
+    a532 = FALSE
+    a530 = FALSE
+    a528 = FALSE
+    a526 = TRUE
+    a524 = FALSE
+    a522 = FALSE
+    a520 = TRUE
+    a518 = FALSE
+    a516 = TRUE
+    a514 = FALSE
+    a512 = TRUE
+    a510 = FALSE
+    a508 = FALSE
+    a506 = TRUE
+    a504 = FALSE
+    a502 = TRUE
+    a500 = FALSE
+    a498 = TRUE
+    a496 = FALSE
+    a494 = TRUE
+    a492 = FALSE
+    a490 = TRUE
+    a488 = FALSE
+    a486 = TRUE
+    a484 = FALSE
+    a482 = TRUE
+    a480 = FALSE
+    a478 = FALSE
+    a476 = FALSE
+    a474 = FALSE
+    a472 = TRUE
+    a470 = FALSE
+    a468 = FALSE
+    a466 = FALSE
+    a464 = FALSE
+    a462 = TRUE
+    a460 = FALSE
+    a458 = FALSE
+    a456 = FALSE
+    a454 = FALSE
+    a452 = TRUE
+    a450 = FALSE
+    a448 = FALSE
+    a446 = TRUE
+    a444 = TRUE
+    a442 = TRUE
+    a440 = TRUE
+    a438 = TRUE
+    a436 = FALSE
+    a434 = FALSE
+    a432 = TRUE
+    a430 = FALSE
+    a428 = TRUE
+    a426 = FALSE
+    a424 = TRUE
+    a422 = FALSE
+    a420 = FALSE
+    a418 = TRUE
+    a416 = FALSE
+    a414 = FALSE
+    a412 = TRUE
+    a410 = FALSE
+    a408 = TRUE
+    a406 = FALSE
+    a404 = TRUE
+    a402 = FALSE
+    a400 = TRUE
+    a398 = FALSE
+    a396 = TRUE
+    a394 = FALSE
+    a392 = FALSE
+    a390 = FALSE
+    a388 = FALSE
+    a386 = TRUE
+    a384 = FALSE
+    a382 = FALSE
+    a380 = FALSE
+    a378 = FALSE
+    a376 = TRUE
+    a374 = FALSE
+    a372 = FALSE
+    a370 = FALSE
+    a368 = FALSE
+    a366 = TRUE
+    a364 = FALSE
+    a362 = FALSE
+    a360 = TRUE
+    a358 = TRUE
+    a356 = TRUE
+    a354 = TRUE
+    a352 = FALSE
+    a350 = FALSE
+    a348 = FALSE
+    a346 = TRUE
+    a344 = FALSE
+    a342 = TRUE
+    a340 = FALSE
+    a338 = FALSE
+    a336 = FALSE
+    a334 = FALSE
+    a332 = FALSE
+    a330 = FALSE
+    a328 = TRUE
+    a326 = FALSE
+    a324 = FALSE
+    a322 = FALSE
+    a320 = FALSE
+    a318 = FALSE
+    a316 = TRUE
+    a314 = FALSE
+    a312 = TRUE
+    a310 = FALSE
+    a308 = FALSE
+    a306 = FALSE
+    a304 = FALSE
+    a302 = FALSE
+    a300 = FALSE
+    a298 = TRUE
+    a296 = FALSE
+    a294 = FALSE
+    a292 = FALSE
+    a290 = FALSE
+    a288 = FALSE
+    a286 = TRUE
+    a284 = FALSE
+    a282 = FALSE
+    a280 = FALSE
+    a278 = FALSE
+    a276 = TRUE
+    a274 = FALSE
+    a272 = FALSE
+    a270 = TRUE
+    a268 = FALSE
+    a266 = FALSE
+    a264 = FALSE
+    a262 = TRUE
+    a260 = TRUE
+    a258 = FALSE
+    a256 = FALSE
+    a254 = FALSE
+    a252 = FALSE
+    a250 = TRUE
+    a248 = FALSE
+    a246 = FALSE
+    a244 = FALSE
+    a242 = FALSE
+    a240 = TRUE
+    a238 = FALSE
+    a236 = FALSE
+    a234 = TRUE
+    a232 = FALSE
+    a230 = FALSE
+    a228 = FALSE
+    a226 = TRUE
+    a224 = TRUE
+    a222 = FALSE
+    a220 = FALSE
+    a218 = FALSE
+    a216 = FALSE
+    a214 = TRUE
+    a212 = TRUE
+    a210 = FALSE
+    a208 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a200 = FALSE
+    a198 = FALSE
+    a196 = FALSE
+    a194 = FALSE
+    a192 = TRUE
+    a190 = TRUE
+    a188 = FALSE
+    a186 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a178 = FALSE
+    a176 = FALSE
+    a174 = TRUE
+    a172 = TRUE
+    a170 = FALSE
+    a168 = FALSE
+    a166 = FALSE
+    a164 = TRUE
+    a162 = TRUE
+    a160 = TRUE
+    a158 = FALSE
+    a156 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a150 = FALSE
+    a148 = TRUE
+    a146 = FALSE
+    a144 = TRUE
+    a142 = TRUE
+    a140 = FALSE
+    a138 = FALSE
+    a136 = FALSE
+    a134 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a128 = FALSE
+    a126 = FALSE
+    a124 = FALSE
+    a122 = FALSE
+    a120 = FALSE
+    a118 = TRUE
+    a116 = FALSE
+    a114 = TRUE
+    a112 = FALSE
+    a110 = TRUE
+    a108 = FALSE
+    a106 = FALSE
+    a104 = TRUE
+    a102 = TRUE
+    a100 = TRUE
+    a98 = TRUE
+    a96 = TRUE
+    a94 = TRUE
+    a92 = TRUE
+    a90 = TRUE
+    a88 = TRUE
+    a86 = TRUE
+    a84 = TRUE
+    a82 = TRUE
+    a80 = FALSE
+    a78 = FALSE
+    error = FALSE
+    _rt_release = FALSE
+    _rt_idle = FALSE
+    _rt_sched2 = FALSE
+    _rt_sched1 = FALSE
+    _rt_sched0 = FALSE
+    _rt_ready2 = FALSE
+    _rt_ready1 = FALSE
+    _rt_ready0 = FALSE
+    _rt_miss = FALSE
+    sched.interTimeElapsed2 = FALSE
+    sched.interTimeElapsed1 = FALSE
+    sched.interTimeElapsed0 = FALSE
+    sched.sched2 = FALSE
+    sched.sched1 = FALSE
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.2 <-
+    cmd = cmd_release
+    sched.state = p0
+    IsNotFirstRound = TRUE
+    prev_obsx_1 = TRUE
+    prev_obsx_2 = TRUE
+    prev_obsy_1 = TRUE
+    prev_obsy_2 = TRUE
+    prev_obsmove = TRUE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a682 = FALSE
+    a678 = FALSE
+    a676 = TRUE
+    a674 = TRUE
+    a672 = FALSE
+    a668 = FALSE
+    a666 = FALSE
+    a664 = TRUE
+    a662 = FALSE
+    a658 = FALSE
+    a656 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a644 = TRUE
+    a640 = TRUE
+    a638 = FALSE
+    a634 = FALSE
+    a632 = TRUE
+    a630 = TRUE
+    a628 = FALSE
+    a624 = FALSE
+    a622 = FALSE
+    a620 = TRUE
+    a618 = FALSE
+    a614 = FALSE
+    a612 = TRUE
+    a610 = FALSE
+    a602 = TRUE
+    a598 = TRUE
+    a596 = TRUE
+    a594 = FALSE
+    a580 = TRUE
+    a578 = TRUE
+    a576 = FALSE
+    a572 = FALSE
+    a570 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a558 = FALSE
+    a556 = FALSE
+    a554 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a540 = FALSE
+    a538 = FALSE
+    a536 = TRUE
+    a532 = TRUE
+    a528 = TRUE
+    a352 = TRUE
+    a322 = TRUE
+    a292 = TRUE
+    a256 = TRUE
+    a220 = TRUE
+    a216 = TRUE
+    a214 = FALSE
+    a198 = TRUE
+    a194 = TRUE
+    a192 = FALSE
+    a176 = TRUE
+    a174 = FALSE
+    a166 = TRUE
+    a164 = FALSE
+    a162 = FALSE
+    a160 = FALSE
+    a158 = TRUE
+    a150 = TRUE
+    a148 = FALSE
+    a144 = FALSE
+    a136 = TRUE
+    a134 = FALSE
+    a132 = FALSE
+    a130 = FALSE
+    a128 = TRUE
+    a120 = TRUE
+    a118 = FALSE
+    sched.sched0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.3 <-
+    cmd = cmd_miss
+    is_ready0 = FALSE
+    sched.state = idle
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.4 <-
+    cmd = check_ready0
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.5 <-
+    cmd = check_ready1
+    sched.state = p1
+    _rt_ready1 = TRUE
+    _rt_ready0 = FALSE
+    sched.sched1 = TRUE
+  -- [ time elapse: time = 0.0; delta = 1.0 ] --
+  -> State: 1.6 <-
+    sched.y0 = 1.0
+    sched.y1 = 1.0
+    sched.y2 = 1.0
+    sched.x = 1.0
+  -- [ discrete transition ] --
+  -> State: 1.7 <-
+    sched.y1 = 0.0
+    cmd = check_ready2
+    is_ready1 = FALSE
+    sched.state = wait
+    _rt_ready2 = TRUE
+    _rt_ready1 = FALSE
+    sched.sched1 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.8 <-
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    nondet = FALSE
+    sched.state = p2
+    _rt_ready2 = FALSE
+    sched.sched2 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.9 <-
+    cmd = cmd_release
+    is_ready2 = FALSE
+    sched.state = idle
+    sched.sched2 = FALSE
+  -- [ time elapse: time = 1.0; delta = 1.0 ] --
+  -> State: 1.10 <-
+    sched.y0 = 2.0
+    sched.y1 = 1.0
+    sched.y2 = 1.0
+    sched.x = 1.0
+  -- [ discrete transition ] --
+  -> State: 1.11 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.12 <-
+    cmd = check_ready0
+  -- [ discrete transition ] --
+  -> State: 1.13 <-
+    cmd = check_ready1
+    nondet = TRUE
+    _rt_ready1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.14 <-
+    sched.y1 = 0.0
+    cmd = check_ready2
+    nondet = FALSE
+    _rt_ready1 = FALSE
+  -- [ time elapse: time = 2.0; delta = 4.0 ] --
+  -> State: 1.15 <-
+    sched.y0 = 6.0
+    sched.y1 = 4.0
+    sched.y2 = 5.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.16 <-
+    cmd = cmd_sched
+    sched.state = wait
+    _rt_idle = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.17 <-
+    sched.x = 0.0
+    cmd = cmd_release
+    sched.state = idle
+    _rt_idle = FALSE
+  -- [ time elapse: time = 6.0; delta = 5.0 ] --
+  -> State: 1.18 <-
+    sched.y0 = 11.0
+    sched.y1 = 9.0
+    sched.y2 = 10.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.19 <-
+    cmd = cmd_miss
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.20 <-
+    sched.x = 0.0
+    cmd = check_ready0
+    sched.state = idle
+  -- [ time elapse: time = 11.0; delta = 5.0 ] --
+  -> State: 1.21 <-
+    sched.y0 = 16.0
+    sched.y1 = 14.0
+    sched.y2 = 15.0
+    sched.x = 5.0
+    sched.interTimeElapsed2 = TRUE
+    sched.interTimeElapsed1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.22 <-
+    cmd = check_ready1
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.23 <-
+    sched.y1 = 0.0
+    sched.x = 0.0
+    cmd = check_ready2
+    is_ready1 = TRUE
+    sched.state = idle
+    _rt_ready2 = TRUE
+    _rt_ready1 = FALSE
+    sched.interTimeElapsed1 = FALSE
+  -- [ time elapse: time = 16.0; delta = f'1/4 ] --
+  -> State: 1.24 <-
+    sched.y0 = f'65/4
+    sched.y1 = f'1/4
+    sched.y2 = f'61/4
+    sched.x = f'1/4
+  -- [ time elapse: time = f'65/4; delta = f'7/4 ] --
+  -> State: 1.25 <-
+    sched.y0 = 18.0
+    sched.y1 = 2.0
+    sched.y2 = 17.0
+    sched.x = 2.0
+    sched.interTimeElapsed0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.26 <-
+    sched.y2 = 0.0
+    cmd = cmd_sched
+    is_ready2 = TRUE
+    nondet = FALSE
+    _rt_ready2 = FALSE
+    sched.interTimeElapsed2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.27 <-
+    cmd = cmd_release
+  -- [ discrete transition ] --
+  -> State: 1.28 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.29 <-
+    cmd = check_ready0
+    nondet = TRUE
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.30 <-
+    sched.y0 = 0.0
+    cmd = check_ready1
+    is_ready0 = TRUE
+    nondet = FALSE
+    obsx_0_0_6 = TRUE
+    obsx_1 = FALSE
+    obsy_0_0_6 = TRUE
+    obsy_1 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a560 = FALSE
+    a558 = TRUE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a542 = FALSE
+    a540 = TRUE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a150 = FALSE
+    a120 = FALSE
+    a110 = FALSE
+    a104 = FALSE
+    a102 = FALSE
+    a100 = FALSE
+    a98 = FALSE
+    a96 = FALSE
+    a94 = FALSE
+    a92 = FALSE
+    _rt_ready0 = FALSE
+    sched.interTimeElapsed0 = FALSE
+  -- [ time elapse: time = 18.0; delta = 3.0 ] --
+  -> State: 1.31 <-
+    sched.y0 = 3.0
+    sched.y1 = 5.0
+    sched.y2 = 3.0
+    sched.x = 5.0
+  -- [ discrete transition ] --
+  -> State: 1.32 <-
+    cmd = check_ready2
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a674 = FALSE
+    a672 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = FALSE
+    a630 = FALSE
+    a628 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = FALSE
+    a570 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a158 = FALSE
+    a156 = TRUE
+    a128 = FALSE
+    a126 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.33 <-
+    cmd = cmd_sched
+    sched.state = wait
+    obsy_0_0_6 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.34 <-
+    sched.x = 0.0
+    cmd = cmd_release
+    sched.state = p0
+    obsx_0_0_6 = FALSE
+    obsy_0_0_6 = TRUE
+    obsy_1 = TRUE
+    obsy_2 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a558 = TRUE
+    a556 = TRUE
+    a554 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a162 = TRUE
+    a160 = TRUE
+    a156 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a124 = TRUE
+    a122 = TRUE
+    a78 = TRUE
+    sched.sched0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.35 <-
+    cmd = cmd_miss
+    is_ready0 = FALSE
+    sched.state = idle
+    obsx_0_0_6 = TRUE
+    obsx_1 = TRUE
+    obsx_2 = FALSE
+    prev_obsx_0_0_6 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = TRUE
+    prev_obsy_2 = FALSE
+    a662 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = TRUE
+    a640 = FALSE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a556 = FALSE
+    a552 = TRUE
+    a540 = TRUE
+    a538 = TRUE
+    a536 = FALSE
+    a208 = TRUE
+    a204 = FALSE
+    a202 = FALSE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a150 = TRUE
+    a146 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a126 = FALSE
+    a124 = FALSE
+    a122 = FALSE
+    a106 = TRUE
+    sched.sched0 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.36 <-
+    cmd = check_ready0
+    obsy_0_0_6 = FALSE
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = TRUE
+    prev_obsx_2 = FALSE
+    a618 = FALSE
+    a612 = TRUE
+    a610 = FALSE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = TRUE
+    a598 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a538 = FALSE
+    a534 = TRUE
+    a216 = FALSE
+    a214 = TRUE
+    a212 = FALSE
+    a208 = FALSE
+    a206 = FALSE
+    a200 = TRUE
+    a186 = TRUE
+    a182 = FALSE
+    a180 = FALSE
+    a152 = TRUE
+    a120 = TRUE
+    a116 = TRUE
+    a98 = TRUE
+    a78 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.37 <-
+    cmd = check_ready1
+    obsy_0_0_6 = TRUE
+    obsy_1 = FALSE
+    prev_obsy_0_0_6 = FALSE
+    a672 = FALSE
+    a666 = FALSE
+    a664 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a558 = TRUE
+    a206 = TRUE
+    a204 = TRUE
+    a202 = TRUE
+    a172 = FALSE
+    a170 = TRUE
+    a166 = FALSE
+    a162 = FALSE
+    a160 = FALSE
+    a158 = TRUE
+    a152 = FALSE
+    a150 = FALSE
+    a148 = TRUE
+    a146 = FALSE
+    a98 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.38 <-
+    cmd = check_ready2
+    nondet = TRUE
+    obsx_0_0_6 = FALSE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsy_1 = FALSE
+    a678 = TRUE
+    a676 = FALSE
+    a672 = TRUE
+    a668 = TRUE
+    a666 = TRUE
+    a664 = FALSE
+    a662 = TRUE
+    a650 = TRUE
+    a648 = TRUE
+    a644 = FALSE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a562 = TRUE
+    a558 = FALSE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a206 = FALSE
+    a204 = FALSE
+    a202 = FALSE
+    a194 = FALSE
+    a192 = TRUE
+    a190 = FALSE
+    a186 = FALSE
+    a184 = FALSE
+    a178 = TRUE
+    a158 = FALSE
+    a156 = TRUE
+    a122 = TRUE
+    a106 = FALSE
+    a92 = TRUE
+    _rt_ready2 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.39 <-
+    sched.y2 = 0.0
+    cmd = cmd_sched
+    nondet = FALSE
+    obsx_0_0_6 = TRUE
+    obsx_1 = FALSE
+    prev_obsx_0_0_6 = FALSE
+    a628 = FALSE
+    a622 = FALSE
+    a620 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a540 = TRUE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a142 = FALSE
+    a140 = TRUE
+    a136 = FALSE
+    a132 = FALSE
+    a130 = FALSE
+    a128 = TRUE
+    a122 = FALSE
+    a120 = FALSE
+    a118 = TRUE
+    a116 = FALSE
+    a92 = FALSE
+    _rt_ready2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.40 <-
+    cmd = cmd_release
+    prev_obsx_0_0_6 = TRUE
+    prev_obsx_1 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a634 = TRUE
+    a632 = FALSE
+    a628 = TRUE
+    a624 = TRUE
+    a622 = TRUE
+    a620 = FALSE
+    a618 = TRUE
+    a608 = TRUE
+    a606 = TRUE
+    a602 = FALSE
+    a570 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a544 = TRUE
+    a540 = FALSE
+    a184 = FALSE
+    a182 = FALSE
+    a180 = FALSE
+    a128 = FALSE
+    a126 = TRUE
+  -- [ time elapse: time = 21.0; delta = f'1/4 ] --
+  -> State: 1.41 <-
+    sched.y0 = f'13/4
+    sched.y1 = f'21/4
+    sched.y2 = f'1/4
+    sched.x = f'1/4
+  -- [ time elapse: time = f'85/4; delta = f'15/4 ] --
+  -> State: 1.42 <-
+    sched.y0 = 7.0
+    sched.y1 = 9.0
+    sched.y2 = 4.0
+    sched.x = 4.0
+  -- [ discrete transition ] --
+  -> State: 1.43 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.44 <-
+    cmd = check_ready0
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.45 <-
+    sched.x = 0.0
+    cmd = check_ready1
+    sched.state = p1
+    sched.sched1 = TRUE
+  -- [ time elapse: time = 25.0; delta = f'1/4 ] --
+  -> State: 1.46 <-
+    sched.y0 = f'29/4
+    sched.y1 = f'37/4
+    sched.y2 = f'17/4
+    sched.x = f'1/4
+  -- [ discrete transition ] --
+  -> State: 1.47 <-
+    cmd = check_ready2
+    is_ready1 = FALSE
+    sched.state = idle
+    sched.sched1 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.48 <-
+    cmd = cmd_sched
+  -- [ discrete transition ] --
+  -> State: 1.49 <-
+    cmd = cmd_release
+  -- [ time elapse: time = f'101/4; delta = f'19/4 ] --
+  -> State: 1.50 <-
+    sched.y0 = 12.0
+    sched.y1 = 14.0
+    sched.y2 = 9.0
+    sched.x = 5.0
+    sched.interTimeElapsed1 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.51 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.52 <-
+    cmd = check_ready0
+    sched.state = wait
+  -- [ discrete transition ] --
+  -> State: 1.53 <-
+    sched.x = 0.0
+    cmd = check_ready1
+    sched.state = p2
+    sched.sched2 = TRUE
+  -- [ time elapse: time = 30.0; delta = 2.0 ] --
+  -> State: 1.54 <-
+    sched.y0 = 14.0
+    sched.y1 = 16.0
+    sched.y2 = 11.0
+    sched.x = 2.0
+  -- [ time elapse: time = 32.0; delta = 4.0 ] --
+  -> State: 1.55 <-
+    sched.y0 = 18.0
+    sched.y1 = 20.0
+    sched.y2 = 15.0
+    sched.x = 6.0
+    sched.interTimeElapsed2 = TRUE
+    sched.interTimeElapsed0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.56 <-
+    cmd = check_ready2
+    is_ready2 = FALSE
+    nondet = TRUE
+    sched.state = wait
+    _rt_ready2 = TRUE
+    sched.sched2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.57 <-
+    sched.y2 = 0.0
+    sched.x = 0.0
+    cmd = cmd_sched
+    is_ready2 = TRUE
+    nondet = FALSE
+    sched.state = idle
+    _rt_ready2 = FALSE
+    sched.interTimeElapsed2 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.58 <-
+    cmd = cmd_release
+  -- [ discrete transition ] --
+  -> State: 1.59 <-
+    cmd = cmd_miss
+  -- [ discrete transition ] --
+  -> State: 1.60 <-
+    cmd = check_ready0
+    nondet = TRUE
+    obsy_0_0_6 = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a686 = FALSE
+    a684 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a562 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+    _rt_ready0 = TRUE
+  -- [ discrete transition ] --
+  -> State: 1.61 <-
+    sched.y0 = 0.0
+    cmd = check_ready1
+    is_ready0 = TRUE
+    obsx_0_0_6 = FALSE
+    controllable_obsmove = FALSE
+    prev_obsy_0_0_6 = FALSE
+    o0 = FALSE
+    a698 = FALSE
+    a696 = TRUE
+    a694 = FALSE
+    a692 = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a656 = TRUE
+    a654 = FALSE
+    a652 = TRUE
+    a650 = FALSE
+    a648 = FALSE
+    a592 = TRUE
+    a568 = TRUE
+    a566 = TRUE
+    a564 = FALSE
+    a560 = TRUE
+    a550 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a544 = FALSE
+    a154 = FALSE
+    a152 = FALSE
+    a124 = TRUE
+    a122 = TRUE
+    _rt_ready0 = FALSE
+    sched.interTimeElapsed0 = FALSE
+  -- [ time elapse: time = 36.0; delta = 3.0 ] --
+  -> State: 1.62 <-
+    sched.y0 = 3.0
+    sched.y1 = 23.0
+    sched.y2 = 3.0
+    sched.x = 3.0
+  -- [ discrete transition ] --
+  -> State: 1.63 <-
+    cmd = check_ready2
+    sched.state = wait
+    prev_obsx_0_0_6 = FALSE
+    prev_obsmove = FALSE
+    o0 = TRUE
+    a698 = TRUE
+    a696 = FALSE
+    a694 = TRUE
+    a692 = FALSE
+    a690 = FALSE
+    a688 = TRUE
+    a686 = FALSE
+    a682 = TRUE
+    a658 = TRUE
+    a638 = TRUE
+    a614 = TRUE
+    a612 = FALSE
+    a610 = TRUE
+    a608 = FALSE
+    a606 = FALSE
+    a570 = TRUE
+    a550 = TRUE
+    a548 = TRUE
+    a546 = FALSE
+    a542 = TRUE
+    a124 = FALSE
+    a122 = FALSE
+  -- [ discrete transition ] --
+  -> State: 1.64 <-
+    sched.x = 0.0
+    cmd = cmd_sched
+    sched.state = p0
+    obsx_2 = TRUE
+    obsy_0_0_6 = TRUE
+    controllable_obsmove = TRUE
+    o0 = FALSE
+    a698 = FALSE
+    a688 = FALSE
+    a684 = TRUE
+    a592 = FALSE
+    a586 = FALSE
+    a584 = FALSE
+    a582 = TRUE
+    a580 = FALSE
+    a578 = FALSE
+    a576 = TRUE
+    a572 = TRUE
+    a570 = FALSE
+    a568 = FALSE
+    a566 = FALSE
+    a564 = TRUE
+    a560 = FALSE
+    a550 = FALSE
+    a538 = TRUE
+    a534 = FALSE
+    a532 = FALSE
+    a528 = FALSE
+    a352 = FALSE
+    a322 = FALSE
+    a292 = FALSE
+    a256 = FALSE
+    a220 = FALSE
+    a204 = TRUE
+    a202 = TRUE
+    a198 = FALSE
+    a190 = TRUE
+    a178 = FALSE
+    a176 = FALSE
+    a144 = TRUE
+    a142 = TRUE
+    a140 = FALSE
+    _rt_sched0 = TRUE
+    sched.sched0 = TRUE
+  -- [ time elapse: time = 39.0; delta = 2.0 ] --
+  -> State: 1.65 <-
+    sched.y0 = 5.0
+    sched.y1 = 25.0
+    sched.y2 = 5.0
+    sched.x = 2.0
+  -- [ time elapse: time = 41.0; delta = f'1/4 ] --
+  -> State: 1.66 <-
+    sched.y0 = f'21/4
+    sched.y1 = f'101/4
+    sched.y2 = f'21/4
+    sched.x = f'9/4
+  -- [ discrete transition ] --
+  -> State: 1.67 <-
+    cmd = cmd_release
+    is_ready0 = FALSE
+    nondet = FALSE
+    sched.state = sink
+    obsx_0_0_6 = TRUE
+    obsx_1 = TRUE
+    obsx_2 = FALSE
+    obsy_0_0_6 = FALSE
+    obsy_1 = TRUE
+    obsy_2 = TRUE
+    robx_0_0_7 = TRUE
+    robx_1 = TRUE
+    robx_2 = TRUE
+    roby_0_0_7 = TRUE
+    roby_1 = TRUE
+    roby_2 = TRUE
+    glitches_0_0_1 = TRUE
+    controllable_movx_0_0_2 = TRUE
+    controllable_movx_1 = TRUE
+    controllable_movy_0_0_2 = TRUE
+    controllable_movy_1 = TRUE
+    controllable_obsmove = FALSE
+    prev_obsx_2 = TRUE
+    prev_obsy_0_0_6 = TRUE
+    prev_obsmove = TRUE
+    AssumptionsAlreadyViolated = TRUE
+    a690 = TRUE
+    a686 = TRUE
+    a684 = FALSE
+    a682 = FALSE
+    a658 = FALSE
+    a656 = FALSE
+    a654 = TRUE
+    a652 = FALSE
+    a650 = TRUE
+    a648 = TRUE
+    a638 = FALSE
+    a634 = FALSE
+    a632 = TRUE
+    a624 = FALSE
+    a614 = FALSE
+    a598 = TRUE
+    a596 = FALSE
+    a590 = TRUE
+    a588 = TRUE
+    a576 = FALSE
+    a574 = TRUE
+    a572 = FALSE
+    a558 = TRUE
+    a556 = TRUE
+    a552 = FALSE
+    a548 = FALSE
+    a546 = TRUE
+    a542 = FALSE
+    a540 = TRUE
+    a526 = FALSE
+    a502 = FALSE
+    a500 = TRUE
+    a494 = FALSE
+    a492 = TRUE
+    a490 = FALSE
+    a488 = TRUE
+    a486 = FALSE
+    a460 = TRUE
+    a444 = FALSE
+    a442 = FALSE
+    a438 = FALSE
+    a414 = TRUE
+    a408 = FALSE
+    a406 = TRUE
+    a404 = FALSE
+    a402 = TRUE
+    a400 = FALSE
+    a374 = TRUE
+    a358 = FALSE
+    a356 = FALSE
+    a328 = FALSE
+    a326 = TRUE
+    a324 = TRUE
+    a298 = FALSE
+    a296 = TRUE
+    a294 = TRUE
+    a290 = TRUE
+    a288 = TRUE
+    a286 = FALSE
+    a280 = TRUE
+    a278 = TRUE
+    a276 = FALSE
+    a270 = FALSE
+    a268 = TRUE
+    a254 = TRUE
+    a252 = TRUE
+    a250 = FALSE
+    a244 = TRUE
+    a242 = TRUE
+    a240 = FALSE
+    a234 = FALSE
+    a232 = TRUE
+    a212 = TRUE
+    a204 = FALSE
+    a202 = FALSE
+    a200 = FALSE
+    a194 = TRUE
+    a192 = FALSE
+    a184 = TRUE
+    a182 = TRUE
+    a180 = TRUE
+    a174 = TRUE
+    a172 = TRUE
+    a170 = FALSE
+    a160 = TRUE
+    a156 = FALSE
+    a154 = TRUE
+    a152 = TRUE
+    a144 = FALSE
+    a136 = TRUE
+    a132 = TRUE
+    a130 = TRUE
+    a126 = FALSE
+    a118 = FALSE
+    a106 = TRUE
+    a100 = TRUE
+    a98 = TRUE
+    a90 = FALSE
+    a88 = FALSE
+    a86 = FALSE
+    a84 = FALSE
+    a82 = FALSE
+    _rt_sched0 = FALSE
+    sched.sched0 = FALSE
+elapse: 10.37 seconds, total: 10.37 seconds

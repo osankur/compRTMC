@@ -44,4 +44,4 @@ process:Proc1
 location:Proc1:q{initial:}
 location:Proc1:sink1{labels:p1miss}
 edge:Proc1:q:q:ready1{provided: y[1] >= 8 : do : y[1] = 0}
-edge:Proc1:q:sink1:miss1{provided: y[1] >= 23}
+edge:Proc1:q:sink1:miss1{provided: y[1] > 23}

@@ -4,7 +4,7 @@
 	<declaration>
 bool active[2];
 bool br;
-int[0,4] nb_actives;
+int[-1,4] nb_actives;
 clock t;
 clock x[3];
 broadcast chan go_sleep;
@@ -25624,16 +25624,16 @@ a30 := a25560 &amp; a25560;
 		<name x="5" y="5">P</name>
 		<parameter>int[0,2] i</parameter>
 		<declaration>// Place local declarations here.</declaration>
-		<location id="id0" x="-493" y="-8">
-			<name x="-503" y="-42">sleeping</name>
-			<label kind="invariant" x="-503" y="9">x[i]&lt;=period[i]</label>
+		<location id="id0" x="-510" y="-8">
+			<name x="-520" y="-42">sleeping</name>
+			<label kind="invariant" x="-520" y="9">x[i]&lt;=period[i]</label>
 		</location>
-		<location id="id1" x="-187" y="-8">
-			<name x="-197" y="-42">awake</name>
-			<label kind="invariant" x="-170" y="17">x[i]&lt;=sleepy[i]</label>
+		<location id="id1" x="-170" y="-8">
+			<name x="-180" y="-42">awake</name>
+			<label kind="invariant" x="-153" y="-25">x[i]&lt;=sleepy[i]</label>
 		</location>
-		<location id="id2" x="-187" y="68">
-			<label kind="invariant" x="-197" y="85">x[i]&lt;=sleepy[i]</label>
+		<location id="id2" x="-170" y="68">
+			<label kind="invariant" x="-180" y="85">x[i]&lt;=sleepy[i]</label>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -25646,8 +25646,9 @@ a30 := a25560 &amp; a25560;
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="guard" x="-187" y="-4">nb_actives&gt;=2</label>
-			<label kind="synchronisation" x="-170" y="34">go_sleep?</label>
+			<label kind="guard" x="-161" y="17">nb_actives&gt;=2</label>
+			<label kind="synchronisation" x="-161" y="34">go_sleep?</label>
+			<label kind="assignment" x="-76" y="34">nb_actives=nb_actives-1</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -25900,7 +25901,6 @@ a30 := a25560 &amp; a25560;
 			<source ref="id3"/>
 			<target ref="id5"/>
 			<label kind="synchronisation" x="-127" y="25">go_sleep!</label>
-			<label kind="assignment" x="-144" y="8">nb_actives=0</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
@@ -25916,6 +25916,10 @@ system P, m;
 	<queries>
 		<query>
 			<formula>A[]!m.error</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt;nb_actives&lt;0</formula>
 			<comment></comment>
 		</query>
 	</queries>

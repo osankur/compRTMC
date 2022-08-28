@@ -1,0 +1,398 @@
+- broadcast_amba.smv broadcast_2_2_a-ta.ta:
+  Safety holds
+
+  Learning [ms]: 13720, (13.72 s)
+  Searching for counterexample [ms]: 48178, (48.178 s)
+
+  learning rounds [#]: 49
+  States: 63
+  Sigma: 7
+  Total system calls: 0ms
+  Nb of membership queries: 1324
+  Time per query: 0ms
+
+  real	1m2,522s
+
+- nuXmv broadcast_amba_a.tsmv 107s
+
+- broadcast_amba.smv broadcast_2_2_b-ta.ta:
+    Safety holds
+
+    Learning [ms]: 19501, (19.501 s)
+    Searching for counterexample [ms]: 91502, (91.502 s)
+
+    learning rounds [#]: 41
+    States: 63
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 1100
+    Time per query: 0ms
+
+    real	1m51,755s
+    user	1m49,830s
+    sys	0m4,553s
+
+
+- broadcast_amba.smv broadcast_2_2_c-ta.ta:
+    Safety holds
+
+    Learning [ms]: 8191, (8.191 s)
+    Searching for counterexample [ms]: 19868, (19.868 s)
+
+    learning rounds [#]: 21
+    States: 39
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 590
+    Time per query: 0ms
+
+    real	0m28,679s
+    user	0m29,205s
+    sys	0m2,248s
+
+- broadcast_amba.smv broadcast_2_2_d-ta.ta:
+    Safety holds
+
+    Learning [ms]: 8398, (8.398 s)
+    Searching for counterexample [ms]: 41110, (41.11 s)
+
+    learning rounds [#]: 27
+    States: 52
+    Sigma: 7
+    Total system calls: 0ms
+    Nb of membership queries: 901
+    Time per query: 0ms
+
+    real	0m50,207s
+    user	0m50,702s
+    sys	0m3,104s
+broadcast_amba.smv broadcast_amba_a.ta
+./run-comp.sh: line 16: ../../../run.sh: Permission denied
+broadcast_amba.smv broadcast_amba_b.ta
+./run-comp.sh: line 16: ../../../run.sh: Permission denied
+broadcast_amba.smv broadcast_amba_c.ta
+./run-comp.sh: line 16: ../../../run.sh: Permission denied
+broadcast_amba.smv broadcast_amba_d.ta
+./run-comp.sh: line 16: ../../../run.sh: Permission denied
+broadcast_amba.smv broadcast_amba_a.ta
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,000s
+sys	0m0,002s
+broadcast_amba.smv broadcast_amba_b.ta
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,002s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_c.ta
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,001s
+user	0m0,001s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_d.ta
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,001s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_a.ta
+Invalid maximum heap size: -Xmx8GB
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+real	0m0,007s
+user	0m0,004s
+sys	0m0,003s
+broadcast_amba.smv broadcast_amba_b.ta
+Invalid maximum heap size: -Xmx8GB
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+real	0m0,005s
+user	0m0,005s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_c.ta
+Invalid maximum heap size: -Xmx8GB
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+real	0m0,007s
+user	0m0,007s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_d.ta
+Invalid maximum heap size: -Xmx8GB
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+real	0m0,006s
+user	0m0,003s
+sys	0m0,003s
+broadcast_amba.smv broadcast_amba_a.ta
+[main] ERROR CompRTMC - [31m File /home/osankur/inria/comprtmc/comprtmc/broadcast_amba_a.ta does not exist[0m
+
+real	0m0,338s
+user	0m0,478s
+sys	0m0,047s
+broadcast_amba.smv broadcast_amba_b.ta
+[main] ERROR CompRTMC - [31m File /home/osankur/inria/comprtmc/comprtmc/broadcast_amba_b.ta does not exist[0m
+
+real	0m0,329s
+user	0m0,501s
+sys	0m0,037s
+broadcast_amba.smv broadcast_amba_c.ta
+[main] ERROR CompRTMC - [31m File /home/osankur/inria/comprtmc/comprtmc/broadcast_amba_c.ta does not exist[0m
+
+real	0m0,365s
+user	0m0,513s
+sys	0m0,035s
+broadcast_amba.smv broadcast_amba_d.ta
+[main] ERROR CompRTMC - [31m File /home/osankur/inria/comprtmc/comprtmc/broadcast_amba_d.ta does not exist[0m
+
+real	0m0,339s
+user	0m0,521s
+sys	0m0,036s
+broadcast_amba.smv broadcast_amba_a.ta
+/home/osankur/inria/comprtmc/comprtmc
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,001s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_b.ta
+/home/osankur/inria/comprtmc/comprtmc
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,002s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_c.ta
+/home/osankur/inria/comprtmc/comprtmc
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,002s
+user	0m0,002s
+sys	0m0,000s
+broadcast_amba.smv broadcast_amba_d.ta
+/home/osankur/inria/comprtmc/comprtmc
+Error: Unable to access jarfile ./target/scala-3.1.1/compRTMC-assembly-0.1.0-SNAPSHOT.jar
+
+real	0m0,003s
+user	0m0,002s
+sys	0m0,001s
+broadcast_amba.smv broadcast_amba_a.ta
+Map(taMembershipOracle -> 22)
+Map(taMembershipOracle -> 33)
+Map(taMembershipOracle -> 44)
+Map(taMembershipOracle -> 59)
+Map(taMembershipOracle -> 100)
+Map(taMembershipOracle -> 114)
+Map(taMembershipOracle -> 127)
+Map(taMembershipOracle -> 140)
+Map(taMembershipOracle -> 198)
+Map(taMembershipOracle -> 220)
+Map(taMembershipOracle -> 242)
+Map(taMembershipOracle -> 257)
+Map(taMembershipOracle -> 277)
+Map(taMembershipOracle -> 293)
+Map(taMembershipOracle -> 318)
+Map(taMembershipOracle -> 341)
+Map(taMembershipOracle -> 367)
+Map(taMembershipOracle -> 387)
+Map(taMembershipOracle -> 413)
+Map(taMembershipOracle -> 442)
+Map(taMembershipOracle -> 468)
+Map(taMembershipOracle -> 490)
+Map(taMembershipOracle -> 511)
+Map(taMembershipOracle -> 534)
+Map(taMembershipOracle -> 563)
+Map(taMembershipOracle -> 588)
+Map(taMembershipOracle -> 610)
+Map(taMembershipOracle -> 635)
+Map(taMembershipOracle -> 660)
+Map(taMembershipOracle -> 837)
+Map(taMembershipOracle -> 863)
+Map(taMembershipOracle -> 882)
+Map(taMembershipOracle -> 909)
+Map(taMembershipOracle -> 928)
+Map(taMembershipOracle -> 963)
+Map(taMembershipOracle -> 998)
+Map(taMembershipOracle -> 1025)
+Map(taMembershipOracle -> 1063)
+Map(taMembershipOracle -> 1091)
+Map(taMembershipOracle -> 1121)
+Map(taMembershipOracle -> 1141)
+Map(taMembershipOracle -> 1163)
+Map(taMembershipOracle -> 1185)
+Map(taMembershipOracle -> 1211)
+Map(taMembershipOracle -> 1231)
+Map(taMembershipOracle -> 1251)
+Map(taMembershipOracle -> 1274)
+Map(taMembershipOracle -> 1293)
+Map(taMembershipOracle -> 1324)
+[32mTA Inclusion holds: hypothesis with 63 states found[0m
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 13282, (13.282 s)
+Searching for counterexample [ms]: 46058, (46.058 s)
+
+learning rounds [#]: 49
+States: 63
+Sigma: 7
+Total system calls: 0ms
+Nb of membership queries: 1324
+Time per query: 0ms
+
+real	0m59,907s
+user	0m59,165s
+sys	0m4,737s
+broadcast_amba.smv broadcast_amba_b.ta
+Map(taMembershipOracle -> 22)
+Map(taMembershipOracle -> 31)
+Map(taMembershipOracle -> 42)
+Map(taMembershipOracle -> 52)
+Map(taMembershipOracle -> 67)
+Map(taMembershipOracle -> 79)
+Map(taMembershipOracle -> 96)
+Map(taMembershipOracle -> 109)
+Map(taMembershipOracle -> 122)
+Map(taMembershipOracle -> 140)
+Map(taMembershipOracle -> 154)
+Map(taMembershipOracle -> 168)
+Map(taMembershipOracle -> 187)
+Map(taMembershipOracle -> 202)
+Map(taMembershipOracle -> 215)
+Map(taMembershipOracle -> 293)
+Map(taMembershipOracle -> 308)
+Map(taMembershipOracle -> 340)
+Map(taMembershipOracle -> 357)
+Map(taMembershipOracle -> 374)
+Map(taMembershipOracle -> 410)
+Map(taMembershipOracle -> 433)
+Map(taMembershipOracle -> 472)
+Map(taMembershipOracle -> 488)
+Map(taMembershipOracle -> 512)
+Map(taMembershipOracle -> 528)
+Map(taMembershipOracle -> 551)
+Map(taMembershipOracle -> 576)
+Map(taMembershipOracle -> 594)
+Map(taMembershipOracle -> 619)
+Map(taMembershipOracle -> 637)
+Map(taMembershipOracle -> 663)
+Map(taMembershipOracle -> 682)
+Map(taMembershipOracle -> 953)
+Map(taMembershipOracle -> 971)
+Map(taMembershipOracle -> 990)
+Map(taMembershipOracle -> 1010)
+Map(taMembershipOracle -> 1028)
+Map(taMembershipOracle -> 1046)
+Map(taMembershipOracle -> 1073)
+Map(taMembershipOracle -> 1100)
+[32mTA Inclusion holds: hypothesis with 63 states found[0m
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 16835, (16.835 s)
+Searching for counterexample [ms]: 84468, (84.468 s)
+
+learning rounds [#]: 41
+States: 63
+Sigma: 7
+Total system calls: 0ms
+Nb of membership queries: 1100
+Time per query: 0ms
+
+real	1m41,867s
+user	1m41,425s
+sys	0m4,051s
+broadcast_amba.smv broadcast_amba_c.ta
+Map(taMembershipOracle -> 22)
+Map(taMembershipOracle -> 31)
+Map(taMembershipOracle -> 42)
+Map(taMembershipOracle -> 54)
+Map(taMembershipOracle -> 68)
+Map(taMembershipOracle -> 79)
+Map(taMembershipOracle -> 113)
+Map(taMembershipOracle -> 142)
+Map(taMembershipOracle -> 158)
+Map(taMembershipOracle -> 201)
+Map(taMembershipOracle -> 260)
+Map(taMembershipOracle -> 277)
+Map(taMembershipOracle -> 323)
+Map(taMembershipOracle -> 372)
+Map(taMembershipOracle -> 389)
+Map(taMembershipOracle -> 422)
+Map(taMembershipOracle -> 441)
+Map(taMembershipOracle -> 466)
+Map(taMembershipOracle -> 483)
+Map(taMembershipOracle -> 572)
+Map(taMembershipOracle -> 590)
+[32mTA Inclusion holds: hypothesis with 39 states found[0m
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 8492, (8.492 s)
+Searching for counterexample [ms]: 23329, (23.329 s)
+
+learning rounds [#]: 21
+States: 39
+Sigma: 7
+Total system calls: 0ms
+Nb of membership queries: 590
+Time per query: 0ms
+
+real	0m32,410s
+user	0m31,062s
+sys	0m2,337s
+broadcast_amba.smv broadcast_amba_d.ta
+Map(taMembershipOracle -> 22)
+Map(taMembershipOracle -> 32)
+Map(taMembershipOracle -> 46)
+Map(taMembershipOracle -> 74)
+Map(taMembershipOracle -> 100)
+Map(taMembershipOracle -> 115)
+Map(taMembershipOracle -> 130)
+Map(taMembershipOracle -> 203)
+Map(taMembershipOracle -> 215)
+Map(taMembershipOracle -> 235)
+Map(taMembershipOracle -> 266)
+Map(taMembershipOracle -> 282)
+Map(taMembershipOracle -> 344)
+Map(taMembershipOracle -> 389)
+Map(taMembershipOracle -> 468)
+Map(taMembershipOracle -> 503)
+Map(taMembershipOracle -> 527)
+Map(taMembershipOracle -> 575)
+Map(taMembershipOracle -> 619)
+Map(taMembershipOracle -> 664)
+Map(taMembershipOracle -> 701)
+Map(taMembershipOracle -> 727)
+Map(taMembershipOracle -> 810)
+Map(taMembershipOracle -> 829)
+Map(taMembershipOracle -> 858)
+Map(taMembershipOracle -> 880)
+Map(taMembershipOracle -> 901)
+[32mTA Inclusion holds: hypothesis with 52 states found[0m
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 9834, (9.834 s)
+Searching for counterexample [ms]: 40400, (40.4 s)
+
+learning rounds [#]: 27
+States: 52
+Sigma: 7
+Total system calls: 0ms
+Nb of membership queries: 901
+Time per query: 0ms
+
+real	0m50,880s
+user	0m49,101s
+sys	0m3,327s

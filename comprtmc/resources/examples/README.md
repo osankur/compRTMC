@@ -138,7 +138,7 @@ The `prio_scheduling` directory:
 Priority-based scheduler without preemption between two or three processes.
 Each process sends signal _rt_readyi whenever it is ready to execute its rt task.
 Whenever the scheduler is available, it schedules process 1 if it is ready,
-otherwise, process 2 if it is ready, otherwise process 3, and if non of them are ready,
+otherwise, process 2 if it is ready, otherwise process 3, and if none of them are ready,
 then schedules a low priority task called idle.
 Each task ends with a _rt_release signal, while _rt_miss means a deadline miss, and leads to the error state.
 

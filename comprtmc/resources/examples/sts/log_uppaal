@@ -1,0 +1,31 @@
+sts-2.xml
+
+Please restart UPPAAL with Internet.
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661329083
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula is satisfied.
+
+real	0m20,077s
+user	0m19,795s
+sys	0m0,057s
+
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661349057
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Killedroughput: 42869 states/sec, Load: 10402739 states
+
+real	30m0,188s
+user	29m56,395s
+sys	0m2,503s
+

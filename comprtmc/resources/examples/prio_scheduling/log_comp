@@ -1,0 +1,44 @@
+- prio_sched_2a.smv prio_sched_2.ta
+
+Safety holds
+
+Learning [ms]: 9859, (9.859 s)
+Searching for counterexample [ms]: 24407, (24.407 s)
+
+learning rounds [#]: 35
+States: 49
+Sigma: 8
+Total system calls: 0ms
+Nb of membership queries: 1384
+Time per query: 0ms
+
+real	0m34,757s
+user	0m33,531s
+sys	0m5,671s
+
+
+- prio_sched_2b.smv prio_sched_2.ta
+    Safety holds
+
+    Learning [ms]: 8486, (8.486 s)
+    Searching for counterexample [ms]: 8925, (8.925 s)
+
+    learning rounds [#]: 29
+    States: 42
+    Sigma: 8
+    Total system calls: 0ms
+    Nb of membership queries: 1162
+    Time per query: 0ms
+
+    real	0m17,998s
+    user	0m16,771s
+    sys	0m5,032s
+
+- prio_sched_3.smv prio_sched_3c.ta
+timeout
+
+- prio_sched_3.smv prio_sched_3d.ta
+timeout
+
+- prio_sched_3.smv prio_sched_3d.ta
+timeout

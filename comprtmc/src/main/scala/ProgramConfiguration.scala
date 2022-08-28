@@ -34,7 +34,7 @@ object FSM {
   sealed trait ModelCheckingAlgorithm
   case object BDDAlgorithm extends ModelCheckingAlgorithm
   case object IC3Algorithm extends ModelCheckingAlgorithm
-  case object DefaultAlgorithm extends ModelCheckingAlgorithm
+  // case object DefaultAlgorithm extends ModelCheckingAlgorithm
 }
 
 sealed trait Algorithm
@@ -47,7 +47,7 @@ case class Configuration(
     taFile: File = new File("."),
     fsmFormat: FSM.FSMFormat = FSM.SMV,
     fsmModelChecker: FSM.ModelChecker = FSM.NuXmv,
-    fsmAlgorithm: FSM.ModelCheckingAlgorithm = FSM.DefaultAlgorithm,
+    fsmAlgorithm: FSM.ModelCheckingAlgorithm = FSM.BDDAlgorithm,
     algorithm: Algorithm = HypothesisLearning,
     keepTmpFiles: Boolean = false,
     verbose: Boolean = false,

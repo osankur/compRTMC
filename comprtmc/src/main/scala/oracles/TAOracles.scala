@@ -530,7 +530,8 @@ class TCheckerInclusionOracle(
       hypothesis: DFA[_, String],
       inputs: java.util.Collection[? <: String]
   ): DefaultQuery[String, java.lang.Boolean] = {
-    statistics.Counters.incrementCounter("taInclusionOracle")
+    if (configuration.globalConfiguration.verbose)
+      statistics.Counters.incrementCounter("taInclusionOracle")
 
     val productFile =
       Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
@@ -541,10 +542,12 @@ class TCheckerInclusionOracle(
     var certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
 
     // Model check product automaton
-    System.out.println(YELLOW + "Inclusion query (|DFA| = " + hypothesis.size + ")" + RESET)
+    if (configuration.globalConfiguration.verbose)
+      System.out.println(YELLOW + "Inclusion query (|DFA| = " + hypothesis.size + ")" + RESET)
     val cmd = "tck-reach -a reach %s -l %s -C %s" 
       .format(productFile.toString, taMonitorMaker.monitorAcceptLabel, certFile)
-    System.out.println(cmd)
+    if (configuration.globalConfiguration.verbose)
+      System.out.println(cmd)
     val output = cmd.!!
     // System.out.println(output)
     if (!configuration.globalConfiguration.keepTmpFiles){
@@ -561,10 +564,12 @@ class TCheckerInclusionOracle(
         certFile.delete()
       }
       val word = ta.getTraceFromCexDescription(cexLines).filter(alphabet.contains(_))
-      System.out.println(ta.getTraceFromCexDescription(cexLines))
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
-      System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
-      System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
+      if (configuration.globalConfiguration.verbose){
+        System.out.println(ta.getTraceFromCexDescription(cexLines))
+        System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
+        System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
+      }
       statistics.posQueries = statistics.posQueries + word.mkString(" ")
 
       // Visualization.visualize(hypothesis, alphabet);

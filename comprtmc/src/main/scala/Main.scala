@@ -118,7 +118,15 @@ object Main {
         if ( config.fsmFormat == FSM.Verilog && config.algorithm != Synthesis){
           throw Exception("Verilog FSM files are currently only supported with the synthesis algorithm")
         }
-        "./remove_temp.sh".!        
+        //"./remove_temp.sh".!
+        val tmpFolder = File(".crtmc")
+        if(!tmpFolder.exists()){
+          tmpFolder.mkdir()
+        }
+        for(file <- tmpFolder.listFiles()){
+          if (!file.isDirectory()) 
+            file.delete()
+        }
         config.algorithm match {
           case HypothesisLearning =>
             val fsmIntersectOracle : fsm.FSMIntersectionOracle = config.fsmFormat match{

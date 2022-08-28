@@ -237,8 +237,10 @@ class SMVIntersectionOracle(
         case _ =>
           "echo \"read_model -i %s; go_msat; check_invar_ic3 -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
       }
-    System.out.println(YELLOW + s"Model checking FSM with given hypothesis TA: $productFile" + RESET)
-    System.out.println(cmd)
+    if (configuration.globalConfiguration.verbose){
+      System.out.println(YELLOW + s"Model checking FSM with given hypothesis TA: $productFile" + RESET)
+      System.out.println(cmd)
+    }
     val output = cmd.!!
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()

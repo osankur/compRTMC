@@ -81,7 +81,8 @@ class CompSafetyAlgorithm(
     ): DefaultQuery[String, java.lang.Boolean] = {
       assert(inputs.size == fsmIntersectionOracle.alphabet.length)
       assert(statistics.posQueries.intersect(statistics.negQueries).isEmpty)
-      System.out.println(statistics.Counters.toString)
+      if (configuration.globalConfiguration.verbose)
+        System.out.println(statistics.Counters.toString)
       taInclusionOracle.findCounterExample(hypothesis, inputs) match {
         case null =>
           fsmIntersectionOracle.checkIntersection(hypothesis) match {
@@ -92,12 +93,14 @@ class CompSafetyAlgorithm(
             case Some(fsm.CounterExample(cexDescription, trace)) =>
               // FSM x hypothesis contains a counterexample trace
               // Check feasability with TChecker
-              System.out.println(
-                RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n"
-              )
-              System.out.println(
-                YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n"
-              )
+              if (configuration.globalConfiguration.verbose){
+                System.out.println(
+                  RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n"
+                )
+                System.out.println(
+                  YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n"
+                )
+              }
               val word = Word.fromList(trace)
               if (trace == statistics.lastTrace) {
                 if (configuration.globalConfiguration.visualizeDFA) then
@@ -115,15 +118,17 @@ class CompSafetyAlgorithm(
                 case Some(timedTrace) =>
                   throw ProductCounterExample(cexDescription, trace, timedTrace)
                 case None =>
-                  System.out.println(
-                    GREEN + "Equiv. Query: Cex was spurious\n" + RESET
-                  )
-                  System.out.println(
-                    DefaultQuery[String, java.lang.Boolean](
-                      word,
-                      java.lang.Boolean.FALSE
+                  if (configuration.globalConfiguration.verbose){
+                    System.out.println(
+                      GREEN + "Equiv. Query: Cex was spurious\n" + RESET
                     )
-                  )
+                    System.out.println(
+                      DefaultQuery[String, java.lang.Boolean](
+                        word,
+                        java.lang.Boolean.FALSE
+                      )
+                    )
+                  }
                   statistics.negQueries =
                     statistics.negQueries + word.mkString(" ")
                   // Visualization.visualize(hypothesis, inputs)

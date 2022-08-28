@@ -1,0 +1,46 @@
+ftsp-2-abs.xml
+Please restart UPPAAL with Internet.
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661335877
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula is satisfied.
+
+real	0m1,277s
+user	0m1,253s
+sys	0m0,024s
+
+ftsp-3-abs.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661336857
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula is satisfied.
+
+real	7m8,969s
+user	7m7,338s
+sys	0m0,619s
+
+ftsp-4-abs.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661440664
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Killedroughput: 110778 states/sec, Load: 15927551 states
+
+real	30m0,230s
+user	29m56,700s
+sys	0m2,308s
+

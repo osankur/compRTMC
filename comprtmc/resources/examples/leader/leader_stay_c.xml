@@ -791,7 +791,7 @@ void receive(){
 		<transition>
 			<source ref="id24"/>
 			<target ref="id25"/>
-			<label kind="guard" x="-255" y="8">hb==4 &amp;&amp; x == 4</label>
+			<label kind="guard" x="-255" y="8">hb==4 &amp;&amp; x == 1</label>
 			<label kind="synchronisation" x="-110" y="8">wakeup[i]?</label>
 			<label kind="assignment" x="-345" y="29">prev=leader[i], leader[i]=id[i], msg=id[i],sender=id[i], hb=0</label>
 			<nail x="-399" y="0"/>
@@ -800,7 +800,7 @@ void receive(){
 		<transition>
 			<source ref="id24"/>
 			<target ref="id25"/>
-			<label kind="guard" x="-272" y="-59">hb&lt;4&amp;&amp; x==4</label>
+			<label kind="guard" x="-272" y="-59">hb&lt;4&amp;&amp; x==1</label>
 			<label kind="synchronisation" x="-357" y="-59">wakeup[i]?</label>
 			<label kind="assignment" x="-424" y="-42">hb=hb+1, msg=leader[i],sender=id[i],x=0</label>
 			<nail x="-399" y="-68"/>

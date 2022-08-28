@@ -1,0 +1,1128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock x;
+
+
+const int comp_u[3] = {5,4,6};
+const int comp_l[3] = {2,1,2};
+const int inter[3] = {20,20,25};
+const int dead[3] = {20,20,40};
+bool cond[3];
+
+bool is_ready[3] = {1,1,1};
+
+chan step;
+
+// inputs
+bool obsx_0_0_6;
+bool obsx_1;
+bool obsx_2;
+bool obsy_0_0_6;
+bool obsy_1;
+bool obsy_2;
+bool robx_0_0_7;
+bool robx_1;
+bool robx_2;
+bool roby_0_0_7;
+bool roby_1;
+bool roby_2;
+bool glitches_0_0_1;
+bool controllable_movx_0_0_2;
+bool controllable_movx_1;
+bool controllable_movy_0_0_2;
+bool controllable_movy_1;
+bool controllable_obsmove;
+//
+bool IsNotFirstRound;
+bool prev_obsx_0_0_6;
+bool prev_obsx_1;
+bool prev_obsx_2;
+bool prev_obsy_0_0_6;
+bool prev_obsy_1;
+bool prev_obsy_2;
+bool prev_robx_0_0_7;
+bool prev_robx_1;
+bool prev_robx_2;
+bool prev_roby_0_0_7;
+bool prev_roby_1;
+bool prev_roby_2;
+bool prev_glitches_0_0_1;
+bool prev_movx_0_0_2;
+bool prev_movx_1;
+bool prev_movy_0_0_2;
+bool prev_movy_1;
+bool prev_obsmove;
+bool AssumptionsAlreadyViolated;
+
+bool a0;
+bool a2;
+bool a4;
+bool a6;
+bool a8;
+bool a10;
+bool a12;
+bool a14;
+bool a16;
+bool a18;
+bool a20;
+bool a22;
+bool a24;
+bool a26;
+bool a28;
+bool a30;
+bool a32;
+bool a34;
+bool a36;
+bool a38;
+bool a40;
+bool a42;
+bool a44;
+bool a46;
+bool a48;
+bool a50;
+bool a52;
+bool a54;
+bool a56;
+bool a58;
+bool a60;
+bool a62;
+bool a64;
+bool a66;
+bool a68;
+bool a70;
+bool a72;
+bool a74;
+bool a76;
+bool a78;
+bool a80;
+bool a82;
+bool a84;
+bool a86;
+bool a88;
+bool a90;
+bool a92;
+bool a94;
+bool a96;
+bool a98;
+bool a100;
+bool a102;
+bool a104;
+bool a106;
+bool a108;
+bool a110;
+bool a112;
+bool a114;
+bool a116;
+bool a118;
+bool a120;
+bool a122;
+bool a124;
+bool a126;
+bool a128;
+bool a130;
+bool a132;
+bool a134;
+bool a136;
+bool a138;
+bool a140;
+bool a142;
+bool a144;
+bool a146;
+bool a148;
+bool a150;
+bool a152;
+bool a154;
+bool a156;
+bool a158;
+bool a160;
+bool a162;
+bool a164;
+bool a166;
+bool a168;
+bool a170;
+bool a172;
+bool a174;
+bool a176;
+bool a178;
+bool a180;
+bool a182;
+bool a184;
+bool a186;
+bool a188;
+bool a190;
+bool a192;
+bool a194;
+bool a196;
+bool a198;
+bool a200;
+bool a202;
+bool a204;
+bool a206;
+bool a208;
+bool a210;
+bool a212;
+bool a214;
+bool a216;
+bool a218;
+bool a220;
+bool a222;
+bool a224;
+bool a226;
+bool a228;
+bool a230;
+bool a232;
+bool a234;
+bool a236;
+bool a238;
+bool a240;
+bool a242;
+bool a244;
+bool a246;
+bool a248;
+bool a250;
+bool a252;
+bool a254;
+bool a256;
+bool a258;
+bool a260;
+bool a262;
+bool a264;
+bool a266;
+bool a268;
+bool a270;
+bool a272;
+bool a274;
+bool a276;
+bool a278;
+bool a280;
+bool a282;
+bool a284;
+bool a286;
+bool a288;
+bool a290;
+bool a292;
+bool a294;
+bool a296;
+bool a298;
+bool a300;
+bool a302;
+bool a304;
+bool a306;
+bool a308;
+bool a310;
+bool a312;
+bool a314;
+bool a316;
+bool a318;
+bool a320;
+bool a322;
+bool a324;
+bool a326;
+bool a328;
+bool a330;
+bool a332;
+bool a334;
+bool a336;
+bool a338;
+bool a340;
+bool a342;
+bool a344;
+bool a346;
+bool a348;
+bool a350;
+bool a352;
+bool a354;
+bool a356;
+bool a358;
+bool a360;
+bool a362;
+bool a364;
+bool a366;
+bool a368;
+bool a370;
+bool a372;
+bool a374;
+bool a376;
+bool a378;
+bool a380;
+bool a382;
+bool a384;
+bool a386;
+bool a388;
+bool a390;
+bool a392;
+bool a394;
+bool a396;
+bool a398;
+bool a400;
+bool a402;
+bool a404;
+bool a406;
+bool a408;
+bool a410;
+bool a412;
+bool a414;
+bool a416;
+bool a418;
+bool a420;
+bool a422;
+bool a424;
+bool a426;
+bool a428;
+bool a430;
+bool a432;
+bool a434;
+bool a436;
+bool a438;
+bool a440;
+bool a442;
+bool a444;
+bool a446;
+bool a448;
+bool a450;
+bool a452;
+bool a454;
+bool a456;
+bool a458;
+bool a460;
+bool a462;
+bool a464;
+bool a466;
+bool a468;
+bool a470;
+bool a472;
+bool a474;
+bool a476;
+bool a478;
+bool a480;
+bool a482;
+bool a484;
+bool a486;
+bool a488;
+bool a490;
+bool a492;
+bool a494;
+bool a496;
+bool a498;
+bool a500;
+bool a502;
+bool a504;
+bool a506;
+bool a508;
+bool a510;
+bool a512;
+bool a514;
+bool a516;
+bool a518;
+bool a520;
+bool a522;
+bool a524;
+bool a526;
+bool a528;
+bool a530;
+bool a532;
+bool a534;
+bool a536;
+bool a538;
+bool a540;
+bool a542;
+bool a544;
+bool a546;
+bool a548;
+bool a550;
+bool a552;
+bool a554;
+bool a556;
+bool a558;
+bool a560;
+bool a562;
+bool a564;
+bool a566;
+bool a568;
+bool a570;
+bool a572;
+bool a574;
+bool a576;
+bool a578;
+bool a580;
+bool a582;
+bool a584;
+bool a586;
+bool a588;
+bool a590;
+bool a592;
+bool a594;
+bool a596;
+bool a598;
+bool a600;
+bool a602;
+bool a604;
+bool a606;
+bool a608;
+bool a610;
+bool a612;
+bool a614;
+bool a616;
+bool a618;
+bool a620;
+bool a622;
+bool a624;
+bool a626;
+bool a628;
+bool a630;
+bool a632;
+bool a634;
+bool a636;
+bool a638;
+bool a640;
+bool a642;
+bool a644;
+bool a646;
+bool a648;
+bool a650;
+bool a652;
+bool a654;
+bool a656;
+bool a658;
+bool a660;
+bool a662;
+bool a664;
+bool a666;
+bool a668;
+bool a670;
+bool a672;
+bool a674;
+bool a676;
+bool a678;
+bool a680;
+bool a682;
+bool a684;
+bool a686;
+bool a688;
+bool a690;
+bool a692;
+bool a694;
+bool a696;
+bool a698;
+
+void update(){
+ IsNotFirstRound := 1;
+prev_obsx_0_0_6 := obsx_0_0_6;
+prev_obsx_1 := obsx_1;
+prev_obsx_2 := obsx_2;
+prev_obsy_0_0_6 := obsy_0_0_6;
+prev_obsy_1 := obsy_1;
+prev_obsy_2 := obsy_2;
+prev_robx_0_0_7 := robx_0_0_7;
+prev_robx_1 := robx_1;
+prev_robx_2 := robx_2;
+prev_roby_0_0_7 := roby_0_0_7;
+prev_roby_1 := roby_1;
+prev_roby_2 := roby_2;
+prev_glitches_0_0_1 := glitches_0_0_1;
+prev_movx_0_0_2 := controllable_movx_0_0_2;
+prev_movx_1 := controllable_movx_1;
+prev_movy_0_0_2 := controllable_movy_0_0_2;
+prev_movy_1 := controllable_movy_1;
+prev_obsmove := controllable_obsmove;
+AssumptionsAlreadyViolated := !a586;
+a78 := obsy_1 &amp; obsy_0_0_6;
+a80 := a78 &amp; obsy_2;
+a82 := !robx_1 &amp; !robx_0_0_7;
+a84 := a82 &amp; !robx_2;
+a86 := !roby_1 &amp; !roby_0_0_7;
+a88 := a86 &amp; !roby_2;
+a90 := a88 &amp; a84;
+a92 := obsx_1 &amp; !obsx_0_0_6;
+a94 := a92 &amp; obsx_2;
+a96 := a94 &amp; a90;
+a98 := obsy_1 &amp; !obsy_0_0_6;
+a100 := a98 &amp; obsy_2;
+a102 := a100 &amp; a96;
+a104 := a102 &amp; !glitches_0_0_1;
+a106 := obsx_1 &amp; obsx_0_0_6;
+a108 := a106 &amp; obsx_2;
+a110 := !a108 &amp; a104;
+a112 := !a110 &amp; !IsNotFirstRound;
+a114 := !a112 &amp; !a80;
+a116 := prev_obsx_1 &amp; prev_obsx_0_0_6;
+a118 := !a116 &amp; !prev_obsx_2;
+a120 := prev_obsx_1 &amp; obsx_1;
+a122 := prev_obsx_0_0_6 &amp; !obsx_0_0_6;
+a124 := a122 &amp; !a120;
+a126 := !prev_obsx_1 &amp; !obsx_1;
+a128 := prev_obsx_1 &amp; !prev_obsx_0_0_6;
+a130 := !a128 &amp; !a126;
+a132 := a130 &amp; !a124;
+a134 := a132 &amp; obsx_2;
+a136 := !a134 &amp; !a118;
+a138 := a116 &amp; prev_obsx_2;
+a140 := !a132 &amp; !obsx_2;
+a142 := !a140 &amp; !a138;
+a144 := a142 &amp; !a136;
+a146 := prev_obsy_1 &amp; prev_obsy_0_0_6;
+a148 := !a146 &amp; !prev_obsy_2;
+a150 := prev_obsy_1 &amp; obsy_1;
+a152 := prev_obsy_0_0_6 &amp; !obsy_0_0_6;
+a154 := a152 &amp; !a150;
+a156 := !prev_obsy_1 &amp; !obsy_1;
+a158 := prev_obsy_1 &amp; !prev_obsy_0_0_6;
+a160 := !a158 &amp; !a156;
+a162 := a160 &amp; !a154;
+a164 := a162 &amp; obsy_2;
+a166 := !a164 &amp; !a148;
+a168 := a146 &amp; prev_obsy_2;
+a170 := !a162 &amp; !obsy_2;
+a172 := !a170 &amp; !a168;
+a174 := a172 &amp; !a166;
+a176 := !a174 &amp; !a144;
+a178 := !a106 &amp; !obsx_2;
+a180 := !prev_obsx_0_0_6 &amp; obsx_0_0_6;
+a182 := a180 &amp; !a120;
+a184 := !a126 &amp; !a92;
+a186 := a184 &amp; !a182;
+a188 := a186 &amp; prev_obsx_2;
+a190 := !a188 &amp; !a178;
+a192 := !a186 &amp; !prev_obsx_2;
+a194 := !a192 &amp; !a108;
+a196 := a194 &amp; !a190;
+a198 := !a196 &amp; a176;
+a200 := !a78 &amp; !obsy_2;
+a202 := !prev_obsy_0_0_6 &amp; obsy_0_0_6;
+a204 := a202 &amp; !a150;
+a206 := !a156 &amp; !a98;
+a208 := a206 &amp; !a204;
+a210 := a208 &amp; prev_obsy_2;
+a212 := !a210 &amp; !a200;
+a214 := !a208 &amp; !prev_obsy_2;
+a216 := !a214 &amp; !a80;
+a218 := a216 &amp; !a212;
+a220 := !a218 &amp; a198;
+a222 := prev_robx_1 &amp; prev_robx_0_0_7;
+a224 := !a222 &amp; !prev_robx_2;
+a226 := !prev_robx_1 &amp; !prev_robx_0_0_7;
+a228 := !a226 &amp; !a222;
+a230 := a228 &amp; !robx_1;
+a232 := !a228 &amp; robx_1;
+a234 := !prev_robx_0_0_7 &amp; !robx_0_0_7;
+a236 := prev_robx_0_0_7 &amp; robx_0_0_7;
+a238 := a236 &amp; !a234;
+a240 := !a238 &amp; !a232;
+a242 := !a240 &amp; !a230;
+a244 := a242 &amp; robx_2;
+a246 := !a244 &amp; !a224;
+a248 := a222 &amp; prev_robx_2;
+a250 := !a242 &amp; !robx_2;
+a252 := !a250 &amp; !a248;
+a254 := a252 &amp; !a246;
+a256 := !a254 &amp; a220;
+a258 := prev_roby_1 &amp; prev_roby_0_0_7;
+a260 := !a258 &amp; !prev_roby_2;
+a262 := !prev_roby_1 &amp; !prev_roby_0_0_7;
+a264 := !a262 &amp; !a258;
+a266 := a264 &amp; !roby_1;
+a268 := !a264 &amp; roby_1;
+a270 := !prev_roby_0_0_7 &amp; !roby_0_0_7;
+a272 := prev_roby_0_0_7 &amp; roby_0_0_7;
+a274 := a272 &amp; !a270;
+a276 := !a274 &amp; !a268;
+a278 := !a276 &amp; !a266;
+a280 := a278 &amp; roby_2;
+a282 := !a280 &amp; !a260;
+a284 := a258 &amp; prev_roby_2;
+a286 := !a278 &amp; !roby_2;
+a288 := !a286 &amp; !a284;
+a290 := a288 &amp; !a282;
+a292 := !a290 &amp; a256;
+a294 := robx_1 &amp; robx_0_0_7;
+a296 := a294 &amp; robx_2;
+a298 := !a294 &amp; !robx_2;
+a300 := !a298 &amp; !a296;
+a302 := a300 &amp; !prev_robx_2;
+a304 := !a300 &amp; prev_robx_2;
+a306 := !a294 &amp; !a82;
+a308 := a306 &amp; !prev_robx_1;
+a310 := !a306 &amp; prev_robx_1;
+a312 := !a310 &amp; !a238;
+a314 := !a312 &amp; !a308;
+a316 := !a314 &amp; !a304;
+a318 := !a316 &amp; !a302;
+a320 := a318 &amp; !a296;
+a322 := !a320 &amp; a292;
+a324 := roby_1 &amp; roby_0_0_7;
+a326 := a324 &amp; roby_2;
+a328 := !a324 &amp; !roby_2;
+a330 := !a328 &amp; !a326;
+a332 := a330 &amp; !prev_roby_2;
+a334 := !a330 &amp; prev_roby_2;
+a336 := !a324 &amp; !a86;
+a338 := a336 &amp; !prev_roby_1;
+a340 := !a336 &amp; prev_roby_1;
+a342 := !a340 &amp; !a274;
+a344 := !a342 &amp; !a338;
+a346 := !a344 &amp; !a334;
+a348 := !a346 &amp; !a332;
+a350 := a348 &amp; !a326;
+a352 := !a350 &amp; a322;
+a354 := a226 &amp; !prev_robx_2;
+a356 := a354 &amp; a84;
+a358 := a356 &amp; !prev_movx_1;
+a360 := !prev_movx_1 &amp; !prev_robx_1;
+a362 := prev_movx_1 &amp; prev_robx_1;
+a364 := prev_movx_0_0_2 &amp; prev_robx_0_0_7;
+a366 := !a364 &amp; !a362;
+a368 := !a366 &amp; !a360;
+a370 := a368 &amp; prev_robx_2;
+a372 := a370 &amp; !a296;
+a374 := !a370 &amp; a296;
+a376 := !a368 &amp; !prev_robx_2;
+a378 := !a376 &amp; !a370;
+a380 := a378 &amp; !a300;
+a382 := !a378 &amp; a300;
+a384 := !a362 &amp; !a360;
+a386 := !a384 &amp; !a364;
+a388 := a384 &amp; a364;
+a390 := !a388 &amp; !a386;
+a392 := a390 &amp; !a306;
+a394 := !a390 &amp; a306;
+a396 := !prev_movx_0_0_2 &amp; !prev_robx_0_0_7;
+a398 := !a396 &amp; !a364;
+a400 := !a398 &amp; !robx_0_0_7;
+a402 := !a400 &amp; !a394;
+a404 := !a402 &amp; !a392;
+a406 := !a404 &amp; !a382;
+a408 := !a406 &amp; !a380;
+a410 := !a408 &amp; !a374;
+a412 := !a410 &amp; !a372;
+a414 := a412 &amp; !a358;
+a416 := a296 &amp; a248;
+a418 := !prev_movx_1 &amp; !prev_movx_0_0_2;
+a420 := !a418 &amp; a416;
+a422 := a398 &amp; robx_0_0_7;
+a424 := !a422 &amp; !a392;
+a426 := !a424 &amp; !a394;
+a428 := !a426 &amp; !a380;
+a430 := !a428 &amp; !a382;
+a432 := !a430 &amp; !a372;
+a434 := !a432 &amp; !a374;
+a436 := a434 &amp; !a420;
+a438 := !a436 &amp; !a414;
+a440 := a262 &amp; !prev_roby_2;
+a442 := a440 &amp; a88;
+a444 := a442 &amp; !prev_movy_1;
+a446 := !prev_movy_1 &amp; !prev_roby_1;
+a448 := prev_movy_1 &amp; prev_roby_1;
+a450 := prev_movy_0_0_2 &amp; prev_roby_0_0_7;
+a452 := !a450 &amp; !a448;
+a454 := !a452 &amp; !a446;
+a456 := a454 &amp; prev_roby_2;
+a458 := a456 &amp; !a326;
+a460 := !a456 &amp; a326;
+a462 := !a454 &amp; !prev_roby_2;
+a464 := !a462 &amp; !a456;
+a466 := a464 &amp; !a330;
+a468 := !a464 &amp; a330;
+a470 := !a448 &amp; !a446;
+a472 := !a470 &amp; !a450;
+a474 := a470 &amp; a450;
+a476 := !a474 &amp; !a472;
+a478 := a476 &amp; !a336;
+a480 := !a476 &amp; a336;
+a482 := !prev_movy_0_0_2 &amp; !prev_roby_0_0_7;
+a484 := !a482 &amp; !a450;
+a486 := !a484 &amp; !roby_0_0_7;
+a488 := !a486 &amp; !a480;
+a490 := !a488 &amp; !a478;
+a492 := !a490 &amp; !a468;
+a494 := !a492 &amp; !a466;
+a496 := !a494 &amp; !a460;
+a498 := !a496 &amp; !a458;
+a500 := a498 &amp; !a444;
+a502 := !a500 &amp; a438;
+a504 := a326 &amp; a284;
+a506 := !prev_movy_1 &amp; !prev_movy_0_0_2;
+a508 := !a506 &amp; a504;
+a510 := a484 &amp; roby_0_0_7;
+a512 := !a510 &amp; !a478;
+a514 := !a512 &amp; !a480;
+a516 := !a514 &amp; !a466;
+a518 := !a516 &amp; !a468;
+a520 := !a518 &amp; !a458;
+a522 := !a520 &amp; !a460;
+a524 := a522 &amp; !a508;
+a526 := !a524 &amp; a502;
+a528 := a526 &amp; a352;
+a530 := prev_glitches_0_0_1 &amp; !glitches_0_0_1;
+a532 := !a530 &amp; a528;
+a534 := !prev_obsx_2 &amp; !obsx_2;
+a536 := prev_obsx_2 &amp; obsx_2;
+a538 := !a536 &amp; !a534;
+a540 := !a126 &amp; !a120;
+a542 := !prev_obsx_0_0_6 &amp; !obsx_0_0_6;
+a544 := prev_obsx_0_0_6 &amp; obsx_0_0_6;
+a546 := !a544 &amp; !a542;
+a548 := !a546 &amp; !a540;
+a550 := a548 &amp; !a538;
+a552 := !prev_obsy_2 &amp; !obsy_2;
+a554 := prev_obsy_2 &amp; obsy_2;
+a556 := !a554 &amp; !a552;
+a558 := !a156 &amp; !a150;
+a560 := !prev_obsy_0_0_6 &amp; !obsy_0_0_6;
+a562 := prev_obsy_0_0_6 &amp; obsy_0_0_6;
+a564 := !a562 &amp; !a560;
+a566 := !a564 &amp; !a558;
+a568 := a566 &amp; !a556;
+a570 := a568 &amp; a550;
+a572 := !a570 &amp; !prev_obsmove;
+a574 := !prev_glitches_0_0_1 &amp; glitches_0_0_1;
+a576 := !a574 &amp; a572;
+a578 := !a576 &amp; a532;
+a580 := a578 &amp; !a108;
+a582 := !a580 &amp; IsNotFirstRound;
+a584 := !a582 &amp; a114;
+a586 := a584 &amp; !AssumptionsAlreadyViolated;
+a588 := controllable_movy_1 &amp; controllable_movy_0_0_2;
+a590 := controllable_movx_1 &amp; controllable_movx_0_0_2;
+a592 := !a590 &amp; !controllable_obsmove;
+a594 := !a592 &amp; !IsNotFirstRound;
+a596 := !a594 &amp; !a588;
+a598 := !prev_robx_2 &amp; prev_obsx_2;
+a600 := prev_robx_2 &amp; !prev_obsx_2;
+a602 := !prev_robx_1 &amp; prev_obsx_1;
+a604 := prev_robx_1 &amp; !prev_obsx_1;
+a606 := !prev_robx_0_0_7 &amp; prev_obsx_0_0_6;
+a608 := a606 &amp; !a604;
+a610 := !a608 &amp; !a602;
+a612 := !a610 &amp; !a600;
+a614 := !a612 &amp; !a598;
+a616 := prev_robx_1 &amp; prev_obsx_1;
+a618 := !prev_robx_1 &amp; !prev_obsx_1;
+a620 := !a618 &amp; !a606;
+a622 := !a620 &amp; !a616;
+a624 := !prev_obsx_2 &amp; !prev_obsx_1;
+a626 := a624 &amp; prev_robx_2;
+a628 := !a626 &amp; a622;
+a630 := prev_obsx_2 &amp; prev_obsx_1;
+a632 := !a624 &amp; !prev_robx_2;
+a634 := !a632 &amp; !a630;
+a636 := a634 &amp; !a628;
+a638 := !a636 &amp; a614;
+a640 := !prev_roby_2 &amp; prev_obsy_2;
+a642 := prev_roby_2 &amp; !prev_obsy_2;
+a644 := !prev_roby_1 &amp; prev_obsy_1;
+a646 := prev_roby_1 &amp; !prev_obsy_1;
+a648 := !prev_roby_0_0_7 &amp; prev_obsy_0_0_6;
+a650 := a648 &amp; !a646;
+a652 := !a650 &amp; !a644;
+a654 := !a652 &amp; !a642;
+a656 := !a654 &amp; !a640;
+a658 := a656 &amp; a638;
+a660 := prev_roby_1 &amp; prev_obsy_1;
+a662 := !prev_roby_1 &amp; !prev_obsy_1;
+a664 := !a662 &amp; !a648;
+a666 := !a664 &amp; !a660;
+a668 := !prev_obsy_2 &amp; !prev_obsy_1;
+a670 := a668 &amp; prev_roby_2;
+a672 := !a670 &amp; a666;
+a674 := prev_obsy_2 &amp; prev_obsy_1;
+a676 := !a668 &amp; !prev_roby_2;
+a678 := !a676 &amp; !a674;
+a680 := a678 &amp; !a672;
+a682 := !a680 &amp; a658;
+a684 := !a570 &amp; controllable_obsmove;
+a686 := !a684 &amp; !a682;
+a688 := a570 &amp; !controllable_obsmove;
+a690 := !a688 &amp; a686;
+a692 := a690 &amp; !a590;
+a694 := !a692 &amp; IsNotFirstRound;
+a696 := !a694 &amp; a596;
+a698 := !a696 &amp; a586;   
+cond[0] = (obsx_0_0_6 | obsx_1 | obsx_2);
+cond[1] = (obsy_0_0_6 | obsy_1);
+cond[2] = (obsy_0_0_6 | obsx_1);
+}</declaration>
+	<template>
+		<name>Internals</name>
+		<location id="id0" x="-289" y="-8">
+		</location>
+		<location id="id1" x="-187" y="-102">
+			<committed/>
+		</location>
+		<location id="id2" x="0" y="-110">
+			<committed/>
+		</location>
+		<location id="id3" x="212" y="-17">
+			<committed/>
+		</location>
+		<location id="id4" x="374" y="-42">
+			<committed/>
+		</location>
+		<location id="id5" x="374" y="42">
+			<committed/>
+		</location>
+		<location id="id6" x="374" y="119">
+			<committed/>
+		</location>
+		<location id="id7" x="374" y="195">
+			<committed/>
+		</location>
+		<location id="id8" x="263" y="195">
+			<committed/>
+		</location>
+		<location id="id9" x="153" y="195">
+			<committed/>
+		</location>
+		<location id="id10" x="34" y="187">
+			<committed/>
+		</location>
+		<location id="id11" x="-76" y="178">
+			<committed/>
+		</location>
+		<location id="id12" x="-212" y="178">
+			<committed/>
+		</location>
+		<location id="id13" x="-340" y="170">
+			<committed/>
+		</location>
+		<location id="id14" x="-331" y="76">
+			<committed/>
+		</location>
+		<location id="id15" x="-187" y="76">
+			<committed/>
+		</location>
+		<location id="id16" x="-34" y="85">
+			<committed/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-271" y="-4">controllable_obsmove=1</label>
+			<nail x="-51" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-271" y="8">controllable_obsmove=0</label>
+			<nail x="-59" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="assignment" x="-169" y="59">controllable_movy_1=1</label>
+			<nail x="-110" y="42"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="assignment" x="-313" y="55">controllable_movy_0_0_2=1</label>
+			<nail x="-263" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="assignment" x="-314" y="106">controllable_movx_1=0</label>
+			<nail x="-297" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-322" y="208">controllable_movx_0_0_2=1</label>
+			<nail x="-263" y="246"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="assignment" x="-152" y="208">glitches_0_0_1=1</label>
+			<nail x="-170" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="4" y="221">roby_1=1</label>
+			<nail x="-25" y="255"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="103" y="237">roby_0_0_7=1</label>
+			<nail x="85" y="280"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="213" y="225">robx_1=1</label>
+			<nail x="195" y="255"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="324" y="220">robx_0_0_7 =1</label>
+			<nail x="306" y="246"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="assignment" x="-169" y="80">controllable_movy_1=0</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="assignment" x="-313" y="76">controllable_movy_0_0_2=0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="assignment" x="-335" y="123">controllable_movx_1=1</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-322" y="174">controllable_movx_0_0_2=0</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="assignment" x="-194" y="178">glitches_0_0_1=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-58" y="182">roby_1=0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="52" y="191">roby_0_0_7=0</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="171" y="195">robx_1=0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="281" y="195">robx_0_0_7 =0</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="assignment" x="352" y="169">obsy_2=0</label>
+			<nail x="331" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="assignment" x="374" y="157">obsy_2=1</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="361" y="63">obsy_1=0</label>
+			<nail x="348" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="374" y="80">obsy_1=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="357" y="-17">obsy_0_0_6=0</label>
+			<nail x="340" y="8"/>
+			<nail x="365" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="374" y="0">obsy_0_0_6=1</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="230" y="-8">obsx_2=1</label>
+			<nail x="323" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="85" y="-42">obsx_1=0</label>
+			<nail x="64" y="-148"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="255" y="-51">obsx_2=0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="68" y="0">obsx_1=1</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="assignment" x="-144" y="-136">obsx_0_0_6 =1</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="assignment" x="-153" y="-85">obsx_0_0_6 =0</label>
+			<nail x="-85" y="-64"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-246" y="-34">step?</label>
+			<label kind="assignment" x="-263" y="-51">update()</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Scheduler</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id17" x="-416" y="102">
+			<name x="-426" y="68">wait</name>
+			<urgent/>
+		</location>
+		<location id="id18" x="-544" y="-76">
+			<name x="-554" y="-110">p0</name>
+			<committed/>
+		</location>
+		<location id="id19" x="-85" y="93">
+			<name x="-95" y="59">p1</name>
+			<committed/>
+		</location>
+		<location id="id20" x="-408" y="238">
+			<name x="-418" y="204">idle</name>
+			<committed/>
+		</location>
+		<location id="id21" x="-459" y="-85">
+			<name x="-469" y="-119">p0_</name>
+			<label kind="invariant" x="-469" y="-68">x&lt;=comp_u[0]</label>
+		</location>
+		<location id="id22" x="-85" y="161">
+			<name x="-95" y="127">p1_</name>
+			<label kind="invariant" x="-95" y="178">x&lt;=comp_u[1]</label>
+		</location>
+		<location id="id23" x="-340" y="238">
+			<name x="-350" y="204">idle_</name>
+			<label kind="invariant" x="-350" y="255">x&lt;=5</label>
+		</location>
+		<location id="id24" x="-663" y="110">
+			<label kind="invariant" x="-673" y="127">x&lt;=comp_u[2]</label>
+		</location>
+		<init ref="id17"/>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id17"/>
+			<nail x="-561" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-645" y="72">!is_ready[0] &amp;&amp; !is_ready[1] &amp;&amp; is_ready[2]</label>
+			<label kind="synchronisation" x="-645" y="89">step!</label>
+			<label kind="assignment" x="-645" y="106">x=0, is_ready[2]=0</label>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-398" y="170">x=0</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-390" y="221">step!</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-296" y="157">x=0</label>
+			<nail x="-314" y="153"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-42" y="127">step!</label>
+			<nail x="-42" y="119"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id17"/>
+			<label kind="assignment" x="-441" y="-38">x=0</label>
+			<nail x="-391" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-526" y="-97">step!</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-212" y="59">step!</label>
+			<nail x="-314" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<nail x="-425" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-731" y="178">!is_ready[0] &amp;&amp; !is_ready[1] &amp;&amp; !is_ready[2]</label>
+			<label kind="assignment" x="-442" y="153">x=0</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-391" y="34">!is_ready[0] &amp;&amp; is_ready[1]</label>
+			<label kind="assignment" x="-297" y="110">x=0, is_ready[1]=0</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-526" y="-21">is_ready[0]</label>
+			<label kind="assignment" x="-629" y="17">x=0, is_ready[0]=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>P</name>
+		<parameter>int[0,2] i</parameter>
+		<declaration>clock y;</declaration>
+		<location id="id25" x="-229" y="-51">
+			<name x="-239" y="-85">q</name>
+		</location>
+		<location id="id26" x="34" y="-51">
+			<name x="24" y="-85">missed</name>
+		</location>
+		<init ref="id25"/>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-161" y="-76">y&gt;dead[i] &amp;&amp; is_ready[i]</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-262" y="-178">y&gt;=inter[i] &amp;&amp; cond[i]</label>
+			<label kind="synchronisation" x="-262" y="-161">step!</label>
+			<label kind="assignment" x="-262" y="-144">y=0, is_ready[i]=1</label>
+			<nail x="-280" y="-144"/>
+			<nail x="-187" y="-144"/>
+		</transition>
+	</template>
+	<system>system P, Scheduler, Internals;
+    </system>
+	<queries>
+		<query>
+			<formula>A[]!(P(0).missed || P(1).missed)</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

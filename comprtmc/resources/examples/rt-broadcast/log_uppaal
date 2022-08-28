@@ -1,0 +1,53 @@
+broadcast_amba_a.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661340489
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Throughput: 12915 states/sec, Load: 1868153 states
+real	30m0,112s
+user	29m57,968s
+sys	0m0,734s
+broadcast_amba_b.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661342289
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Throughput: 12195 states/sec, Load: 792117 states
+real	30m4,782s
+user	29m57,398s
+sys	0m0,846s
+broadcast_amba_c.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661344093
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Throughput: 12942 states/sec, Load: 331967 states
+real	30m2,420s
+user	29m57,175s
+sys	0m0,839s
+broadcast_amba_d.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661345896
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Throughput: 10971 states/sec, Load: 2116973 states
+real	30m0,096s
+user	29m57,687s
+sys	0m0,821s
+

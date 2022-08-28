@@ -1,0 +1,79 @@
+prio_sched_2a.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661608905
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula is satisfied.
+
+real	0m0,808s
+user	0m0,803s
+sys	0m0,004s
+prio_sched_2b.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661608906
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Out of memory. See 721 states/sec, Load: 39968615 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	4m26,822s
+user	4m21,943s
+sys	0m3,624s
+prio_sched_3c.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661609173
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Out of memory. See 751 states/sec, Load: 31898815 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	3m27,622s
+user	3m24,436s
+sys	0m2,933s
+prio_sched_3d.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661609380
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Out of memory. See 308 states/sec, Load: 31933338 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	3m37,656s
+user	3m33,558s
+sys	0m3,454s
+prio_sched_3e.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1661609598
+  State space representation uses minimal constraint systems
+
+Verifying formula 1 at /nta/queries/query[1]/formula
+Out of memory. See 603 states/sec, Load: 32001371 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	3m24,781s
+user	3m21,525s
+sys	0m2,945s
+
