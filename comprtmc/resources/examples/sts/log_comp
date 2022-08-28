@@ -1,0 +1,21 @@
+sts-2-fsm.smv sts-2-ta.ta
+[32mTA Inclusion holds: hypothesis with 2 states found[0m
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 289, (0.289 s)
+Searching for counterexample [ms]: 5584, (5.584 s)
+
+learning rounds [#]: 1
+States: 2
+Sigma: 10
+Total system calls: 0ms
+Nb of membership queries: 31
+Time per query: 0ms
+
+real	0m6,473s
+user	0m7,054s
+sys	0m0,277s
+sts-3-fsm.smv sts-3-ta.ta
+[32mTA Inclusion holds: hypothesis with 32 states found[0m
