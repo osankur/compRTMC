@@ -133,10 +133,12 @@ class CompSynthesisAlgorithm(
         hypothesis: DFA[_, String],
         inputs: java.util.Collection[? <: String]
     ): DefaultQuery[String, java.lang.Boolean] = {
-      System.out.println(statistics.Counters.toString)
+      if (configuration.globalConfiguration.verbose)
+        System.out.println(statistics.Counters.toString)
       taInclusionOracle.findCounterExample(hypothesis, inputs) match {
         case null => // T <= barH
-          System.out.println("New over approximation found")
+          if (configuration.globalConfiguration.verbose)
+            System.out.println("New over approximation found")
           SynthesisLearningLock.setOverApproximation(hypothesis)
           if (configuration.globalConfiguration.visualizeDFA) then
             Visualization.visualize(hypothesis,inputs)
@@ -145,18 +147,19 @@ class CompSynthesisAlgorithm(
               // Synthesis succeeded
               // Visualization.visualize(hypothesis, inputs)
               SynthesisLearningLock.strategy = strat
-              SynthesisLearningLock.setVerdict(true)
+              SynthesisLearningLock.setVerdict(true)              
               System.out.println(GREEN + BOLD + "\nControllable\n" + RESET)
               if (configuration.globalConfiguration.visualizeDFA) then
                 Visualization.visualize(hypothesis,inputs)
               null
             case synthesis.Uncontrollable(strat) =>
-              System.out.println(
-                RED + "OverAppr Query: Uncontrollable" + RESET + "\n"
-              )
-              System.out.println(
-                RED + "Checking the feasibility of the counterstrategy w.r.t. TA" + RESET + "\n"
-              )
+              if (configuration.globalConfiguration.verbose)
+                System.out.println(
+                  RED + "OverAppr Query: Uncontrollable" + RESET + "\n"
+                )
+                System.out.println(
+                  RED + "Checking the feasibility of the counterstrategy w.r.t. TA" + RESET + "\n"
+                )
 
               // // TODO Assertion: FSM^strat <= overH
               // val smvStrategy = fsm.SMV(strat)
@@ -180,7 +183,8 @@ class CompSynthesisAlgorithm(
               if (SynthesisLearningLock.verdict != None) {
                 null
               } else {
-                System.out.println("Adding Query: " + SynthesisLearningLock.query)
+                if (configuration.globalConfiguration.verbose)
+                  System.out.println("Adding Query: " + SynthesisLearningLock.query)
                 SynthesisLearningLock.query
               }
             case _ => throw Exception("Unknown synthesis result")
@@ -269,8 +273,10 @@ class CompSynthesisAlgorithm(
                       word,
                       java.lang.Boolean.TRUE
                     )
-                System.out.println(query)
-                System.out.println("cexTrace is accepted by TA. Make query so that underH accepts it as well")
+                if (configuration.globalConfiguration.verbose){
+                  System.out.println(query)
+                  System.out.println("cexTrace is accepted by TA. Make query so that underH accepts it as well")
+                }
                 query
               } else {
                 // cexTrace is rejected by TA. Pause learning and go back to OverAppr learning with new query
@@ -279,12 +285,13 @@ class CompSynthesisAlgorithm(
                       word,
                       java.lang.Boolean.FALSE
                     )
-                System.out.println(query)
-                System.out.println("cexTrace is rejected by TA. Update overH to exclude this trace")
+                if (configuration.globalConfiguration.verbose){
+                  System.out.println(query)
+                  System.out.println("cexTrace is rejected by TA. Update overH to exclude this trace")
+                }
                 SynthesisLearningLock.query = query
                 SynthesisLearningLock.switchPhase()
                 SynthesisLearningLock.waitForPhase(UnderApprPhase)
-                System.out.println("We are back: " + SynthesisLearningLock.verdict)
                 if (SynthesisLearningLock.verdict != None) {
                     null
                 } else {

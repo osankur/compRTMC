@@ -15,6 +15,8 @@ real	0m20,077s
 user	0m19,795s
 sys	0m0,057s
 
+sts-3.xml
+
 Options for the verification:
   Generating no trace
   Search order is breadth first

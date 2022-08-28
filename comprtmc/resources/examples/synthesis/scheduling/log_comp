@@ -1,0 +1,155 @@
+sched_bitcounter64.v scheda.ta
+[32mTA Inclusion holds: hypothesis with 114 states found[0m
+
+yosys> read_verilog .crtmc/product9693250749857342925.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product9693250749857342925.v.blif
+Warning: Deep recursion in AST simplifier.
+Does this design contain insanely long expressions?
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product9693250749857342925.v.blif; strash; write_aiger -s .crtmc/product9693250749857342925.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product9693250749857342925.v:116$71_Y[10]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product9693250749857342925.v:82$25_Y[3], $add$.crtmc/product9693250749857342925.v:92$42_Y[3]
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+26.48user 7.22system 0:28.91elapsed 116%CPU (0avgtext+0avgdata 185612maxresident)k
+2216inputs+21320outputs (23major+1658816minor)pagefaults 0swaps
+sched_bitcounter64.v schedb.ta
+[32mTA Inclusion holds: hypothesis with 96 states found[0m
+
+yosys> read_verilog .crtmc/product6149996643618288303.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product6149996643618288303.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product6149996643618288303.v.blif; strash; write_aiger -s .crtmc/product6149996643618288303.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product6149996643618288303.v:116$71_Y[10]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product6149996643618288303.v:82$25_Y[3], $add$.crtmc/product6149996643618288303.v:92$42_Y[3]
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+15.93user 5.69system 0:17.47elapsed 123%CPU (0avgtext+0avgdata 165148maxresident)k
+0inputs+16928outputs (8major+1302594minor)pagefaults 0swaps
+sched_bitcounter64.v schedc.ta
+[32mTA Inclusion holds: hypothesis with 88 states found[0m
+
+yosys> read_verilog .crtmc/product5030870227011388601.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product5030870227011388601.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product5030870227011388601.v.blif; strash; write_aiger -s .crtmc/product5030870227011388601.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product5030870227011388601.v:116$71_Y[10]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product5030870227011388601.v:82$25_Y[3], $add$.crtmc/product5030870227011388601.v:92$42_Y[3]
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating reachability strategy
+[abssynthe] Adversary can ensure reachability
+[LOG] Realizable? 0
+<--[1m[34m Switched to phase [32mUnderApprPhase[0m -->
+Checking if lower bound is found |DFA|=2: Map(taMembershipOracle -> 1513)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy14592300473346407632.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(tick, tick, tick, startB)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=4: Map(taMembershipOracle -> 1807, SMVIntersectionOracle -> 1)
+Checking if lower bound is found |DFA|=5: Map(taMembershipOracle -> 1959, SMVIntersectionOracle -> 1)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy14592300473346407632.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(tick, tick, tick, startB, startA)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=7: Map(taMembershipOracle -> 3240, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=8: Map(taMembershipOracle -> 3303, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=9: Map(taMembershipOracle -> 3430, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=11: Map(taMembershipOracle -> 5454, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=12: Map(taMembershipOracle -> 8259, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=15: Map(taMembershipOracle -> 8346, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=16: Map(taMembershipOracle -> 8386, SMVIntersectionOracle -> 2)
+Checking if lower bound is found |DFA|=17: Map(taMembershipOracle -> 14268, SMVIntersectionOracle -> 2)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy14592300473346407632.aag.smv conforms to underH
+There are no traces currently available.
+[31m[1m
+Uncontrollable
+[0m
+95.77user 75.54system 2:26.20elapsed 117%CPU (0avgtext+0avgdata 257924maxresident)k
+56inputs+195624outputs (24major+16154087minor)pagefaults 0swaps
+sched_genbuf2f3yunrealy.v schedd.ta
+[32mTA Inclusion holds: hypothesis with 108 states found[0m
+
+yosys> read_verilog .crtmc/product6965676975594619271.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product6965676975594619271.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product6965676975594619271.v.blif; strash; write_aiger -s .crtmc/product6965676975594619271.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product6965676975594619271.v:600$368_Y[3]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product6965676975594619271.v:139$23_Y[3], $add$.crtmc/product6965676975594619271.v:149$40_Y[3]
+Hierarchy reader flattened 3 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+26.29user 7.04system 0:28.53elapsed 116%CPU (0avgtext+0avgdata 176132maxresident)k
+56inputs+20728outputs (8major+1599448minor)pagefaults 0swaps
+sched_genbuf2f3yunrealy.v schede.ta
+[32mTA Inclusion holds: hypothesis with 83 states found[0m
+
+yosys> read_verilog .crtmc/product5247508271923018879.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product5247508271923018879.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product5247508271923018879.v.blif; strash; write_aiger -s .crtmc/product5247508271923018879.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product5247508271923018879.v:600$368_Y[3]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product5247508271923018879.v:139$23_Y[3], $add$.crtmc/product5247508271923018879.v:149$40_Y[3]
+Hierarchy reader flattened 3 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+15.91user 4.96system 0:17.33elapsed 120%CPU (0avgtext+0avgdata 175696maxresident)k
+8inputs+14520outputs (8major+1113897minor)pagefaults 0swaps
+sched_genbuf2f3yunrealy.v schedf.ta
+[32mTA Inclusion holds: hypothesis with 19 states found[0m
+
+yosys> read_verilog .crtmc/product14313019984383473909.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product14313019984383473909.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product14313019984383473909.v.blif; strash; write_aiger -s .crtmc/product14313019984383473909.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product14313019984383473909.v:600$368_Y[3]
+Warning: Constant-0 drivers added to 2 non-driven nets in network "sched":
+$add$.crtmc/product14313019984383473909.v:139$23_Y[3], $add$.crtmc/product14313019984383473909.v:149$40_Y[3]
+Hierarchy reader flattened 3 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+4.64user 0.86system 0:04.86elapsed 113%CPU (0avgtext+0avgdata 105372maxresident)k
+8inputs+2640outputs (8major+184158minor)pagefaults 0swaps

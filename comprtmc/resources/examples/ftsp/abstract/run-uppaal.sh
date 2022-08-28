@@ -8,6 +8,6 @@ ftsp-3-abs.xml
 ftsp-4-abs.xml
 )
 for b in ${benchs[@]}; do
-	echo $b	| tee log_uppaal 2>&1
-	time verifyta $b | tee log_uppaal 2>&1
+	echo $b	| tee -a log_uppaal
+	time verifyta $b 2>&1 | tee -a log_uppaal
 done

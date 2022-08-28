@@ -218,30 +218,35 @@ class AbssyntheOracle(verilog : Verilog) extends SynthesisOracle{
         val cmd_yosys = s"echo \"read_verilog ${verilogFile.toString}; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif $tmpFilename.blif\"" #| "yosys -q"
         // val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; refactor; rewrite; dfraig; write_aiger -s $tmpFilename.aig\""
         val cmd_abc = s"berkeley-abc -c \"read_blif ${tmpFilename}.blif; strash; write_aiger -s $tmpFilename.aig\""
-        val cmd_aig = s"./resources/scripts/aig/bad2out $tmpFilename.aig $tmpFilename.aag"
-        //val cmd_bad2out = s"./resources/scripts/aig/bad2out $tmpFilename.aig $tmpFilename.aag"
-        System.out.println(cmd_yosys)
+        // val cmd_aig = s"./resources/scripts/aig/bad2out $tmpFilename.aig $tmpFilename.aag"
+        val cmd_aig = s"bad2out $tmpFilename.aig $tmpFilename.aag"
+        if (configuration.globalConfiguration.verbose)
+            System.out.println(cmd_yosys)
         
         if (cmd_yosys.! != 0){
             throw Exception("Yosys returned an error")
         }
-        System.out.println(cmd_abc)
+        if (configuration.globalConfiguration.verbose)
+            System.out.println(cmd_abc)
         if (cmd_abc.! != 0){
             throw Exception("berkeley-abc returned an error")
         }
-        System.out.println(cmd_aig)
+        if (configuration.globalConfiguration.verbose)
+            System.out.println(cmd_aig)
         if (cmd_aig.! != 0){
             throw Exception("aigtoaig returned an error")
         }
         val witnessStrategyFile = Files.createTempFile(tmpDirPath, "strategy", ".aag").toFile()
         val cmd_synth = s"abssynthe -v LD ${tmpFilename}.aag -o ${witnessStrategyFile.toString}"
-        System.out.println(cmd_synth)
+        if (configuration.globalConfiguration.verbose)
+            System.out.println(cmd_synth)
         val output_synth = cmd_synth.!
         val smvWitnessStrategyFile = File(witnessStrategyFile.toString + ".smv")
         val cmd_convert = s"aigtosmv -c ${witnessStrategyFile.toString}" #> smvWitnessStrategyFile
         val cmd_append = s"echo \"INVARSPEC !${verilog.errorName}\n\"" #>> smvWitnessStrategyFile
-        System.out.println(cmd_convert)
-        System.out.println(cmd_append)
+        if (configuration.globalConfiguration.verbose)
+            System.out.println(cmd_convert)
+            System.out.println(cmd_append)
         output_synth match {
             case 10 => // Realizable
                 cmd_convert.!

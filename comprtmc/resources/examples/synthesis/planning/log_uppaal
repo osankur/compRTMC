@@ -1,0 +1,133 @@
+planning_genbuf_a.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697162
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+Out of memory. See 09 states/sec, Size: 16825716 states, Load: 6732953 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	1m2,048s
+user	1m0,315s
+sys	0m1,612s
+planning_genbuf_b.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697224
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+Out of memory. See 04 states/sec, Size: 16810882 states, Load: 6725536 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	1m2,575s
+user	1m0,662s
+sys	0m1,444s
+planning_genbuf_c.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697286
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+Out of memory. See 184 states/sec, Size: 17557032 states, Load: 8671475 states
+http://bugsy.grid.aau.dk/bugzilla3/show_bug.cgi?id=63
+for more information.
+
+real	1m9,878s
+user	1m6,800s
+sys	0m1,924s
+planning_stateless_d.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697356
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+ -- Property is satisfied.
+
+real	0m24,358s
+user	0m21,612s
+sys	0m0,359s
+planning_stateless_e.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697380
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+ -- Property is satisfied.
+
+real	0m4,304s
+user	0m4,216s
+sys	0m0,056s
+planning_stateless_f.xml
+Options for the verification:
+  Generating no trace
+  Search order is breadth first (UPPAAL), automatic (TIGA)
+  Using conservative space optimisation
+  Seed is 1661697385
+  State space representation uses minimal constraint systems
+  Using Covariance Matrixes for learning SMC-Strategies
+  Learning-settings:
+	maxRuns		:5000
+	maxGood		:50000
+	maxBest		:500
+	evalRuns	:1000
+  Using Local Heap filtering for learning
+
+Verifying property 1 at line 6
+ -- Property is satisfied.
+
+real	0m1,559s
+user	0m1,518s
+sys	0m0,040s
+

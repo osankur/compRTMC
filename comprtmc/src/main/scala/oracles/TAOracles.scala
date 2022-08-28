@@ -530,9 +530,8 @@ class TCheckerInclusionOracle(
       hypothesis: DFA[_, String],
       inputs: java.util.Collection[? <: String]
   ): DefaultQuery[String, java.lang.Boolean] = {
-    if (configuration.globalConfiguration.verbose)
-      statistics.Counters.incrementCounter("taInclusionOracle")
-
+    statistics.Counters.incrementCounter("taInclusionOracle")
+    
     val productFile =
       Files.createTempFile(tmpDirPath, "productEq", ".ta").toFile()
     val pw = PrintWriter(productFile)

@@ -7,6 +7,6 @@ broadcast_amba_b.xml
 broadcast_amba_c.xml
 broadcast_amba_d.xml)
 for b in ${benchs[@]}; do
-	echo $b	| tee log_uppaal 2>&1
-	time verifyta $b | tee log_uppaal 2>&1
+	echo $b	| tee -a log_uppaal
+	time verifyta $b  2>&1| tee -a log_uppaal
 done

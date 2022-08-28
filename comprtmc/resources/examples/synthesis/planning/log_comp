@@ -1,0 +1,226 @@
+planning_stateless.v planning_a.ta
+[32mTA Inclusion holds: hypothesis with 4 states found[0m
+
+yosys> read_verilog .crtmc/product2119474586679480418.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product2119474586679480418.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product2119474586679480418.v.blif; strash; write_aiger -s .crtmc/product2119474586679480418.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product2119474586679480418.v:96$59_Y[11]
+Warning: Constant-0 drivers added to 16 non-driven nets in network "planning":
+$sub$.crtmc/product2119474586679480418.v:60$32_Y[31], $sub$.crtmc/product2119474586679480418.v:64$36_Y[31], $sub$.crtmc/product2119474586679480418.v:72$45_Y[31], $sub$.crtmc/product2119474586679480418.v:76$51_Y[31] ...
+Warning: The design has 2 root-level modules. The first one (_rtmc_) will be used.
+Hierarchy reader flattened 2 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+2.08user 0.15system 0:01.73elapsed 129%CPU (0avgtext+0avgdata 76196maxresident)k
+0inputs+936outputs (8major+39455minor)pagefaults 0swaps
+planning_stateless.v planning_b.ta
+[32mTA Inclusion holds: hypothesis with 5 states found[0m
+
+yosys> read_verilog .crtmc/product5074975684888432124.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product5074975684888432124.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product5074975684888432124.v.blif; strash; write_aiger -s .crtmc/product5074975684888432124.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product5074975684888432124.v:96$59_Y[11]
+Warning: Constant-0 drivers added to 16 non-driven nets in network "planning":
+$sub$.crtmc/product5074975684888432124.v:60$32_Y[31], $sub$.crtmc/product5074975684888432124.v:64$36_Y[31], $sub$.crtmc/product5074975684888432124.v:72$45_Y[31], $sub$.crtmc/product5074975684888432124.v:76$51_Y[31] ...
+Warning: The design has 2 root-level modules. The first one (_rtmc_) will be used.
+Hierarchy reader flattened 2 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+2.00user 0.19system 0:01.69elapsed 129%CPU (0avgtext+0avgdata 77536maxresident)k
+0inputs+992outputs (8major+44581minor)pagefaults 0swaps
+planning_stateless.v planning_c.ta
+[32mTA Inclusion holds: hypothesis with 3 states found[0m
+
+yosys> read_verilog .crtmc/product12810869307192397428.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product12810869307192397428.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product12810869307192397428.v.blif; strash; write_aiger -s .crtmc/product12810869307192397428.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product12810869307192397428.v:96$59_Y[11]
+Warning: Constant-0 drivers added to 16 non-driven nets in network "planning":
+$sub$.crtmc/product12810869307192397428.v:60$32_Y[31], $sub$.crtmc/product12810869307192397428.v:64$36_Y[31], $sub$.crtmc/product12810869307192397428.v:72$45_Y[31], $sub$.crtmc/product12810869307192397428.v:76$51_Y[31] ...
+Warning: The design has 2 root-level modules. The first one (_rtmc_) will be used.
+Hierarchy reader flattened 2 instances of logic boxes and left 0 black boxes.
+[LOG] Generating reachability strategy
+[abssynthe] Adversary can ensure reachability
+[LOG] Realizable? 0
+<--[1m[34m Switched to phase [32mUnderApprPhase[0m -->
+Checking if lower bound is found |DFA|=2: Map(taMembershipOracle -> 19)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy8915731761233923185.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=3: Map(taMembershipOracle -> 100, SMVIntersectionOracle -> 1)
+Checking if lower bound is found |DFA|=4: Map(taMembershipOracle -> 142, SMVIntersectionOracle -> 1)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy8915731761233923185.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, obs1, robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+<--[1m[34m Switched to phase [32mOverApprPhase[0m -->
+[32mTA Inclusion holds: hypothesis with 5 states found[0m
+
+yosys> read_verilog .crtmc/product17137663641127681544.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product17137663641127681544.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product17137663641127681544.v.blif; strash; write_aiger -s .crtmc/product17137663641127681544.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product17137663641127681544.v:96$59_Y[11]
+Warning: Constant-0 drivers added to 16 non-driven nets in network "planning":
+$sub$.crtmc/product17137663641127681544.v:60$32_Y[31], $sub$.crtmc/product17137663641127681544.v:64$36_Y[31], $sub$.crtmc/product17137663641127681544.v:72$45_Y[31], $sub$.crtmc/product17137663641127681544.v:76$51_Y[31] ...
+Warning: The design has 2 root-level modules. The first one (_rtmc_) will be used.
+Hierarchy reader flattened 2 instances of logic boxes and left 0 black boxes.
+[LOG] Generating reachability strategy
+[abssynthe] Adversary can ensure reachability
+[LOG] Realizable? 0
+<--[1m[34m Switched to phase [32mUnderApprPhase[0m -->
+Checking if lower bound is found |DFA|=4: Map(taMembershipOracle -> 433, SMVIntersectionOracle -> 2)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy6912441340700370801.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, robot, obs1, robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=5: Map(taMembershipOracle -> 719, SMVIntersectionOracle -> 3)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy6912441340700370801.aag.smv conforms to underH
+There are no traces currently available.
+[31m[1m
+Uncontrollable
+[0m
+10.08user 4.44system 0:10.89elapsed 133%CPU (0avgtext+0avgdata 175852maxresident)k
+0inputs+12368outputs (8major+930244minor)pagefaults 0swaps
+planning_genbuf.v planning_a.ta
+[32mTA Inclusion holds: hypothesis with 4 states found[0m
+
+yosys> read_verilog .crtmc/product1696819081714595539.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product1696819081714595539.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product1696819081714595539.v.blif; strash; write_aiger -s .crtmc/product1696819081714595539.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product1696819081714595539.v:128$59_Y[11]
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product1696819081714595539.v:557$362_Y[3]
+Warning: Constant-0 drivers added to 12 non-driven nets in network "planning":
+$sub$.crtmc/product1696819081714595539.v:100$36_Y[31], $sub$.crtmc/product1696819081714595539.v:108$45_Y[31], $sub$.crtmc/product1696819081714595539.v:112$51_Y[31], $sub$.crtmc/product1696819081714595539.v:96$32_Y[31] ...
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+5.94user 0.21system 0:05.61elapsed 109%CPU (0avgtext+0avgdata 78276maxresident)k
+0inputs+4496outputs (8major+49713minor)pagefaults 0swaps
+planning_genbuf.v planning_b.ta
+[32mTA Inclusion holds: hypothesis with 5 states found[0m
+
+yosys> read_verilog .crtmc/product726730931650969419.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product726730931650969419.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product726730931650969419.v.blif; strash; write_aiger -s .crtmc/product726730931650969419.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product726730931650969419.v:128$59_Y[11]
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product726730931650969419.v:557$362_Y[3]
+Warning: Constant-0 drivers added to 12 non-driven nets in network "planning":
+$sub$.crtmc/product726730931650969419.v:100$36_Y[31], $sub$.crtmc/product726730931650969419.v:108$45_Y[31], $sub$.crtmc/product726730931650969419.v:112$51_Y[31], $sub$.crtmc/product726730931650969419.v:96$32_Y[31] ...
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating safety strategy
+[abssynthe] Controller can ensure safety
+[LOG] Realizable? 1
+[32m[1m
+Controllable
+[0m
+8.97user 0.25system 0:08.75elapsed 105%CPU (0avgtext+0avgdata 78088maxresident)k
+0inputs+4056outputs (8major+54092minor)pagefaults 0swaps
+planning_genbuf.v planning_c.ta
+[32mTA Inclusion holds: hypothesis with 3 states found[0m
+
+yosys> read_verilog .crtmc/product10106263433608159041.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product10106263433608159041.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product10106263433608159041.v.blif; strash; write_aiger -s .crtmc/product10106263433608159041.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product10106263433608159041.v:128$59_Y[11]
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product10106263433608159041.v:557$362_Y[3]
+Warning: Constant-0 drivers added to 12 non-driven nets in network "planning":
+$sub$.crtmc/product10106263433608159041.v:100$36_Y[31], $sub$.crtmc/product10106263433608159041.v:108$45_Y[31], $sub$.crtmc/product10106263433608159041.v:112$51_Y[31], $sub$.crtmc/product10106263433608159041.v:96$32_Y[31] ...
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating reachability strategy
+[abssynthe] Adversary can ensure reachability
+[LOG] Realizable? 0
+<--[1m[34m Switched to phase [32mUnderApprPhase[0m -->
+Checking if lower bound is found |DFA|=2: Map(taMembershipOracle -> 19)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy1248694906206950866.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=3: Map(taMembershipOracle -> 100, SMVIntersectionOracle -> 1)
+Checking if lower bound is found |DFA|=4: Map(taMembershipOracle -> 142, SMVIntersectionOracle -> 1)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy1248694906206950866.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, obs1, robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+<--[1m[34m Switched to phase [32mOverApprPhase[0m -->
+[32mTA Inclusion holds: hypothesis with 5 states found[0m
+
+yosys> read_verilog .crtmc/product990609613352391278.v; hierarchy; proc; opt; memory; opt; techmap; opt; write_blif .crtmc/product990609613352391278.v.blif
+
+yosys> exit
+ABC command line: "read_blif .crtmc/product990609613352391278.v.blif; strash; write_aiger -s .crtmc/product990609613352391278.v.aig".
+
+Warning: Constant-0 drivers added to 1 non-driven nets in network "counter":
+$add$.crtmc/product990609613352391278.v:128$59_Y[11]
+Warning: Constant-0 drivers added to 1 non-driven nets in network "genbuf_3_new_4":
+$add$.crtmc/product990609613352391278.v:557$362_Y[3]
+Warning: Constant-0 drivers added to 12 non-driven nets in network "planning":
+$sub$.crtmc/product990609613352391278.v:100$36_Y[31], $sub$.crtmc/product990609613352391278.v:108$45_Y[31], $sub$.crtmc/product990609613352391278.v:112$51_Y[31], $sub$.crtmc/product990609613352391278.v:96$32_Y[31] ...
+Hierarchy reader flattened 4 instances of logic boxes and left 0 black boxes.
+[LOG] Generating reachability strategy
+[abssynthe] Adversary can ensure reachability
+[LOG] Realizable? 0
+<--[1m[34m Switched to phase [32mUnderApprPhase[0m -->
+Checking if lower bound is found |DFA|=4: Map(taMembershipOracle -> 433, SMVIntersectionOracle -> 2)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy16449685217952744338.aag.smv conforms to underH
+[31mUnderAppr: Counter strategy has a trace that is not in underH: List(robot, robot, obs1, robot, obs1, robot)[0m
+
+[31mChecking the feasibility of this trace w.r.t. TA[0m
+
+Checking if lower bound is found |DFA|=5: Map(taMembershipOracle -> 719, SMVIntersectionOracle -> 3)
+New under approximation found
+Checking if the environment-controlled system .crtmc/strategy16449685217952744338.aag.smv conforms to underH
+There are no traces currently available.
+[31m[1m
+Uncontrollable
+[0m
+266.70user 13.94system 4:29.52elapsed 104%CPU (0avgtext+0avgdata 3893300maxresident)k
+33528inputs+107960outputs (125major+3340656minor)pagefaults 0swaps
