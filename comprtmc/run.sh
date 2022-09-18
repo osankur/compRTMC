@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 MEMLIM=8G
 if [ "$#" -lt 3 ]; then
     echo "Illegal number of parameters"

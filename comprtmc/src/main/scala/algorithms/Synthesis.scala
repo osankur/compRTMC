@@ -133,6 +133,7 @@ class CompSynthesisAlgorithm(
         hypothesis: DFA[_, String],
         inputs: java.util.Collection[? <: String]
     ): DefaultQuery[String, java.lang.Boolean] = {
+      statistics.Counters.incrementCounter("conjecture_overH")
       if (configuration.globalConfiguration.verbose)
         System.out.println(statistics.Counters.toString)
       taInclusionOracle.findCounterExample(hypothesis, inputs) match {
@@ -149,6 +150,19 @@ class CompSynthesisAlgorithm(
               SynthesisLearningLock.strategy = strat
               SynthesisLearningLock.setVerdict(true)              
               System.out.println(GREEN + BOLD + "\nControllable\n" + RESET)
+              System.out.println("Total number of conjectures made: " + (statistics.Counters.get("conjecture_overH") + statistics.Counters.get("conjecture_underH")))
+              SynthesisLearningLock.overApproximation match 
+              { case Some(aut) =>
+                System.out.println("Size of conjecture overH: " + aut.size())
+                case _ => ()
+              }
+              SynthesisLearningLock.underApproximation match 
+              { case Some(aut) =>
+                System.out.println("Size of conjecture underH: " + aut.size())
+                case _ => ()
+              }
+              System.out.println(statistics.Counters.counter)
+
               if (configuration.globalConfiguration.visualizeDFA) then
                 Visualization.visualize(hypothesis,inputs)
               null
@@ -231,6 +245,8 @@ class CompSynthesisAlgorithm(
         hypothesis: DFA[_, String],
         inputs: java.util.Collection[? <: String]
     ): DefaultQuery[String, java.lang.Boolean] = {
+      statistics.Counters.incrementCounter("conjecture_underH")
+
       System.out.println("Checking if lower bound is found |DFA|=" + hypothesis.size() + ": " + statistics.Counters.toString)
       SynthesisLearningLock.setUnderApproximation(hypothesis)
       // Visualization.visualize(hypothesis,inputs)
@@ -255,6 +271,19 @@ class CompSynthesisAlgorithm(
               // We have FSM^sigma <= underH. Counterstrategy validated
               SynthesisLearningLock.setVerdict(false)
               System.out.println(RED + BOLD + "\nUncontrollable\n" + RESET)
+              System.out.println("Total number of conjectures made: " + (statistics.Counters.get("conjecture_overH") + statistics.Counters.get("conjecture_underH")))
+              SynthesisLearningLock.overApproximation match 
+              { case Some(aut) =>
+                System.out.println("Size of conjecture overH: " + aut.size())
+                case _ => ()
+              }
+              SynthesisLearningLock.underApproximation match 
+              { case Some(aut) =>
+                System.out.println("Size of conjecture underH: " + aut.size())
+                case _ => ()
+              }
+
+              System.out.println(statistics.Counters.counter)
               if (configuration.globalConfiguration.visualizeDFA) then
                 Visualization.visualize(hypothesis,inputs)
               null
