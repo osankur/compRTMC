@@ -19,11 +19,3 @@ There are also the following files
 
 - `sts-2.tsmv` : nuXmv timed automaton model obtained using `tck-convert` from the single process model
   given by `tck-convert` applied to `sts-X.ta`.
-
-Current performance is:
-- `sts-2-fsm.ta` and `sts-2-ta.ta`: 2m (and ~30s with covreach)
-- `sts-2-fsm.smv` and `sts-2-ta.ta`: 7s
-- `sts-3-fsm.ta` and `sts-3-ta.ta`: ????
-- `sts-2.xml` : 20s (Uppaal)
-- `sts-3.xml` : ???? (Uppaal)
-- `sts-2.tsmv` : > 10m, probably times out (?)

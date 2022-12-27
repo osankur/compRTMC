@@ -1,0 +1,78 @@
+ftsp-abs-2-fsm.smv ftsp-abs-2-ta.ta
+Safety holds
+Learning [ms]: 446, (0.446 s)
+Searching for counterexample [ms]: 373, (0.373 s)
+
+learning rounds [#]: 3
+States: 8
+Sigma: 2
+Total system calls: 0ms
+Nb of membership queries: 54
+Time per query: 0ms
+
+ftsp-abs-3-fsm.smv ftsp-abs-3-ta.ta
+Safety holds
+Learning [ms]: 40585, (40.585 s)
+Searching for counterexample [ms]: 103247, (103.247 s)
+
+learning rounds [#]: 88
+States: 217
+Sigma: 3
+Total system calls: 0ms
+Nb of membership queries: 5756
+Time per query: 0ms
+
+ftsp-abs-4-fsm.smv ftsp-abs-4-ta.ta
+timeout
+ftsp-abs-2-fsm.smv ftsp-abs-2-ta.ta
+Map(taMembershipOracle -> 3)
+[33mInclusion query (|DFA| = 1)[0m
+tck-reach -a reach .crtmc/productEq4148372588137245662.ta -l _crtmc_monitor_accept -C .crtmc/cert18252910397166292416.ta
+[32mTA Inclusion holds: hypothesis with 1 states found[0m
+[33mModel checking FSM with given hypothesis TA: .crtmc/product14802702538447527198.smv[0m
+ ( [echo, read_model -i .crtmc/product14802702538447527198.smv; go; check_invar -p !_rtmc_error;; show_traces -v; quit;] #| [NuSMV, -int] ) 
+WARNING: single-value variable 'time.state' has been stored as a constant
+[31mEquiv. Query: FSM Counterexample found: List(wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup1, wakeup2, wakeup2, wakeup2, wakeup2, wakeup2, wakeup2, wakeup2, wakeup2, wakeup2)[0m
+
+[33mChecking the feasibility w.r.t. TA[0m
+
+[32mEquiv. Query: Cex was spurious
+[0m
+Query[ε|wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup1 wakeup2 wakeup2 wakeup2 wakeup2 wakeup2 wakeup2 wakeup2 wakeup2 wakeup2 / false]
+Map(taMembershipOracle -> 25, taInclusionOracle -> 1, SMVIntersectionOracle -> 1)
+[33mInclusion query (|DFA| = 4)[0m
+tck-reach -a reach .crtmc/productEq7802760574804186971.ta -l _crtmc_monitor_accept -C .crtmc/cert1089122014244363475.ta
+List(tau, wakeup2, tau, wakeup2, wakeup1, wakeup2, wakeup1, wakeup2, wakeup1, wakeup2, wakeup2)
+[35mCEX requested alphabet: [wakeup1, wakeup2][0m
+[31mCounterexample to inclusion (accepted by TA but not by hypothesis): Query[ε|wakeup2 wakeup2 wakeup1 wakeup2 wakeup1 wakeup2 wakeup1 wakeup2 wakeup2 / true][0m
+Map(taMembershipOracle -> 54, taInclusionOracle -> 2, SMVIntersectionOracle -> 1)
+[33mInclusion query (|DFA| = 8)[0m
+tck-reach -a reach .crtmc/productEq7415755240995434887.ta -l _crtmc_monitor_accept -C .crtmc/cert6109930687424796236.ta
+[32mTA Inclusion holds: hypothesis with 8 states found[0m
+[33mModel checking FSM with given hypothesis TA: .crtmc/product10446295703516285513.smv[0m
+ ( [echo, read_model -i .crtmc/product10446295703516285513.smv; go; check_invar -p !_rtmc_error;; show_traces -v; quit;] #| [NuSMV, -int] ) 
+There are no traces currently available.
+[32m[1m
+Safety holds
+[0m
+Learning [ms]: 454, (0.454 s)
+Searching for counterexample [ms]: 397, (0.397 s)
+
+learning rounds [#]: 3
+States: 8
+Sigma: 2
+Total system calls: 0ms
+Nb of membership queries: 54
+Time per query: 0ms
+1.81user 0.32system 0:01.30elapsed 163%CPU (0avgtext+0avgdata 84972maxresident)k
+0inputs+608outputs (8major+65666minor)pagefaults 0swaps
+ftsp-abs-3-fsm.smv ftsp-abs-3-ta.ta
+Map(taMembershipOracle -> 4)
+[33mInclusion query (|DFA| = 1)[0m
+tck-reach -a reach .crtmc/productEq11154963293055952582.ta -l _crtmc_monitor_accept -C .crtmc/cert1427939997709198202.ta
+[32mTA Inclusion holds: hypothesis with 1 states found[0m
+[33mModel checking FSM with given hypothesis TA: .crtmc/product12380632394338711804.smv[0m
+ ( [echo, read_model -i .crtmc/product12380632394338711804.smv; go; check_invar -p !_rtmc_error;; show_traces -v; quit;] #| [NuSMV, -int] ) 
+WARNING: single-value variable 'time.state' has been stored as a constant
+ftsp-abs-4-fsm.smv ftsp-abs-4-ta.ta
+Map(taMembershipOracle -> 5)
