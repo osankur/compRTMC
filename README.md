@@ -4,30 +4,35 @@ This is a prototype tool used for the experiments of the following paper:
 
   Ocan Sankur. Timed Automata Verification and Synthesis via Finite Automata Learning. TACAS 2023.
 
+This is licensed under GNU GPL 3.0.
+
 ## Dependencies and Installation
 The tool depends on several command line programs, most of which are shipped together:
-- `NuSMV` as an FSM model checker:
+- `NuSMV` as an FSM model checker (LGPL v2.1)
 
   https://nusmv.fbk.eu/index.html
 
-- `nuXmv` as an FSM model checker (proprietary; not included due to licence).
+- `nuXmv` as an FSM model checker (proprietary; not included due to license).
   This can be downloaded and used for academic and research purposes:
 
   https://nuxmv.fbk.eu/
   
-- The TChecker timed automaton model checker executables: `tck-reach`, `tck-tar`, `tck-convert` from the following particular fork (the default `tacas23` branch): 
+- The TChecker timed automaton model checker (MIT license) executables: `tck-reach`, `tck-tar`, `tck-convert` from the following particular fork (the default `tacas23` branch): 
   
   https://github.com/osankur/tchecker/
   
   
-- `abssynthe` circuit synthesis tool from AIG specifications; the following branch `tacas23`:
+- `abssynthe` circuit synthesis tool from AIG specifications (GNU GPL 3.0); the following branch `tacas23`:
   
-    https://github.com/osankur/abssynthe/tree/tacas23    
+    https://github.com/osankur/abssynthe/tree/tacas23
 
 - `aigtoaig` and `aigtosmv` for translating aig models (modified to produce parsable names)
-  Sources are included.
+  Sources are included. Please see here for the original and full library:
+  
+  https://github.com/arminbiere/aiger
 
-- `yosys`, `berkeley-abc` for translating Verilog programs to AIG
+- `yosys`, `berkeley-abc` for translating Verilog programs to AIG.
+  These can be installed as packages of the same name e.g. under Ubuntun 22.04.
   
 
 ## Usage
