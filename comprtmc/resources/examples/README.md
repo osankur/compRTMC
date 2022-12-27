@@ -3,26 +3,6 @@
 and stays active within a time interval. If at least m of them are awake at the same time, they perform
 one step of a computation together and go back to sleep. The specification is whether a particular common
 configuration is reachable within a time bound.
-
-- broadcast_2_2_a-*.{smv,ta}: 22s (nuXmv 1s)
-- broadcast_2_2_b-*.{smv,ta}: 9s (nuXmv 22m)
-- broadcast_2_2_c-*.{smv,ta}: 12s (nuXmv 14m)
-- broadcast_2_2_d-*.{smv,ta}: 10s (nuXmv 1m)
-- broadcast_3_3_d-*.{smv,ta}: 1m (nuXmv 528s)
-- TODO find a few other timings
-- TODO show that nuXmv is faster when the error state is reachable.
-
-Currently, if the period+activations have a large gcd, then learning the DFA is hard, and nuXmv has also difficulties.
-nuXmv is either faster, or as fast as learning. Both time out on the same instances.
- 
-TODO: !Try other fsm protocols for which nuXmv would be slower!
-    - Consider a self-stabilizing algorithm. Encode fairness with clock constraints (if enabled then taken within 20 time units)
-    - Introduce random errors or Byzantine behavior but with time constraints: bounded number of errors within a time window
-      and require self-stabilization within time bound under these constraints
-    
-    - Round based protocol: Each round has a duration within `[a,b]`, while fair events `e` must occur within `[0,d_e]`
-      Due to clock synchronization: between each round increment
-      Aspnes
     
 # Robust Leader Election
 The `leader/`  directory contains models for a leader election protocol inspired by the following paper:
@@ -94,10 +74,6 @@ The specification is that after a given number of steps, all processes agree tha
   
 The script `concrete/ftsp-concrete.py` can be used to generate the above smv and tsmv files.
 
-nuXmv is too slow on these instances.
-Uppaal / TChecker are very fast.
-Learning takes ~1-2m on ftsp-line-3.smv versus 1-2s for Uppaal.
-
 ## Abstract
 Abstract FTSP protocol in an arbitrary network in which a particular line is modeled concretely.
 The models is inspired from the incremental model checking method of Sankur, Talpin TACAS 2017.
@@ -157,16 +133,8 @@ The timed model checker of nuXmv is currently much faster.
 # STS
 See `sts/README.md`
 
-For n=3, the alphabet is probably too big for learning.
-TODO write smv fsm model.
-
-# Mutex (TODO)
-From TChecker benchmarks database
-
 # Maze planning
-The `planning` directory
-- maze_planning1
-- maze_planning2 (TODO)
+The `planning` directory.
 
 This is a high-level planning problem with real-time constraints.
 An agent must go from a start cell to a goal cell in a grid maze. Some cells are obstacles,
@@ -186,6 +154,3 @@ The second model should contain a Boolean program to specify the behavior of a m
 # RT-SAT
 The `rt-sat/` directory contains rt-sat benchmarks from the TChecker benchmarks database.
 nuXmv is very quick on these.
-
-# Real-Time Requirements
-From the FORMATS paper or ATVA submission...

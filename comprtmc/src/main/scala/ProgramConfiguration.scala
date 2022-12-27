@@ -46,7 +46,7 @@ case class Configuration(
     fsmFile: File = new File("."),
     taFile: File = new File("."),
     fsmFormat: FSM.FSMFormat = FSM.SMV,
-    fsmModelChecker: FSM.ModelChecker = FSM.NuXmv,
+    fsmModelChecker: FSM.ModelChecker = FSM.NuSMV,
     fsmAlgorithm: FSM.ModelCheckingAlgorithm = FSM.BDDAlgorithm,
     algorithm: Algorithm = HypothesisLearning,
     keepTmpFiles: Boolean = false,

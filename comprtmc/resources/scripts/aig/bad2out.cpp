@@ -4,6 +4,7 @@
 void process_bad2out(aiger * spec){
     for(int i = 0; i < spec->num_bad; i++){
         aiger_add_output(spec, spec->bad[i].lit, spec->bad[i].name);
+        
     }
     spec->num_bad = 0; // I know it's bad
 }
