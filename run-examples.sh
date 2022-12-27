@@ -1,5 +1,9 @@
 set -e
+./run.sh verify resources/examples/leader/leader_n3_stateless.smv resources/examples/leader/leader_n3_a-ta.ta 
+sleep 2
 ./run.sh verify resources/examples/ftsp/ftsp-abs-2-fsm.smv resources/examples/ftsp/ftsp-abs-2-ta.ta
+sleep 2
+./run.sh verify resources/examples/sts/sts-2-fsm.smv resources/examples/sts/sts-2-ta.ta 
 sleep 2
 ./run.sh verify resources/examples/rt-broadcast/broadcast_amba.smv resources/examples/rt-broadcast/broadcast_amba_a.ta
 sleep 2
