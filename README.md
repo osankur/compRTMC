@@ -6,8 +6,14 @@ This is a prototype tool used for the experiments of the following paper:
 
 This software is licensed under GNU GPL 3.0.
 
-## Dependencies and Installation
+## Installation
+
+### Artifact Evaluation
+Please refer to the readme file of the artifact.
+
 ### Manual Installation
+Read this if you are *not* using the TACAS23 artifact to run this program.
+
 You need Java 17, Scala 3.1.1, and sbt 1.8.
 
 To compile, run 

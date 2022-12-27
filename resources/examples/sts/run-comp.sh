@@ -13,5 +13,5 @@ do
      fsm=${benchs[$i]}
      ta=${benchs[$i+1]}
      echo $fsm $ta | tee -a log_comp
-     ../../../run.sh verify $fsm $ta 2>&1 | tee -a log_comp
+     time ../../../run.sh verify $fsm $ta 2>&1 | tee -a log_comp
 done
