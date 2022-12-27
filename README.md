@@ -7,9 +7,14 @@ This is a prototype tool used for the experiments of the following paper:
 This software is licensed under GNU GPL 3.0.
 
 ## Dependencies and Installation
-
 ### Manual Installation
-The tool depends on several command line programs. We provide the binaries for most of them:
+You need Java 17, Scala 3.1.1, and sbt 1.8.
+
+To compile, run 
+
+    sbt assembly
+
+The tool uses several command line programs during runtime. We provide the binaries for most of them:
 
 - `NuSMV` as an FSM model checker (LGPL v2.1)
 
@@ -48,12 +53,8 @@ The tool depends on several command line programs. We provide the binaries for m
 Binaries for all these programs are included in this repository except for [*] which are free software and can be installed easily on Linux;
 and [+] which are proprietary software and are only used for comparing the present algorithm to those model checkers.
 
-Concretely, the only installation step consists in installing yosys and berkeley-abc. Note that these are ony used for the synthesis algorithm.
+Concretely, the only dependencies that needs to be installed are yosys and berkeley-abc. Note that these are ony used for the synthesis algorithm.
 The verification algorithm works out of the box.
-
-To compile, run 
-
-    sbt assembly
 
 ## Usage
 Currently two safety verification algorithms are implemented.
