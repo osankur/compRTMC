@@ -65,12 +65,11 @@ The verification algorithm works out of the box.
 ## Usage
 Currently two safety verification algorithms are implemented.
 
-- `learning`: a DFA learning algorithm is run to learn the timed automaton model
-applies compositional verification.
+- `verify`: model checking algorithm.
 
-- `synth`: controller synthesis algrithm.
+- `synthesize`: controller synthesis algrithm.
 
-A script is provided to run examples. To run the verification algorithm, try
+A script is provided to run examples. To run the verification algorithm, try e.g.
 
     ./run.sh verify resources/examples/ftsp/ftsp-abs-2-fsm.smv resources/examples/ftsp/ftsp-abs-2-ta.ta 
 
