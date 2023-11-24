@@ -12,4 +12,4 @@ if [ "$#" -eq 4 ]; then
 fi
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-PATH=$PATH:$parent_path/resources/scripts/aig/ time java 2>&1 -Xmx${MEMLIM} -Dorg.slf4j.simpleLogger.defaultLogLevel=error -jar $parent_path/target/scala-3.1.1/compRTMC.jar --alg $1 --fsm $2 --ta $3 --verbose $verbose
+PATH=$PATH:$parent_path/resources/scripts/aig/ time java 2>&1 -Xmx${MEMLIM} -Dorg.slf4j.simpleLogger.defaultLogLevel=info -jar $parent_path/target/scala-3.1.1/compRTMC.jar --alg $1 --fsm $2 --ta $3 --verbose $verbose

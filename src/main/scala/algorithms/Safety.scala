@@ -55,7 +55,7 @@ class CompSafetyAlgorithm(
     taMembershipOracle: ta.TAMembershipOracle,
     taInclusionOracle: EquivalenceOracle.DFAEquivalenceOracle[String]
 ) {
-  private val logger = LoggerFactory.getLogger(classOf[CompSafetyAlgorithm])
+  private val logger = LoggerFactory.getLogger("compRTMC")
 
   case class ProductCounterExample(
       smvTrace: String,
@@ -82,7 +82,7 @@ class CompSafetyAlgorithm(
       assert(inputs.size == fsmIntersectionOracle.alphabet.length)
       assert(statistics.posQueries.intersect(statistics.negQueries).isEmpty)
       if (configuration.globalConfiguration.verbose)
-        System.out.println(statistics.Counters.toString)
+        logger.debug(statistics.Counters.toString)
       taInclusionOracle.findCounterExample(hypothesis, inputs) match {
         case null =>
           fsmIntersectionOracle.checkIntersection(hypothesis) match {
@@ -94,10 +94,10 @@ class CompSafetyAlgorithm(
               // FSM x hypothesis contains a counterexample trace
               // Check feasability with TChecker
               if (configuration.globalConfiguration.verbose){
-                System.out.println(
+                logger.debug(
                   RED + "Equiv. Query: FSM Counterexample found: " + trace + RESET + "\n"
                 )
-                System.out.println(
+                logger.debug(
                   YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n"
                 )
               }
@@ -119,14 +119,14 @@ class CompSafetyAlgorithm(
                   throw ProductCounterExample(cexDescription, trace, timedTrace)
                 case None =>
                   if (configuration.globalConfiguration.verbose){
-                    System.out.println(
+                    logger.debug(
                       GREEN + "Equiv. Query: Cex was spurious\n" + RESET
                     )
-                    System.out.println(
-                      DefaultQuery[String, java.lang.Boolean](
+                    logger.debug(
+                      (DefaultQuery[String, java.lang.Boolean](
                         word,
                         java.lang.Boolean.FALSE
-                      )
+                      )).toString
                     )
                   }
                   statistics.negQueries =
@@ -174,35 +174,35 @@ class CompSafetyAlgorithm(
     experiment.setLogModels(true);
     try {
       experiment.run();
-      System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
+      logger.info(GREEN + BOLD + "Safety holds" + RESET)
       val result = experiment.getFinalHypothesis();
       if (configuration.globalConfiguration.visualizeDFA) then
         Visualization.visualize(result, alph)
-      System.out.println(SimpleProfiler.getResults());
-      System.out.println(experiment.getRounds().getSummary());
-      System.out.println("States: " + result.size());
-      System.out.println("Sigma: " + alph.size());
-      System.out.println(
+      logger.info(SimpleProfiler.getResults());
+      logger.info(experiment.getRounds().getSummary());
+      logger.info("States: " + result.size());
+      logger.info("Sigma: " + alph.size());
+      logger.info(
         "Total system calls: " + taMembershipOracle.systemElapsedTime / 1000000L + "ms"
       );
-      System.out.println(
+      logger.info(
         "Nb of membership queries: " + taMembershipOracle.nbQueries
       );
-      System.out.println(
+      logger.info(
         "Time per query: " + taMembershipOracle.systemElapsedTime / 1000000L / taMembershipOracle.nbQueries + "ms"
       );
     } catch {
       case ProductCounterExample(smvTrace, trace, taTrace) =>
-        System.out.println(
+        logger.info(
           RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n"
         )
-        System.out.println("\t" + YELLOW + BOLD + trace + RESET)
-        System.out.println("\nSMV trace:")
-        System.out.println(YELLOW + smvTrace + RESET)
-        System.out.println("\nTA trace:")
-        System.out.println(YELLOW + taTrace + RESET)
+        logger.info("\t" + YELLOW + BOLD + trace + RESET)
+        logger.info("\nSMV trace:")
+        logger.info(YELLOW + smvTrace + RESET)
+        logger.info("\nTA trace:")
+        logger.info(YELLOW + taTrace + RESET)
       case configuration.ParseError(msg) =>
-        System.out.println(RED + msg + RESET)
+        logger.error(RED + msg + RESET)
       case e => throw e
     }
   }
@@ -237,34 +237,34 @@ class TARAlgorithm(
     var decisionReached = false
     while (!decisionReached) {
       statistics.Counters.incrementCounter("tar-iteration")
-      System.out.println(statistics.Counters.toString)
+      logger.debug(statistics.Counters.toString)
       // Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
       fsmIntersectionOracle.checkIntersection(learnedDFA) match {
         case None =>
-          System.out.println(GREEN + BOLD + "\nSafety holds\n" + RESET)
+          logger.debug(GREEN + BOLD + "\nSafety holds\n" + RESET)
           if (configuration.globalConfiguration.visualizeDFA) then
             Visualization.visualize(learnedDFA, Alphabets.fromList(alphabet))
           decisionReached = true
         case Some(fsm.CounterExample(cexDescription, trace)) =>
-          System.out.println(
+          logger.debug(
             RED + "FSM Counterexample found: " + trace + RESET + "\n"
           )
-          System.out.println(
+          logger.debug(
             YELLOW + "Checking the feasibility w.r.t. TA" + RESET + "\n"
           )
           taInterpolationOracle.checkWord(trace) match {
             case taInterpolationOracle.NonEmpty(taTrace) =>
-              System.out.println(
+              logger.debug(
                 RED + BOLD + "\nError state is reachable " + RESET + "\nOn the following synchronized word:\n"
               )
-              System.out.println("\t" + YELLOW + BOLD + trace + RESET)
-              System.out.println("\nFSM trace:")
-              System.out.println(YELLOW + cexDescription + RESET)
-              System.out.println("\nTA trace:")
-              System.out.println(YELLOW + taTrace + RESET)
+              logger.debug("\t" + YELLOW + BOLD + trace + RESET)
+              logger.debug("\nFSM trace:")
+              logger.debug(YELLOW + cexDescription + RESET)
+              logger.debug("\nTA trace:")
+              logger.debug(YELLOW + taTrace + RESET)
               decisionReached = true
             case taInterpolationOracle.Empty(nfa) =>
-              System.out.println(
+              logger.debug(
                 GREEN + "Trace was spurious; adding NFA\n" + RESET
               )
               val alph = Alphabets.fromList(alphabet)
@@ -272,11 +272,11 @@ class TARAlgorithm(
               val complemented = DFAs.complement(determinized, alph)
               val minimized = DFAs.minimize(complemented, alph)
               val newHypothesis = DFAs.and(learnedDFA, minimized, alph)
-              System.out.println(
+              logger.debug(
                 YELLOW + "New hypothesis has " + newHypothesis.size + " states\n" + RESET
               )
               val newHypothesisMinimized = DFAs.minimize(newHypothesis, alph)
-              System.out.println(
+              logger.debug(
                 YELLOW + "and " + newHypothesisMinimized.size + " once minimized\n" + RESET
               )
               learnedDFA = newHypothesisMinimized

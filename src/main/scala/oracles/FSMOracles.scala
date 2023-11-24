@@ -106,13 +106,10 @@ class SMV(inputFile: java.io.File) {
         "The main module must contain the precise specification \"INVARSPEC !error\"."
       )
     }
-    // val alphabetAsArgs = alphabet.map("fsm._rt_"+_).mkString(", ")
     val alphabetAsArgs = alphabet.map("_rt_"+_).mkString(", ")
     val fsm = newLines.mkString("\n")
     val strB = StringBuilder()
-    // strB.append("MODULE main\n")
     strB.append("VAR\n")
-    // strB.append("\tfsm : _rtmc_main;\n")
     strB.append(
       "\ttime : _rtmc_time(%s);\n".format(alphabetAsArgs)
     )
@@ -123,7 +120,6 @@ class SMV(inputFile: java.io.File) {
         y <- alphabet
         if x < y
       } yield (x, y)
-      // strB.append(uniquePairs.map((x,y) => "fsm._rt_%s & fsm._rt_%s".format(x,y)).mkString(" | "))
       strB.append(uniquePairs.map((x,y) => "_rt_%s & _rt_%s".format(x,y)).mkString(" | "))
       strB.append(";\n")
     } else {
@@ -211,7 +207,7 @@ class SMVIntersectionOracle(
     smv: SMV
 ) extends FSMIntersectionOracle {
 
-  private val logger = LoggerFactory.getLogger(classOf[SMVIntersectionOracle])
+  private val logger = LoggerFactory.getLogger("compRTMC")
 
   val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
@@ -233,22 +229,19 @@ class SMVIntersectionOracle(
     val cmd =
       configuration.globalConfiguration.fsmAlgorithm match {
         case configuration.FSM.BDDAlgorithm =>
-          "echo \"read_model -i %s; go; check_invar -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
+          "echo \"read_model -i %s; go; check_invar -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "./bin/%s -int".format(configuration.globalConfiguration.fsmModelChecker)
         case _ =>
-          "echo \"read_model -i %s; go_msat; check_invar_ic3 -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "%s -int".format(configuration.globalConfiguration.fsmModelChecker)
+          "echo \"read_model -i %s; go_msat; check_invar_ic3 -p \"!_rtmc_error;\"; show_traces -v; quit;\"".format(productFile) #| "./bin/%s -int".format(configuration.globalConfiguration.fsmModelChecker)
       }
-    if (configuration.globalConfiguration.verbose){
-      System.out.println(YELLOW + s"Model checking FSM with given hypothesis TA: $productFile" + RESET)
-      System.out.println(cmd)
+    if (configuration.globalConfiguration.verbose){      
+      logger.debug(YELLOW + s"Model checking FSM with given hypothesis TA: $productFile" + RESET)
+      logger.debug(cmd.toString)
     }
     val output = cmd.!!
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("Trace Type: Counterexample")) {
-      // if(output.contains("_rt_nonexcl = TRUE")){
-      //   throw ParseError("The real-time labels _rt_ must be mutually exclusive")
-      // }
       // The output should contain the counterexample twice
       // Return the first occurrence (nonverbose), but use the second occurrence (verbose) to extract trace
       val (cexStr,cexVerboseStr) = 
@@ -276,8 +269,6 @@ class SMVIntersectionOracle(
         if (!errorHasBeenSeen){
           filteredStates.append(state)
         }
-        // System.out.println("-> state %d (error: ".format(i) + state.contains(regError)+ ")\n")
-        // System.out.println(state.split("\n").filter(!_.contains("fsm.a")).filter(_.length >0).mkString("\n"))
       }
       filteredStates.foreach{
         _.split("\n").foreach{
@@ -293,7 +284,7 @@ class SMVIntersectionOracle(
     } else if (regInvariantTrue.matches(output)){
       None
     } else {
-      System.out.println(output)
+      logger.debug(output)
       throw ParseError("FSM Model checker did not return an expected result")
     }
   }
@@ -304,6 +295,7 @@ class TCheckerIntersectionOracle(
     fsm: TCheckerTA
 ) extends FSMIntersectionOracle {
   private val taMonitorMaker = TCheckerMonitorMaker(fsm, Alphabets.fromList(this.alphabet), Some("error"))
+  private val logger = LoggerFactory.getLogger("compRTMC")
   throw Exception("not supported")
   override def alphabet : List[String] = {
     fsm.externEvents
@@ -311,7 +303,7 @@ class TCheckerIntersectionOracle(
   override def checkIntersection(hypothesis: DFA[?, String]): 
     Option[CounterExample] = {
       val productTA = taMonitorMaker.makeDFAIntersecter(hypothesis, false)
-      System.out.println("Checking intersection: ")
+      logger.debug("Checking intersection: ")
       statistics.Counters.incrementCounter("TCheckerIntersectionOracle")
 
       taMonitorMaker.checkEmpty(productTA, true) match {

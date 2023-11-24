@@ -62,7 +62,7 @@ class TCheckerTA(inputFile: java.io.File) {
       val syncs: List[List[(String, String)]],
       val core: String,
   )
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
+  private val logger = LoggerFactory.getLogger("compRTMC")
 
   private val taComponents = {
     val lines = Source.fromFile(inputFile).getLines().toList
@@ -71,7 +71,7 @@ class TCheckerTA(inputFile: java.io.File) {
     val regSync = "\\s*sync:(.*)\\s*".r
     val regProcess = "\\s*process:(.*)\\s*".r
     val regEdge = "\\s*edge:[^:]*:[^:]*:[^:]*:([^{]*).*".r
-    // System.out.println("File: " + inputFile.toString)
+    // logger.debug("File: " + inputFile.toString)
     val events = lines.flatMap({
       case regEvent(event) => Some(event.strip())
       case _               => None
@@ -102,12 +102,10 @@ class TCheckerTA(inputFile: java.io.File) {
       case regProcess(monitorProcessName) =>
         currentProcess = monitorProcessName
         eventsOfProcesses += (monitorProcessName -> Set[String]())
-      // System.out.println("Now reading process: " + monitorProcessName)
       case regEdge(sync) =>
         eventsOfProcesses += (currentProcess -> (eventsOfProcesses(
           currentProcess
         ) + sync))
-      // System.out.println("Adding sync: " + sync)
       case _ => ()
     }
     val core = lines.filter(line => !line.startsWith("sync:")).mkString("\n")
@@ -157,6 +155,8 @@ class TCheckerMonitorMaker (
     acceptingLabel : Option[String],
     monitorProcessName: String = "_crtmc_mon"
 )  {
+  private val logger = LoggerFactory.getLogger("compRTMC")
+
   val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
 
@@ -284,7 +284,6 @@ class TCheckerMonitorMaker (
     * 
     * The accepting label is to be checked is monitorAcceptLabel if all locations of the TA are accepting (acceptingLabel == None),
     * and productAcceptLabel otherwise. These cases are handled by the checkEmpty function.
-    * FIXME there should be a unique accepting label in both cases.
     * 
     * @param complement whether given DFA should be complemented.
     */
@@ -371,6 +370,7 @@ class TCheckerMonitorMaker (
    * @return Empty if the given automaton is empty, and NonEmpty with a trace otherwise.
    */
   def checkEmpty(monitorDescription : String, generateWitness : Boolean) : Answer = {
+
     val label = if acceptingLabel == None then monitorAcceptLabel else productAcceptLabel
     val productFile =
       Files.createTempFile(tmpDirPath, "product", ".ta").toFile()
@@ -384,18 +384,18 @@ class TCheckerMonitorMaker (
     val cmd = 
         if (generateWitness){
           certFile = Files.createTempFile(tmpDirPath, "cert", ".ta").toFile()
-          "tck-reach -a reach %s -l %s -C %s"
+          "./bin/tck-reach -a reach %s -l %s -C %s"
             .format(productFile.toString, label,certFile.toString)
         } else {
-          "tck-reach -a covreach %s -l %s"
+          "./bin/tck-reach -a covreach %s -l %s"
             .format(productFile.toString, label)
         }
     if configuration.globalConfiguration.verbose_MembershipQueries then
-      System.out.println(cmd)
+      logger.debug(cmd)
     // var beginTime = System.nanoTime()
     val output = cmd.!!
     // this._elapsed = this._elapsed + (System.nanoTime() - beginTime)
-    // System.out.println(output)
+    // logger.debug(output)
 
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
@@ -407,13 +407,10 @@ class TCheckerMonitorMaker (
       Empty
     } else if (output.contains("REACHABLE true")) then {
       if (generateWitness){
-        // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)      
-        // val timedCex = parts(1)
         val timedCex = Source.fromFile(certFile).getLines.mkString("\n")
         if (!configuration.globalConfiguration.keepTmpFiles){
           certFile.delete()
         }
-        // System.out.println(timedCex)
         NonEmpty(timedCex)
       } else {
         NonEmpty("")
@@ -447,7 +444,7 @@ class TCheckerMembershipOracle(
     alphabet: Alphabet[String],
     acceptingLabel : Option[String] = None
 ) extends TAMembershipOracle {
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerTA])
+  private val logger = LoggerFactory.getLogger("compRTMC")
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet, acceptingLabel)
 
   private var _elapsed : Long = 0
@@ -473,7 +470,7 @@ class TCheckerMembershipOracle(
   ): java.lang.Boolean = {
     val pr = prefix.asList.asScala
     val su = suffix.asList.asScala
-    // System.out.println(pr.toList.mkString(" ") + " ||| " + su.mkString(" "))
+    // logger.debug(pr.toList.mkString(" ") + " ||| " + su.mkString(" "))
     answerQuery(prefix,suffix, false) match {
       case None => false
       case _ => true
@@ -499,13 +496,13 @@ class TCheckerMembershipOracle(
     verdict match {
       case taMonitorMaker.Empty =>
         if configuration.globalConfiguration.verbose_MembershipQueries then
-          System.out.println(RED + " (false)" + RESET)
+          logger.debug(RED + " (false)" + RESET)
         statistics.negQueries = statistics.negQueries + trace.mkString(" ")
         None
       case taMonitorMaker.NonEmpty(cex) =>
         statistics.posQueries = statistics.posQueries + trace.mkString(" ")
         if configuration.globalConfiguration.verbose_MembershipQueries then
-          System.out.println(GREEN + " (true)" + RESET)
+          logger.debug(GREEN + " (true)" + RESET)
         Some(cex)
     }
   }
@@ -519,7 +516,7 @@ class TCheckerInclusionOracle(
     ta: TCheckerTA,
     alphabet: Alphabet[String]
 ) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerInclusionOracle])
+  private val logger = LoggerFactory.getLogger("compRTMC")
   private val taMonitorMaker = TCheckerMonitorMaker(ta, alphabet, None)
   private val alphabetSet = alphabet.asScala.toSet
 
@@ -542,18 +539,18 @@ class TCheckerInclusionOracle(
 
     // Model check product automaton
     if (configuration.globalConfiguration.verbose)
-      System.out.println(YELLOW + "Inclusion query (|DFA| = " + hypothesis.size + ")" + RESET)
-    val cmd = "tck-reach -a reach %s -l %s -C %s" 
+      logger.debug(YELLOW + "Inclusion query (|DFA| = " + hypothesis.size + ")" + RESET)
+    val cmd = "./bin/tck-reach -a reach %s -l %s -C %s" 
       .format(productFile.toString, taMonitorMaker.monitorAcceptLabel, certFile)
     if (configuration.globalConfiguration.verbose)
-      System.out.println(cmd)
+      logger.debug(cmd)
     val output = cmd.!!
-    // System.out.println(output)
+    // logger.debug(output)
     if (!configuration.globalConfiguration.keepTmpFiles){
       productFile.delete()
     }    
     if (output.contains("REACHABLE false")) then {
-      System.out.println(GREEN + "TA Inclusion holds: hypothesis with " + hypothesis.size + " states found" + RESET)
+      logger.debug(GREEN + "TA Inclusion holds: hypothesis with " + hypothesis.size + " states found" + RESET)
       null
     } else if (output.contains("REACHABLE true")) then {
       // val parts = output.split("Counterexample trace:").map(_.strip()).filter(_.length>0)
@@ -565,9 +562,9 @@ class TCheckerInclusionOracle(
       val word = ta.getTraceFromCexDescription(cexLines).filter(alphabet.contains(_))
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.TRUE)
       if (configuration.globalConfiguration.verbose){
-        System.out.println(ta.getTraceFromCexDescription(cexLines))
-        System.out.println(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
-        System.out.println(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
+        logger.debug(ta.getTraceFromCexDescription(cexLines).toString)
+        logger.debug(MAGENTA + "CEX requested alphabet: " + inputs + RESET)
+        logger.debug(RED + "Counterexample to inclusion (accepted by TA but not by hypothesis): " + query + RESET)
       }
       statistics.posQueries = statistics.posQueries + word.mkString(" ")
 
@@ -592,6 +589,8 @@ class TCheckerInterpolationOracle(
   case class Empty(nfa : CompactNFA[String]) extends Answer
   case class NonEmpty(cexDescription : String) extends Answer
 
+  private val logger = LoggerFactory.getLogger("compRTMC")
+
   /**
    * Use TChecker to check whether word is in the untimed language of the given ta.
    * @return NonEmpty if the word is accepted (and a witness execution a string);
@@ -601,10 +600,10 @@ class TCheckerInterpolationOracle(
     val wordArg = "\"%s\"".format(word.mkString(" "))
     val alphabetArg = "\"%s\"".format(alphabet.mkString(" "))
 
-    val cmd = "tck-tar %s -t %s -a %s".format(ta.toString, wordArg, alphabetArg)
+    val cmd = "./bin/tck-tar %s -t %s -a %s".format(ta.toString, wordArg, alphabetArg)
     val output = cmd.!!
-    System.out.println(cmd)
-    System.out.println(output)
+    logger.debug(cmd)
+    logger.debug(output)
     if (output.contains("REACHABLE true")){
       NonEmpty(output)
     } else {
@@ -647,14 +646,13 @@ class TCheckerInterpolationOracle(
  *                              H <= T ? 
  *  Here, all locations of the TA is assumed to be accepting.
  * 
- *  FIXME Checking the emptiness of H /\ complement(T)  does not imply the above inclusiom on untimed traces!
  */
 class TCheckerContainmentOracle(
     taFile: File,
     alphabet: Alphabet[String]
 ) extends EquivalenceOracle.DFAEquivalenceOracle[String] {
 
-  private val logger = LoggerFactory.getLogger(classOf[TCheckerContainmentOracle])
+  private val logger = LoggerFactory.getLogger("compRTMC")
 
   private val tmpDirPath = FileSystems.getDefault().getPath(configuration.globalConfiguration.tmpDirName);
   tmpDirPath.toFile().mkdirs()
@@ -664,10 +662,10 @@ class TCheckerContainmentOracle(
   
   private val complementTA = {
     val f = Files.createTempFile(tmpDirPath, "complement", ".ta").toFile()
-    val cmd = s"tck-convert -c ${taFile.toString} -o ${f.toString}"
-    System.out.println(cmd)
+    val cmd = s"./bin/tck-convert -c ${taFile.toString} -o ${f.toString}"
+    logger.debug(cmd)
     if (cmd.! != 0) then{
-      logger.error("tck-convert returned an error")
+      logger.error("./bin/tck-convert returned an error")
       throw FailedTAModelChecking("Could not compute complement")
     }
     TCheckerTA(f)
@@ -686,7 +684,7 @@ class TCheckerContainmentOracle(
       case taMonitorMaker.NonEmpty(cexDescription) => // Containment fails
       val word = complementTA.getTraceFromCexDescription(cexDescription.split("\n").toList).filter(alphabet.contains(_))
       val query =  DefaultQuery[String, java.lang.Boolean](Word.fromArray[String](word.toArray,0,word.length), java.lang.Boolean.FALSE)
-      System.out.println(RED + "Counterexample to containment (accepted by hypothesis but not by timed automaton): " + query + RESET)
+      logger.debug(RED + "Counterexample to containment (accepted by hypothesis but not by timed automaton): " + query + RESET)
       statistics.negQueries = statistics.negQueries + word.mkString(" ")
       query
     }      
